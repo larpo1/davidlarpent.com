@@ -457,6 +457,15 @@ a:hover {
   background: var(--color-code-bg);
 }
 
+/* Show toggle button when TOC is closed on desktop */
+.toc-container[data-open="false"] ~ .toc-toggle {
+  display: block;
+  position: fixed;
+  top: 1.5rem;
+  left: 1.5rem;
+  z-index: 99;
+}
+
 /* Responsive - Hide fixed TOC when viewport too narrow for left margin */
 @media (max-width: 1200px) {
   /* Hide desktop TOC - convert to overlay */
