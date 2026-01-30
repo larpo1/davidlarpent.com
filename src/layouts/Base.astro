@@ -36,6 +36,18 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 
     <!-- RSS -->
     <link rel="alternate" type="application/rss+xml" title="David Larpent" href="/rss.xml" />
+
+    <!-- Google Fonts: Newsreader -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,600;1,400;1,600&display=swap" rel="stylesheet" />
+
+    <!-- Theme: Dark mode by default -->
+    <script is:inline>
+      // Set dark mode by default, allow override via localStorage
+      const theme = localStorage.getItem('theme') || 'dark';
+      document.documentElement.setAttribute('data-theme', theme);
+    </script>
   </head>
   <body>
     <div class="container">
@@ -43,10 +55,25 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
         <h1 class="site-title">
           <a href="/">David Larpent</a>
         </h1>
+        <button id="theme-toggle" aria-label="Toggle theme">
+          <span class="theme-icon">◐</span>
+        </button>
       </header>
       <main>
         <slot />
       </main>
     </div>
+
+    <script>
+      const toggle = document.getElementById('theme-toggle');
+      const html = document.documentElement;
+
+      toggle?.addEventListener('click', () => {
+        const current = html.getAttribute('data-theme');
+        const next = current === 'dark' ? 'light' : 'dark';
+        html.setAttribute('data-theme', next);
+        localStorage.setItem('theme', next);
+      });
+    </script>
   </body>
 </html>
