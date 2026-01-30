@@ -348,7 +348,6 @@ a:hover {
 }
 
 .toc-close {
-  display: none; /* Hidden on desktop */
   background: none;
   border: none;
   font-size: 1.5rem;
@@ -427,7 +426,7 @@ a:hover {
   background: var(--color-code-bg);
 }
 
-/* Responsive - Tablet: hide TOC sidebar, show toggle */
+/* Responsive - Tablet/Mobile: overlay TOC, always show toggle */
 @media (max-width: 1024px) {
   .post-layout {
     max-width: 700px;
@@ -437,22 +436,34 @@ a:hover {
     max-width: none;
   }
 
-  /* Hide TOC sidebar on tablet */
+  /* Hide TOC sidebar - convert to overlay */
   .toc-container {
-    display: none;
+    display: none !important;
+    position: fixed;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    max-height: 100vh;
+    padding: 2rem;
+    border-radius: 0;
+    border: none;
+    z-index: 100;
   }
 
-  /* Show toggle button */
+  /* Only show when explicitly opened */
+  .toc-container[data-open="true"] {
+    display: block !important;
+  }
+
+  /* Always show toggle button on small screens */
   .toc-toggle {
-    display: block;
+    display: block !important;
     position: fixed;
     top: 1rem;
     right: 1.5rem;
     z-index: 99;
-  }
-
-  .toc-container[data-open="false"] ~ .toc-toggle {
-    display: block;
   }
 }
 
@@ -479,37 +490,6 @@ a:hover {
 
   .post-layout {
     flex-direction: column;
-  }
-
-  /* Mobile TOC - Full screen overlay */
-  .toc-container {
-    display: none;
-    position: fixed;
-    left: 0;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    width: 100%;
-    max-height: 100vh;
-    padding: 2rem;
-    border-radius: 0;
-    border: none;
-    z-index: 100;
-  }
-
-  .toc-container[data-open="true"] {
-    display: block;
-  }
-
-  .toc-close {
-    display: block;
-  }
-
-  .toc-toggle {
-    display: block;
-    position: fixed;
-    right: 1.5rem;
-    top: 1rem;
   }
 }
 

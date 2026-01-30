@@ -15,11 +15,7 @@ const tocHeadings = headings.filter(h => h.depth === 2 || h.depth === 3);
 
 {tocHeadings.length > 0 && (
   <>
-    <button id="toc-toggle" class="toc-toggle" aria-label="Toggle table of contents">
-      ☰
-    </button>
-
-    <aside id="toc-container" class="toc-container" data-open="true">
+    <aside id="toc-container" class="toc-container" data-open="false">
       <div class="toc-header">
         <h2>Contents</h2>
         <button id="toc-close" class="toc-close" aria-label="Close table of contents">
@@ -38,6 +34,10 @@ const tocHeadings = headings.filter(h => h.depth === 2 || h.depth === 3);
         </ul>
       </nav>
     </aside>
+
+    <button id="toc-toggle" class="toc-toggle" aria-label="Toggle table of contents">
+      ☰
+    </button>
   </>
 )}
 
@@ -47,8 +47,20 @@ const tocHeadings = headings.filter(h => h.depth === 2 || h.depth === 3);
   const closeButton = document.getElementById('toc-close');
   const tocContainer = document.getElementById('toc-container');
 
-  // Get initial state from localStorage or default to open
-  const initialState = localStorage.getItem('tocOpen') !== 'false';
+  // Check if we're on tablet/mobile (matches CSS breakpoint)
+  const isSmallScreen = () => window.innerWidth <= 1024;
+
+  // Get initial state: use localStorage if set, otherwise default based on screen size
+  // On desktop (>1024px), default to open; on tablet/mobile, default to closed
+  const getInitialState = () => {
+    const stored = localStorage.getItem('tocOpen');
+    if (stored !== null) {
+      return stored === 'true';
+    }
+    return !isSmallScreen(); // Open on desktop, closed on mobile
+  };
+
+  const initialState = getInitialState();
 
   if (tocContainer) {
     tocContainer.setAttribute('data-open', initialState.toString());
@@ -69,8 +81,8 @@ const tocHeadings = headings.filter(h => h.depth === 2 || h.depth === 3);
     toggleToc(false);
   });
 
-  // Close TOC on mobile when clicking a link
-  const isMobile = () => window.innerWidth <= 768;
+  // Close TOC on tablet/mobile when clicking a link
+  const isMobile = () => window.innerWidth <= 1024;
 
   document.querySelectorAll('.toc-link').forEach(link => {
     link.addEventListener('click', (e) => {
