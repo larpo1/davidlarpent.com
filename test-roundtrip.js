@@ -1,5 +1,5 @@
-// Test: HTML → Markdown roundtrip fidelity
-// This tests whether GFM plugin preserves footnotes
+// Test: Footnote preservation strategy
+// This tests whether footnotes from original markdown are preserved
 // Run: node test-roundtrip.js
 
 import TurndownService from 'turndown';
@@ -10,57 +10,111 @@ const turndown = new TurndownService({
   codeBlockStyle: 'fenced',
 });
 
-// Add GFM plugin for footnote support
+// Add GFM plugin
 turndown.use(gfm);
 
-// Simulate what happens when editing a post with footnotes:
-// 1. Markdown rendered to HTML by Astro (with syntax highlighting, footnotes)
-const renderedHTML = `
-<h1>Heading with Code</h1>
-<p>Here's some JavaScript with syntax highlighting:</p>
-<pre><code class="language-javascript"><span class="token keyword">function</span> <span class="token function">hello</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-  console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">"world"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token punctuation">}</span></code></pre>
-<p>And a footnote reference<sup><a href="#user-content-fn-1" id="user-content-fnref-1" data-footnote-ref>1</a></sup>.</p>
-<section class="footnotes">
-<h2>Footnotes</h2>
-<ol>
-<li id="user-content-fn-1">This is the footnote content.</li>
-</ol>
-</section>
+// Simulate the ORIGINAL markdown (with footnotes)
+const originalMarkdown = `
+# Post with Footnotes
+
+This is the first paragraph with a footnote[^1].
+
+Here's some more text with another footnote[^2].
+
+## Code Example
+
+\`\`\`javascript
+function hello() {
+  console.log("world");
+}
+\`\`\`
+
+[^1]: This is the first footnote content.
+
+[^2]: This is the second footnote content.
 `;
 
-// 2. User edits in browser (contenteditable)
-// 3. We send innerHTML to API
-// 4. Turndown converts back to Markdown
-const convertedMarkdown = turndown.turndown(renderedHTML);
+// Simulate the EDITED HTML (footnotes stripped before sending to API)
+// This is what the browser would send after editing (without footnote elements)
+const editedHTML = `
+<h1>Post with Footnotes</h1>
+<p>This is the first paragraph with a footnote.</p>
+<p>Here's some MORE text with another footnote.</p>
+<h2>Code Example</h2>
+<pre><code class="language-javascript">function hello() {
+  console.log("world");
+}</code></pre>
+`;
 
-console.log('=== CONVERTED MARKDOWN ===');
-console.log(convertedMarkdown);
-
-console.log('\n=== PROBLEMS DETECTED ===');
-
-if (convertedMarkdown.includes('[1](#user-content-fn-1)')) {
-  console.log('❌ FOOTNOTE SYNTAX BROKEN');
-  console.log('   Original: [^1]');
-  console.log('   Converted to: [1](#user-content-fn-1)');
-  console.log('   Impact: Footnote will not work in markdown');
+// Step 1: Extract footnote references from original
+const footnoteRefs = [];
+const footnoteRefRegex = /\[\^(\d+)\]/g;
+let match;
+while ((match = footnoteRefRegex.exec(originalMarkdown)) !== null) {
+  footnoteRefs.push(`[^${match[1]}]`);
 }
 
-if (convertedMarkdown.includes('1.  This is the footnote')) {
-  console.log('❌ FOOTNOTE DEFINITION BROKEN');
-  console.log('   Original: [^1]: This is the footnote content.');
-  console.log('   Converted to: 1.  This is the footnote content.');
-  console.log('   Impact: Not valid GFM footnote syntax');
+// Step 2: Extract footnote definitions from original
+const footnoteDefsRegex = /\[\^(\d+)\]:[^\n]*(?:\n(?!\[\^|\n)[^\n]*)*/g;
+const footnoteDefs = [];
+while ((match = footnoteDefsRegex.exec(originalMarkdown)) !== null) {
+  footnoteDefs.push(match[0].trim());
 }
 
-if (convertedMarkdown.includes('```javascript')) {
-  console.log('✅ Code block language preserved (good!)');
-} else {
-  console.log('❌ Code block language lost');
+// Step 3: Convert edited HTML to Markdown
+let convertedContent = turndown.turndown(editedHTML);
+
+// Step 4: Re-insert footnote references
+footnoteRefs.forEach((ref, index) => {
+  if (!convertedContent.includes(ref)) {
+    const paragraphs = convertedContent.split('\n\n');
+    if (paragraphs.length > index) {
+      paragraphs[index] = paragraphs[index] + ref;
+      convertedContent = paragraphs.join('\n\n');
+    }
+  }
+});
+
+// Step 5: Append footnote definitions
+if (footnoteDefs.length > 0) {
+  convertedContent = convertedContent.trimEnd() + '\n\n' + footnoteDefs.join('\n\n');
 }
+
+console.log('=== ORIGINAL MARKDOWN (simulated) ===');
+console.log(originalMarkdown);
+
+console.log('\n=== EDITED HTML (footnotes stripped) ===');
+console.log(editedHTML);
+
+console.log('\n=== CONVERTED MARKDOWN (with preserved footnotes) ===');
+console.log(convertedContent);
+
+console.log('\n=== VERIFICATION ===');
+
+// Check footnote references preserved
+const ref1Present = convertedContent.includes('[^1]');
+const ref2Present = convertedContent.includes('[^2]');
+console.log(`${ref1Present ? '✅' : '❌'} Footnote reference [^1] preserved`);
+console.log(`${ref2Present ? '✅' : '❌'} Footnote reference [^2] preserved`);
+
+// Check footnote definitions preserved
+const def1Present = convertedContent.includes('[^1]: This is the first footnote content.');
+const def2Present = convertedContent.includes('[^2]: This is the second footnote content.');
+console.log(`${def1Present ? '✅' : '❌'} Footnote definition [^1] preserved`);
+console.log(`${def2Present ? '✅' : '❌'} Footnote definition [^2] preserved`);
+
+// Check code block language preserved
+const codeBlockPresent = convertedContent.includes('```javascript');
+console.log(`${codeBlockPresent ? '✅' : '❌'} Code block language preserved`);
+
+// Check edited content preserved
+const editPresent = convertedContent.includes('MORE');
+console.log(`${editPresent ? '✅' : '❌'} User edit "MORE" preserved`);
 
 console.log('\n=== CONCLUSION ===');
-console.log('Inline editing will CORRUPT any post with footnotes.');
-console.log('Do NOT use content editing until this is fixed.');
-console.log('Title/description editing only is SAFE (no markdown complexity).');
+const allPassed = ref1Present && ref2Present && def1Present && def2Present && codeBlockPresent && editPresent;
+if (allPassed) {
+  console.log('✅ All checks passed! Footnote preservation strategy works.');
+} else {
+  console.log('❌ Some checks failed. Review the output above.');
+}

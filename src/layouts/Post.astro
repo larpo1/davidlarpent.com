@@ -54,7 +54,11 @@ const formattedDate = date.toLocaleDateString('en-US', {
           {draft && <span class="draft-badge">Draft</span>}
         </div>
       </header>
-      <div class="post-content">
+      <div
+        class="post-content"
+        contenteditable={isDev}
+        data-field="content"
+      >
         <slot />
       </div>
       <a href="/" class="back-link">← Back to essays</a>
@@ -85,6 +89,34 @@ const formattedDate = date.toLocaleDateString('en-US', {
 </Base>
 
 {isDev && (
+  <script is:inline>
+    // Make footnotes non-editable to prevent corruption
+    document.addEventListener('DOMContentLoaded', () => {
+      // Footnote references (superscript links)
+      document.querySelectorAll('sup a[data-footnote-ref]').forEach(el => {
+        el.setAttribute('contenteditable', 'false');
+        el.style.cursor = 'not-allowed';
+        el.style.opacity = '0.7';
+        el.title = 'Footnotes cannot be edited inline';
+      });
+
+      // Also make the sup element non-editable
+      document.querySelectorAll('sup:has(a[data-footnote-ref])').forEach(el => {
+        el.setAttribute('contenteditable', 'false');
+      });
+
+      // Footnotes section
+      const footnotesSection = document.querySelector('.footnotes');
+      if (footnotesSection) {
+        footnotesSection.setAttribute('contenteditable', 'false');
+        footnotesSection.style.opacity = '0.7';
+        footnotesSection.style.cursor = 'not-allowed';
+      }
+    });
+  </script>
+)}
+
+{isDev && (
   <script>
     // Dev-only inline editing functionality
     const article = document.querySelector('.post-article') as HTMLElement;
@@ -96,10 +128,30 @@ const formattedDate = date.toLocaleDateString('en-US', {
     function getEditableContent() {
       const titleEl = document.querySelector('[data-field="title"]') as HTMLElement;
       const descriptionEl = document.querySelector('[data-field="description"]') as HTMLElement;
+      const contentEl = document.querySelector('[data-field="content"]') as HTMLElement;
+
+      // Clone content to avoid mutating DOM
+      const contentClone = contentEl?.cloneNode(true) as HTMLElement;
+
+      // Remove footnotes section (will be preserved from original file)
+      const footnotesSection = contentClone?.querySelector('.footnotes');
+      if (footnotesSection) {
+        footnotesSection.remove();
+      }
+
+      // Remove footnote reference superscripts (will be preserved from original)
+      contentClone?.querySelectorAll('sup:has(a[data-footnote-ref]), sup a[data-footnote-ref]').forEach(el => {
+        // Find the parent sup element if we're on the anchor
+        const sup = el.tagName === 'SUP' ? el : el.closest('sup');
+        if (sup) {
+          sup.remove();
+        }
+      });
 
       return {
         title: titleEl?.textContent?.trim() || '',
-        description: descriptionEl?.textContent?.trim() || ''
+        description: descriptionEl?.textContent?.trim() || '',
+        content: contentClone?.innerHTML || ''
       };
     }
 
@@ -116,11 +168,11 @@ const formattedDate = date.toLocaleDateString('en-US', {
         return;
       }
 
-      const { title, description } = getEditableContent();
+      const { title, description, content } = getEditableContent();
 
       // Validate non-empty
-      if (!title || !description) {
-        showStatus('Error: Title and description required', true);
+      if (!title?.trim() || !description?.trim() || !content?.trim()) {
+        showStatus('Error: Title, description, and content required', true);
         return;
       }
 
@@ -130,7 +182,7 @@ const formattedDate = date.toLocaleDateString('en-US', {
         const response = await fetch('/api/save-post', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ slug, title, description })
+          body: JSON.stringify({ slug, title, description, content })
         });
 
         const result = await response.json();

@@ -83,8 +83,47 @@ export const POST: APIRoute = async ({ request }) => {
     // Update content if provided (convert HTML to Markdown)
     let newContent = parsed.content;
     if (content !== undefined && content !== null) {
-      // Convert HTML to Markdown
-      newContent = turndown.turndown(content);
+      // Extract footnote references from ORIGINAL markdown
+      const footnoteRefs: string[] = [];
+      const footnoteRefRegex = /\[\^(\d+)\]/g;
+      let match;
+      while ((match = footnoteRefRegex.exec(parsed.content)) !== null) {
+        footnoteRefs.push(`[^${match[1]}]`);
+      }
+
+      // Extract footnote definitions from ORIGINAL markdown
+      const footnoteDefsRegex = /\[\^(\d+)\]:[^\n]*(?:\n(?!\[\^|\n)[^\n]*)*/g;
+      const footnoteDefs: string[] = [];
+      while ((match = footnoteDefsRegex.exec(parsed.content)) !== null) {
+        footnoteDefs.push(match[0].trim());
+      }
+
+      // Convert HTML content (without footnotes) to Markdown
+      let convertedContent = turndown.turndown(content);
+
+      // Re-insert footnote references at approximate positions
+      // Since we stripped them from the HTML, we add them back at end of first paragraph
+      // This is best-effort - exact positioning would need more complex logic
+      footnoteRefs.forEach((ref, index) => {
+        if (!convertedContent.includes(ref)) {
+          // Find the nth paragraph end and insert there
+          const paragraphs = convertedContent.split('\n\n');
+          if (paragraphs.length > index) {
+            paragraphs[index] = paragraphs[index] + ref;
+            convertedContent = paragraphs.join('\n\n');
+          } else {
+            // Fallback: add to end of content
+            convertedContent = convertedContent.trimEnd() + ref + '\n';
+          }
+        }
+      });
+
+      // Append footnote definitions at the end
+      if (footnoteDefs.length > 0) {
+        convertedContent = convertedContent.trimEnd() + '\n\n' + footnoteDefs.join('\n\n');
+      }
+
+      newContent = convertedContent;
     }
 
     // Stringify back to markdown with frontmatter

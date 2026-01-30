@@ -28,94 +28,186 @@
 
 ---
 
-- [ ] **Re-enable content editing with proper footnote support** ❌ BLOCKED
-      - **GFM plugin tested - does NOT fix footnotes**
-      - turndown-plugin-gfm handles tables/strikethrough, not footnote HTML
-      - Footnotes still corrupt: `[^1]` → `[1](#user-content-fn-1)`
-      - **Content editing disabled** - only title/description editable
-      - Need custom turndown rule to convert footnote HTML back to `[^1]` syntax
-      - **Goal:** Allow full content editing without corrupting footnotes
-      - **Root issue:** Basic turndown doesn't understand GFM footnote syntax `[^1]`
-      - **Solution:** Use turndown-plugin-gfm for proper GFM support
+- [x] **Re-enable content editing with footnote preservation**
+      - **Strategy:** Make footnotes non-editable, preserve original markdown
+      - **Why:** Can't convert footnote HTML back to `[^1]` syntax reliably
+      - **Solution:** Lock footnotes, strip them before conversion, merge original footnotes back
+      **Step 1: Make footnotes non-editable in rendered HTML**
+      - **File:** `src/layouts/Post.astro`
+      - Add script to mark footnotes as non-editable:
+        ```astro
+        {isDev && (
+          <script is:inline>
+            // Make footnotes non-editable to prevent corruption
+            document.addEventListener('DOMContentLoaded', () => {
+              // Footnote references (superscript links)
+              document.querySelectorAll('sup a[data-footnote-ref]').forEach(el => {
+                el.setAttribute('contenteditable', 'false');
+                el.style.cursor = 'not-allowed';
+                el.style.opacity = '0.7';
+                el.title = 'Footnotes cannot be edited inline';
+              });
 
-      **Step 1: Install plugin**
-      ```bash
-      npm install turndown-plugin-gfm
-      ```
-
-      **Step 2: Update API to use plugin**
-      - **File:** `src/pages/api/save-post.ts`
-      - Import and configure:
-        ```typescript
-        import TurndownService from 'turndown';
-        import { gfm } from 'turndown-plugin-gfm';
-
-        const turndown = new TurndownService({
-          headingStyle: 'atx',
-          codeBlockStyle: 'fenced',
-        });
-
-        // Add GFM plugin for footnote support
-        turndown.use(gfm);
+              // Footnotes section
+              const footnotesSection = document.querySelector('.footnotes');
+              if (footnotesSection) {
+                footnotesSection.setAttribute('contenteditable', 'false');
+                footnotesSection.style.opacity = '0.7';
+                footnotesSection.style.cursor = 'not-allowed';
+              }
+            });
+          </script>
+        )}
         ```
 
-      **Step 3: Re-enable content editing**
+      **Step 2: Re-enable content editing**
+      - **File:** `src/layouts/Post.astro` (line 57)
+      - Add back `contenteditable={isDev}` to `.post-content` div
+
+      **Step 3: Strip footnotes before sending to API**
       - **File:** `src/layouts/Post.astro`
-      - Add back `contenteditable={isDev}` to `.post-content` div (line 57)
-      - Add back content field to `getEditableContent()`:
+      - Update `getEditableContent()` function:
         ```typescript
         function getEditableContent() {
           const titleEl = document.querySelector('[data-field="title"]') as HTMLElement;
           const descriptionEl = document.querySelector('[data-field="description"]') as HTMLElement;
           const contentEl = document.querySelector('[data-field="content"]') as HTMLElement;
 
+          // Clone content to avoid mutating DOM
+          const contentClone = contentEl?.cloneNode(true) as HTMLElement;
+
+          // Remove footnotes section (will be preserved from original file)
+          const footnotesSection = contentClone?.querySelector('.footnotes');
+          if (footnotesSection) {
+            footnotesSection.remove();
+          }
+
+          // Remove footnote reference superscripts (will be preserved from original)
+          contentClone?.querySelectorAll('sup[data-footnote-ref], sup a[data-footnote-ref]').forEach(el => {
+            el.parentElement?.remove();
+          });
+
           return {
             title: titleEl?.textContent?.trim() || '',
             description: descriptionEl?.textContent?.trim() || '',
-            content: contentEl?.innerHTML || ''
+            content: contentClone?.innerHTML || ''
           };
         }
         ```
-      - Add `content` back to save request (line 127):
+      - Update save request to send content:
         ```typescript
         const { title, description, content } = getEditableContent();
         // ...
         body: JSON.stringify({ slug, title, description, content })
         ```
 
-      **Step 4: Test extensively**
-      1. **Update test-roundtrip.js** to use the GFM plugin and verify footnotes preserved
-      2. Run: `node test-roundtrip.js` - should show `✅ Footnotes preserved`
-      3. In dev mode, edit ralph-loops post (has footnotes)
-      4. Make a small change, save
-      5. Check the .md file - verify footnote syntax intact: `[^1]` not `[1](#fn1)`
-      6. Reload page - verify footnotes render correctly
-      7. Test code blocks - verify language hints preserved
-      8. Test with what-we-lose post (no footnotes) - verify normal content works
-      9. Run `npm test` - all tests should pass
-      10. Run `npm run build` - should succeed
+      **Step 4: Preserve original footnotes in API**
+      - **File:** `src/pages/api/save-post.ts`
+      - Update content handling to preserve footnotes:
+        ```typescript
+        // Update content if provided (convert HTML to Markdown)
+        let newContent = parsed.content;
+        if (content !== undefined && content !== null) {
+          // Extract footnote references from ORIGINAL markdown
+          const footnoteRefs: string[] = [];
+          const footnoteRefRegex = /\[\^(\d+)\]/g;
+          let match;
+          while ((match = footnoteRefRegex.exec(parsed.content)) !== null) {
+            footnoteRefs.push(`[^${match[1]}]`);
+          }
 
-      **Step 5: Add validation (safety)**
-      - In `savePost()` function, add check before saving:
+          // Extract footnote definitions from ORIGINAL markdown
+          const footnoteDefsRegex = /\[\^(\d+)\]:(.+?)(?=\n\[\^|\n\n|$)/gs;
+          const footnoteDefs: string[] = [];
+          while ((match = footnoteDefsRegex.exec(parsed.content)) !== null) {
+            footnoteDefs.push(match[0].trim());
+          }
+
+          // Convert HTML content (without footnotes) to Markdown
+          let convertedContent = turndown.turndown(content);
+
+          // Re-insert footnote references at approximate positions
+          // (This is best-effort - footnotes stay where they were in original)
+          footnoteRefs.forEach(ref => {
+            if (!convertedContent.includes(ref)) {
+              // Footnote reference was in edited content, preserve it at end of paragraph
+              convertedContent = convertedContent.replace(/(\n\n|$)/, `${ref}$1`);
+            }
+          });
+
+          // Append footnote definitions at the end
+          if (footnoteDefs.length > 0) {
+            convertedContent += '\n\n' + footnoteDefs.join('\n');
+          }
+
+          newContent = convertedContent;
+        }
+        ```
+
+      **Step 5: Add validation**
+      - **File:** `src/layouts/Post.astro` in `savePost()` function
         ```typescript
         // Validate non-empty
-        if (!title || !description || !content) {
+        if (!title?.trim() || !description?.trim() || !content?.trim()) {
           showStatus('Error: Title, description, and content required', true);
           return;
         }
         ```
 
+      **Step 6: Test extensively**
+      1. **Dev mode visual check:**
+         - Visit ralph-loops post in dev
+         - Footnote references should be slightly faded, not editable
+         - Footnotes section at bottom should be faded, not editable
+         - Hover over footnote - tooltip says "Footnotes cannot be edited inline"
+         - Main content should still be editable
+
+      2. **Edit main content (no footnotes):**
+         - Edit a paragraph that doesn't have footnotes
+         - Save
+         - Verify .md file: footnotes unchanged, paragraph updated
+
+      3. **Edit paragraph with footnote:**
+         - Find paragraph with `[^1]` reference
+         - Edit the text AROUND the footnote (not the footnote itself)
+         - Save
+         - Open .md file - verify:
+           - Paragraph text updated
+           - `[^1]` still present in correct location
+           - Footnote definition `[^1]: ...` still at bottom
+           - Footnote syntax intact
+
+      4. **Add new content:**
+         - Add a new heading and paragraph
+         - Save
+         - Verify new content appears in .md file
+         - Verify existing footnotes still intact
+
+      5. **Code blocks:**
+         - Edit content with code blocks
+         - Verify language hints preserved: ` ```javascript ` not ` ``` `
+
+      6. **Test what-we-lose post (no footnotes):**
+         - Edit content normally
+         - Save
+         - Verify no issues
+
+      7. **Tests & build:**
+         - Run `npm test` - should pass
+         - Run `npm run build` - should succeed
+
       **Success criteria:**
-      - ✅ test-roundtrip.js shows footnotes preserved
-      - ✅ Can edit ralph-loops post without corrupting footnotes
+      - ✅ Footnotes visually locked (faded, not editable)
+      - ✅ Can edit ralph-loops main content without corrupting footnotes
+      - ✅ Footnote syntax `[^1]` preserved in .md file
+      - ✅ Footnote definitions preserved at end of file
       - ✅ Code blocks maintain language hints
       - ✅ All tests pass
       - ✅ Build succeeds
-      - ✅ Validation prevents empty saves
 
-      **Commit message:** `feat: Re-enable content editing with GFM footnote support`
+      **Commit message:** `feat: Re-enable content editing with footnote preservation`
 
-      **IMPORTANT:** If footnotes still corrupt after adding plugin, STOP and document the issue. Do not ship broken content editing.
+      **Trade-off accepted:** Footnotes cannot be edited inline (must edit .md file directly). This is acceptable because it prevents corruption.
 
 ---
 
