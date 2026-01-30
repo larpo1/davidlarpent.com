@@ -54,11 +54,7 @@ const formattedDate = date.toLocaleDateString('en-US', {
           {draft && <span class="draft-badge">Draft</span>}
         </div>
       </header>
-      <div
-        class="post-content"
-        contenteditable={isDev}
-        data-field="content"
-      >
+      <div class="post-content">
         <slot />
       </div>
       <a href="/" class="back-link">← Back to essays</a>
@@ -100,12 +96,10 @@ const formattedDate = date.toLocaleDateString('en-US', {
     function getEditableContent() {
       const titleEl = document.querySelector('[data-field="title"]') as HTMLElement;
       const descriptionEl = document.querySelector('[data-field="description"]') as HTMLElement;
-      const contentEl = document.querySelector('[data-field="content"]') as HTMLElement;
 
       return {
         title: titleEl?.textContent?.trim() || '',
-        description: descriptionEl?.textContent?.trim() || '',
-        content: contentEl?.innerHTML || ''
+        description: descriptionEl?.textContent?.trim() || ''
       };
     }
 
@@ -122,11 +116,11 @@ const formattedDate = date.toLocaleDateString('en-US', {
         return;
       }
 
-      const { title, description, content } = getEditableContent();
+      const { title, description } = getEditableContent();
 
       // Validate non-empty
-      if (!title || !description || !content) {
-        showStatus('Error: Title, description, and content required', true);
+      if (!title || !description) {
+        showStatus('Error: Title and description required', true);
         return;
       }
 
@@ -136,7 +130,7 @@ const formattedDate = date.toLocaleDateString('en-US', {
         const response = await fetch('/api/save-post', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ slug, title, description, content })
+          body: JSON.stringify({ slug, title, description })
         });
 
         const result = await response.json();

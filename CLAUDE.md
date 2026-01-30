@@ -28,7 +28,12 @@
 
 ---
 
-- [x] **Re-enable content editing with proper footnote support**
+- [ ] **Re-enable content editing with proper footnote support** ❌ BLOCKED
+      - **GFM plugin tested - does NOT fix footnotes**
+      - turndown-plugin-gfm handles tables/strikethrough, not footnote HTML
+      - Footnotes still corrupt: `[^1]` → `[1](#user-content-fn-1)`
+      - **Content editing disabled** - only title/description editable
+      - Need custom turndown rule to convert footnote HTML back to `[^1]` syntax
       - **Goal:** Allow full content editing without corrupting footnotes
       - **Root issue:** Basic turndown doesn't understand GFM footnote syntax `[^1]`
       - **Solution:** Use turndown-plugin-gfm for proper GFM support
