@@ -23,15 +23,7 @@
 
 ## Current Tasks
 
-- [ ] **Table of Contents for Essays** - Implement TOC sidebar like darioamodei.com
-  - [ ] Create TableOfContents.astro component
-  - [ ] Integrate into Post.astro layout
-  - [ ] Add responsive styles (desktop sidebar, mobile overlay)
-  - [ ] Add scroll tracking and active highlighting
-  - [ ] Hamburger menu to open/close, open by default
-- [ ] **Add Favicon** - Copy from field-notes project
-  - Source: `/Users/larpo/Downloads/field-notes/public/static/favicons/favicon.ico`
-  - Destination: `public/favicon.ico`
+*No pending tasks*
 
 ## Completed
 
@@ -41,6 +33,13 @@
 - [x] Update About page with real bio
 - [x] Add subtle "About" link to header
 - [x] Fix syntax highlighting theme (github-dark)
+- [x] **Table of Contents for Essays** - Full TOC implementation
+  - [x] Create TableOfContents.astro component
+  - [x] Integrate into Post.astro layout
+  - [x] Add responsive styles (desktop sidebar, mobile overlay)
+  - [x] Add scroll tracking and active highlighting
+  - [x] Hamburger menu to open/close, open by default
+- [x] **Add Favicon** - Copied from field-notes project
 
 ---
 
