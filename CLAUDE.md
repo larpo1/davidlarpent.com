@@ -28,6 +28,91 @@
 
 ---
 
+- [x] **Fix TOC toggle button issues (overlap + animation quality)**
+      - **Issue 1:** X button overlaps with "CONTENTS" text when TOC is open (both at same position)
+      - **Issue 2:** Animation is not as smooth/elegant as reference material
+
+      - **Problem with current animation:**
+        - Bars use flexbox `gap: 5px` - not precise enough
+        - translateY values (7px/-7px) create imprecise movement
+        - Bars don't rotate around a common center point
+        - Basic `ease` timing function is not as elegant
+        - Bars don't meet perfectly at center to form clean X
+
+      - **Solution for animation:**
+        1. Remove flexbox gap, use absolute positioning for bars
+        2. Position bars relative to button center
+        3. Use `transform-origin: center` so bars rotate around common point
+        4. Use refined easing: `cubic-bezier(0.4, 0, 0.2, 1)`
+        5. Bars should translate to exact center, then rotate
+
+      - **Updated CSS structure:**
+        ```css
+        .toc-toggle {
+          position: relative; /* for absolute bar positioning */
+          width: 2rem;
+          height: 2rem;
+          /* Remove gap and flex alignment */
+        }
+
+        .toc-toggle .bar {
+          position: absolute;
+          left: 50%;
+          transform: translateX(-50%);
+          width: 1.5rem;
+          height: 2px;
+          transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                      opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .toc-toggle .bar:nth-child(1) {
+          top: 25%; /* Top position */
+        }
+
+        .toc-toggle .bar:nth-child(2) {
+          top: 50%; /* Center */
+          transform: translateX(-50%) translateY(-50%);
+        }
+
+        .toc-toggle .bar:nth-child(3) {
+          top: 75%; /* Bottom position */
+        }
+
+        /* When open - bars meet at center and rotate */
+        .toc-toggle.open .bar:nth-child(1) {
+          top: 50%;
+          transform: translateX(-50%) translateY(-50%) rotate(45deg);
+        }
+
+        .toc-toggle.open .bar:nth-child(2) {
+          opacity: 0;
+        }
+
+        .toc-toggle.open .bar:nth-child(3) {
+          top: 50%;
+          transform: translateX(-50%) translateY(-50%) rotate(-45deg);
+        }
+        ```
+
+      - **Solution for overlap:**
+        ```css
+        /* Hide toggle when TOC is open on desktop */
+        @media (min-width: 1201px) {
+          .toc-toggle.open {
+            display: none;
+          }
+        }
+        ```
+
+      - **Files to modify:** `src/styles/global.css`
+      - **Test:**
+        1. Toggle multiple times - animation should feel buttery smooth
+        2. Bars should form perfect X at button center
+        3. On desktop: X should disappear when TOC open (no overlap)
+      - Commit: `refactor: Improve hamburger animation and fix overlap`
+
+---
+
 ## Completed Tasks
 
 - [x] **Polish TOC toggle buttons (hamburger/X)** ⚠️ UX REFINEMENT
@@ -143,22 +228,20 @@ npm run test:update   # Update baseline screenshots
 
 ## PM Review Notes
 
-### 2026-01-30: TOC Positioning - Final Polish Needed
-**Status:** Core functionality working, visual design improved, needs animation polish
+### 2026-01-30: TOC Toggle Animation - Overlap Issue Found
+**Status:** Animation implemented but X overlaps with CONTENTS heading
 
 **Completed by Ralph:**
-- ✅ Fixed positioning (position: fixed to viewport)
-- ✅ Removed border from TOC container
-- ✅ Moved to top-left positioning
-- ✅ Increased width to 280px
-- ✅ Fixed hamburger toggle visibility bug
+- ✅ Hamburger to X animation working (smooth morph with CSS transitions)
+- ✅ No border on toggle button
+- ✅ Three-bar structure animating correctly
 
-**Remaining Issues (UX polish):**
-- ❌ Hamburger button has 1px border (should be removed)
-- ❌ X and hamburger in different positions (should be exactly same place)
-- ❌ No smooth animation when toggling (should morph elegantly)
+**New Issue Discovered:**
+- ❌ Toggle button overlaps "CONTENTS" text when TOC is open
+- Both positioned at `top: 1.5rem; left: 1.5rem`
+- X button should be hidden on desktop when TOC is open
 
-**Next:** Ralph should add smooth toggle animation and remove hamburger border
+**Fix Required:** Hide toggle button when TOC open on desktop (>=1201px)
 
 ---
 

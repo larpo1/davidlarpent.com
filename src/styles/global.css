@@ -428,25 +428,37 @@ a:hover {
   top: 1.5rem;
   left: 1.5rem;
   z-index: 101;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
   width: 2rem;
   height: 2rem;
   padding: 0;
   background: transparent;
   border: none;
   cursor: pointer;
-  gap: 5px;
 }
 
 .toc-toggle .bar {
-  display: block;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
   width: 1.5rem;
   height: 2px;
   background: var(--color-text-light);
-  transition: transform 0.3s ease, opacity 0.3s ease;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+              opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+              top 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.toc-toggle .bar:nth-child(1) {
+  top: 25%;
+}
+
+.toc-toggle .bar:nth-child(2) {
+  top: 50%;
+  transform: translateX(-50%) translateY(-50%);
+}
+
+.toc-toggle .bar:nth-child(3) {
+  top: 75%;
 }
 
 .toc-toggle:hover .bar {
@@ -455,7 +467,8 @@ a:hover {
 
 /* Hamburger to X animation when open */
 .toc-toggle.open .bar:nth-child(1) {
-  transform: translateY(7px) rotate(45deg);
+  top: 50%;
+  transform: translateX(-50%) translateY(-50%) rotate(45deg);
 }
 
 .toc-toggle.open .bar:nth-child(2) {
@@ -463,7 +476,15 @@ a:hover {
 }
 
 .toc-toggle.open .bar:nth-child(3) {
-  transform: translateY(-7px) rotate(-45deg);
+  top: 50%;
+  transform: translateX(-50%) translateY(-50%) rotate(-45deg);
+}
+
+/* Hide toggle when TOC is open on desktop (avoid overlap with CONTENTS heading) */
+@media (min-width: 1201px) {
+  .toc-toggle.open {
+    display: none;
+  }
 }
 
 /* Responsive - Hide fixed TOC when viewport too narrow for left margin */

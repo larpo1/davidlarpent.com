@@ -62,7 +62,7 @@ test.describe('Table of Contents - Desktop', () => {
     await expect(targetElement).toBeInViewport();
   });
 
-  test('toggle button closes and opens TOC', async ({ page }) => {
+  test('toggle button is hidden when TOC open on desktop', async ({ page }) => {
     await page.setViewportSize({ width: 1400, height: 800 });
     await page.goto(POST_URL);
     await page.evaluate(() => localStorage.setItem('tocOpen', 'true'));
@@ -72,7 +72,26 @@ test.describe('Table of Contents - Desktop', () => {
     const toc = page.locator('.toc-container');
     const toggle = page.locator('.toc-toggle');
 
-    // TOC starts visible (with open class on toggle)
+    // TOC is visible
+    await expect(toc).toBeVisible();
+
+    // Toggle button should be hidden on desktop when TOC is open (avoids overlap with CONTENTS heading)
+    await expect(toggle).not.toBeVisible();
+    await expect(toggle).toHaveClass(/open/);
+  });
+
+  test('toggle button works on medium screens', async ({ page }) => {
+    // Use viewport at 1200px where toggle is still visible when open
+    await page.setViewportSize({ width: 1200, height: 800 });
+    await page.goto(POST_URL);
+    await page.evaluate(() => localStorage.setItem('tocOpen', 'true'));
+    await page.reload();
+    await page.waitForTimeout(300);
+
+    const toc = page.locator('.toc-container');
+    const toggle = page.locator('.toc-toggle');
+
+    // TOC starts open (overlay mode at this width)
     await expect(toc).toBeVisible();
     await expect(toggle).toHaveClass(/open/);
 
