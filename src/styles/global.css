@@ -370,9 +370,6 @@ a:hover {
 
 /* TOC Header */
 .toc-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
   margin-bottom: 1rem;
   padding-bottom: 0.75rem;
   border-bottom: 1px solid var(--color-border);
@@ -384,21 +381,6 @@ a:hover {
   margin: 0;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: var(--color-text);
-}
-
-.toc-close {
-  background: none;
-  border: none;
-  font-size: 1.5rem;
-  color: var(--color-text-light);
-  cursor: pointer;
-  padding: 0;
-  line-height: 1;
-  transition: color 0.2s;
-}
-
-.toc-close:hover {
   color: var(--color-text);
 }
 
@@ -440,30 +422,48 @@ a:hover {
   font-weight: 500;
 }
 
-/* TOC Toggle Button - hidden on wide screens, visible on narrow */
+/* TOC Toggle Button - hamburger that morphs to X */
 .toc-toggle {
-  display: none;
-  background: var(--color-background);
-  border: 1px solid var(--color-border);
-  border-radius: 6px;
-  padding: 0.5rem 0.75rem;
-  font-size: 1.2rem;
-  color: var(--color-text-light);
-  cursor: pointer;
-}
-
-.toc-toggle:hover {
-  color: var(--color-text);
-  background: var(--color-code-bg);
-}
-
-/* Show toggle button when TOC is closed on desktop */
-.toc-container[data-open="false"] ~ .toc-toggle {
-  display: block;
   position: fixed;
   top: 1.5rem;
   left: 1.5rem;
-  z-index: 99;
+  z-index: 101;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  gap: 5px;
+}
+
+.toc-toggle .bar {
+  display: block;
+  width: 1.5rem;
+  height: 2px;
+  background: var(--color-text-light);
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.toc-toggle:hover .bar {
+  background: var(--color-text);
+}
+
+/* Hamburger to X animation when open */
+.toc-toggle.open .bar:nth-child(1) {
+  transform: translateY(7px) rotate(45deg);
+}
+
+.toc-toggle.open .bar:nth-child(2) {
+  opacity: 0;
+}
+
+.toc-toggle.open .bar:nth-child(3) {
+  transform: translateY(-7px) rotate(-45deg);
 }
 
 /* Responsive - Hide fixed TOC when viewport too narrow for left margin */
@@ -489,13 +489,10 @@ a:hover {
     display: block !important;
   }
 
-  /* Always show toggle button on small screens */
+  /* Move toggle to top-right on smaller screens */
   .toc-toggle {
-    display: block !important;
-    position: fixed;
-    top: 1rem;
+    left: auto;
     right: 1.5rem;
-    z-index: 99;
   }
 }
 

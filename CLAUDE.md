@@ -28,6 +28,39 @@
 
 ---
 
+## Completed Tasks
+
+- [x] **Polish TOC toggle buttons (hamburger/X)** ⚠️ UX REFINEMENT
+      - **Issues:**
+        1. Hamburger button has 1px border - remove it
+        2. X and hamburger should be in exactly the same place (not jump positions)
+        3. X should smoothly animate/morph into hamburger (elegant transition)
+      - **Reference animation:** https://medium.com/design-bootcamp/from-hamburger-to-close-icon-a-webflow-animation-journey-c88a06632ab9
+        - Three-bar hamburger morphs into X
+        - Top/bottom bars rotate and translate to form X
+        - Middle bar fades out
+        - Smooth, elegant CSS animation
+      - **Files to modify:**
+        - `src/styles/global.css` - remove border from `.toc-toggle`, add animation styles
+        - `src/components/TableOfContents.astro` - restructure button to use spans for bars
+      - **Implementation approach:**
+        - Use single button with three `<span>` bars inside
+        - CSS transitions on transform (rotate, translate) and opacity
+        - Toggle class on button (e.g., `.toc-toggle.open`) to trigger animation
+        - Remove `border: 1px solid var(--color-border)`
+      - **Example structure:**
+        ```html
+        <button class="toc-toggle">
+          <span class="bar"></span>
+          <span class="bar"></span>
+          <span class="bar"></span>
+        </button>
+        ```
+      - **Test:** Toggle TOC open/close multiple times, verify smooth morph animation like reference
+      - Commit: `refactor: Add smooth hamburger-to-X animation, remove border`
+
+---
+
 - [x] Initial site setup
 - [x] First essay: What We Lose When We Stop Struggling
 - [x] Second essay: Ralph loops
@@ -110,21 +143,22 @@ npm run test:update   # Update baseline screenshots
 
 ## PM Review Notes
 
-### 2026-01-30: TOC Positioning - Iteration 2 + Critical Bug Found
-**Status:** Ralph switched to `position: fixed` (correct approach) but has bugs + visual issues
+### 2026-01-30: TOC Positioning - Final Polish Needed
+**Status:** Core functionality working, visual design improved, needs animation polish
 
-**CRITICAL BUG 🚨:**
-- Clicking X to close TOC removes it, but hamburger toggle doesn't appear
-- User has no way to reopen TOC (functionality broken)
-- **Priority:** Must fix before visual refinements
+**Completed by Ralph:**
+- ✅ Fixed positioning (position: fixed to viewport)
+- ✅ Removed border from TOC container
+- ✅ Moved to top-left positioning
+- ✅ Increased width to 280px
+- ✅ Fixed hamburger toggle visibility bug
 
-**Visual Issues (lower priority):**
-- Site still looks too constrained
-- TOC should be wider (not 220px narrow container)
-- TOC should not have 1px border
-- TOC should be anchored to very top-left of viewport (not `top: 6rem`)
+**Remaining Issues (UX polish):**
+- ❌ Hamburger button has 1px border (should be removed)
+- ❌ X and hamburger in different positions (should be exactly same place)
+- ❌ No smooth animation when toggling (should morph elegantly)
 
-**Next:** Ralph should fix hamburger bug first, then visual refinements
+**Next:** Ralph should add smooth toggle animation and remove hamburger border
 
 ---
 

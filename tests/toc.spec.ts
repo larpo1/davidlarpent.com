@@ -12,16 +12,21 @@ test.describe('Table of Contents - Desktop', () => {
   });
 
   test('TOC is visible on desktop by default', async ({ page }) => {
-    await page.setViewportSize({ width: 1200, height: 800 });
+    await page.setViewportSize({ width: 1400, height: 800 });
     await page.goto(POST_URL);
+    await page.evaluate(() => localStorage.clear());
+    await page.reload();
+    await page.waitForTimeout(300);
 
     const toc = page.locator('.toc-container');
     await expect(toc).toBeVisible();
   });
 
   test('TOC contains correct heading links', async ({ page }) => {
-    await page.setViewportSize({ width: 1200, height: 800 });
+    await page.setViewportSize({ width: 1400, height: 800 });
     await page.goto(POST_URL);
+    await page.evaluate(() => localStorage.setItem('tocOpen', 'true'));
+    await page.reload();
 
     const tocLinks = page.locator('.toc-link');
     const count = await tocLinks.count();
@@ -35,8 +40,11 @@ test.describe('Table of Contents - Desktop', () => {
   });
 
   test('clicking TOC link scrolls to section', async ({ page }) => {
-    await page.setViewportSize({ width: 1200, height: 800 });
+    await page.setViewportSize({ width: 1400, height: 800 });
     await page.goto(POST_URL);
+    await page.evaluate(() => localStorage.setItem('tocOpen', 'true'));
+    await page.reload();
+    await page.waitForTimeout(300);
 
     // Get first TOC link
     const firstLink = page.locator('.toc-link').first();
@@ -55,39 +63,37 @@ test.describe('Table of Contents - Desktop', () => {
   });
 
   test('toggle button closes and opens TOC', async ({ page }) => {
-    await page.setViewportSize({ width: 1200, height: 800 });
+    await page.setViewportSize({ width: 1400, height: 800 });
     await page.goto(POST_URL);
+    await page.evaluate(() => localStorage.setItem('tocOpen', 'true'));
+    await page.reload();
+    await page.waitForTimeout(300);
 
     const toc = page.locator('.toc-container');
     const toggle = page.locator('.toc-toggle');
-    const closeBtn = page.locator('.toc-close');
 
-    // TOC starts visible
+    // TOC starts visible (with open class on toggle)
     await expect(toc).toBeVisible();
+    await expect(toggle).toHaveClass(/open/);
 
-    // On desktop, we need to use the close button inside the TOC
-    // (toggle button is hidden when TOC is open on desktop)
-    if (await closeBtn.isVisible()) {
-      await closeBtn.click();
-    } else {
-      // If no close button visible, TOC might use different mechanism
-      await toc.evaluate(el => el.setAttribute('data-open', 'false'));
-    }
-
+    // Click toggle to close
+    await toggle.click();
     await page.waitForTimeout(300);
 
-    // Toggle should now be visible
-    await expect(toggle).toBeVisible();
+    // TOC should be hidden
+    await expect(toc).not.toBeVisible();
+    await expect(toggle).not.toHaveClass(/open/);
 
     // Click toggle to reopen
     await toggle.click();
     await page.waitForTimeout(300);
 
     await expect(toc).toBeVisible();
+    await expect(toggle).toHaveClass(/open/);
   });
 
   test('state persists across reload', async ({ page }) => {
-    await page.setViewportSize({ width: 1200, height: 800 });
+    await page.setViewportSize({ width: 1400, height: 800 });
     await page.goto(POST_URL);
 
     // Close TOC
@@ -159,8 +165,10 @@ test.describe('Table of Contents - Mobile', () => {
 
 test.describe('Active Section Highlighting', () => {
   test('active class applied to current section', async ({ page }) => {
-    await page.setViewportSize({ width: 1200, height: 800 });
+    await page.setViewportSize({ width: 1400, height: 800 });
     await page.goto(POST_URL);
+    await page.evaluate(() => localStorage.setItem('tocOpen', 'true'));
+    await page.reload();
 
     // Scroll to a heading
     const headings = page.locator('h2[id], h3[id]');

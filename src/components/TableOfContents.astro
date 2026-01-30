@@ -15,12 +15,15 @@ const tocHeadings = headings.filter(h => h.depth === 2 || h.depth === 3);
 
 {tocHeadings.length > 0 && (
   <>
+    <button id="toc-toggle" class="toc-toggle" aria-label="Toggle table of contents">
+      <span class="bar"></span>
+      <span class="bar"></span>
+      <span class="bar"></span>
+    </button>
+
     <aside id="toc-container" class="toc-container" data-open="false">
       <div class="toc-header">
         <h2>Contents</h2>
-        <button id="toc-close" class="toc-close" aria-label="Close table of contents">
-          ×
-        </button>
       </div>
       <nav class="toc-nav">
         <ul class="toc-list">
@@ -34,17 +37,12 @@ const tocHeadings = headings.filter(h => h.depth === 2 || h.depth === 3);
         </ul>
       </nav>
     </aside>
-
-    <button id="toc-toggle" class="toc-toggle" aria-label="Toggle table of contents">
-      ☰
-    </button>
   </>
 )}
 
 <script>
   // Toggle functionality
   const toggleButton = document.getElementById('toc-toggle');
-  const closeButton = document.getElementById('toc-close');
   const tocContainer = document.getElementById('toc-container');
 
   // Check if we're on tablet/mobile (matches CSS breakpoint)
@@ -62,23 +60,21 @@ const tocHeadings = headings.filter(h => h.depth === 2 || h.depth === 3);
 
   const initialState = getInitialState();
 
-  if (tocContainer) {
-    tocContainer.setAttribute('data-open', initialState.toString());
+  function setTocState(isOpen: boolean) {
+    if (!tocContainer || !toggleButton) return;
+
+    tocContainer.setAttribute('data-open', isOpen.toString());
+    toggleButton.classList.toggle('open', isOpen);
+    localStorage.setItem('tocOpen', isOpen.toString());
   }
 
-  function toggleToc(shouldOpen: boolean) {
-    if (!tocContainer) return;
+  // Set initial state
+  setTocState(initialState);
 
-    tocContainer.setAttribute('data-open', shouldOpen.toString());
-    localStorage.setItem('tocOpen', shouldOpen.toString());
-  }
-
+  // Toggle on click
   toggleButton?.addEventListener('click', () => {
-    toggleToc(true);
-  });
-
-  closeButton?.addEventListener('click', () => {
-    toggleToc(false);
+    const isOpen = tocContainer?.getAttribute('data-open') === 'true';
+    setTocState(!isOpen);
   });
 
   // Close TOC on tablet/mobile when clicking a link
@@ -96,7 +92,7 @@ const tocHeadings = headings.filter(h => h.depth === 2 || h.depth === 3);
 
         // Close TOC on mobile after clicking
         if (isMobile()) {
-          toggleToc(false);
+          setTocState(false);
         }
       }
     });
