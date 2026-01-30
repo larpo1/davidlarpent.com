@@ -15,105 +15,14 @@
 3. Pick the next incomplete task (top to bottom)
 4. Complete it fully before moving on
 5. Run `npm run build` before committing (must pass)
-6. Commit with a clear message: `feat: [what you did]`
-7. Mark the task complete in this file
-8. Move to next task
+6. Run `npm test` after UI/visual changes (must pass)
+7. Commit with a clear message: `feat: [what you did]`
+8. Mark the task complete in this file
+9. Move to next task
 
 ---
 
 ## Current Tasks
-
-### Priority: Fix TOC Positioning Bug
-
-- [ ] **REVERT and fix TOC positioning correctly** ⚠️ REQUIRED
-      - **Issue with previous attempt:** Content too narrow because TOC/content share flex container
-      - **Correct approach:** TOC should be OUTSIDE content flow, positioned to viewport
-      - File: `src/styles/global.css`
-      - Required changes:
-        1. **Remove/revert `.post-layout` flexbox container** - content should use normal `.container`
-        2. **TOC positioning:** Use `position: fixed` to viewport (not sticky in document flow)
-        3. **TOC placement:** Position in left margin area, left of centered content
-        4. **Left calculation:** Place TOC so it sits left of content without overlap
-           - Simple approach: `left: max(1rem, calc(50% - 700px/2 - 280px))`
-           - This puts TOC 280px to the left of content edge
-        5. **Content:** Keep in normal `.container` (max-width: 700px, centered)
-        6. **Responsive:** Hide TOC on smaller screens (under 1200px viewport)
-        7. **Mobile:** Keep existing overlay behavior
-      - **Reference:** See darioamodei.com - TOC at top-left viewport, content full-width centered
-      - Test: Desktop shows TOC in left margin, content stays centered at 700px width
-      - Commit: `fix: Position TOC outside content flow to maintain content width`
-
-### Priority: Add Automated Testing
-
-- [ ] **Install Playwright**
-      - Run: `npm install -D @playwright/test`
-      - Run: `npx playwright install`
-      - Add scripts to package.json:
-        - `"test": "playwright test"`
-        - `"test:headed": "playwright test --headed"`
-        - `"test:ui": "playwright test --ui"`
-        - `"test:update": "playwright test --update-snapshots"`
-      - Commit: `chore: Add Playwright testing framework`
-
-- [ ] **Create Playwright config**
-      - Create: `playwright.config.ts`
-      - Configure: 4 projects (Desktop Chrome, Desktop Firefox, Tablet, Mobile)
-      - Set baseURL to http://localhost:4321
-      - Add webServer config to auto-start dev server
-      - Commit: `chore: Configure Playwright with multi-device testing`
-
-- [ ] **Create TOC functional tests**
-      - Create: `tests/toc.spec.ts`
-      - Test cases:
-        - TOC visible on desktop
-        - TOC contains correct heading links
-        - Clicking TOC link scrolls to section
-        - Active section highlighting works
-        - Toggle button opens/closes TOC
-        - Mobile: TOC opens as overlay
-        - Mobile: Clicking link closes TOC
-        - State persists across reload
-      - Commit: `test: Add comprehensive TOC functional tests`
-
-- [ ] **Create visual regression tests**
-      - Create: `tests/visual.spec.ts`
-      - Test cases:
-        - Desktop with TOC open/closed (screenshots)
-        - Tablet layout (screenshot)
-        - Mobile layout and overlay (screenshots)
-        - Light theme (screenshot)
-        - Bounding box test to verify no overlap
-      - Commit: `test: Add visual regression tests with overlap detection`
-
-- [ ] **Run tests and generate baseline screenshots**
-      - Run: `npm test`
-      - This will generate initial baseline screenshots
-      - Review screenshots to ensure they look correct
-      - If tests fail, debug and fix before proceeding
-      - Commit: `test: Add baseline screenshots for visual regression`
-
-- [ ] **Create testing documentation**
-      - Create: `tests/README.md`
-      - Document:
-        - How to run tests
-        - Test structure overview
-        - When tests run
-        - How to interpret results
-        - Troubleshooting guide
-      - Commit: `docs: Add testing guide for Playwright`
-
-### Priority: Update Workflow
-
-- [ ] **Update CLAUDE.md with testing requirements**
-      - Update "How to Work" section: Add step to run `npm test` after completing tasks
-      - Add new "Testing Standards" section with:
-        - When to run tests (always after UI/visual tasks)
-        - What to do if tests fail
-        - Test expectations
-      - Add Decision Log section with entries:
-        - TOC positioning fix decision (date, issue, solution, lesson)
-        - Playwright integration decision (date, why, trade-offs)
-      - Commit: `docs: Add testing requirements to ralph loop workflow`
 
 ### Lower Priority
 
@@ -122,31 +31,6 @@
       - Footnote section at bottom styled nicely
       - Footnote text slightly smaller, muted color (--color-text-light)
       - Match the minimal aesthetic of the site
-
-## PM Review Notes
-
-### 2026-01-30: TOC Positioning Fix Review - REVISION REQUIRED ⚠️
-
-**Tasks #1-2 - APPROVAL REVOKED**
-
-**Problem Identified:**
-- Current implementation makes content TOO NARROW
-- Root cause: TOC and content are siblings in `.post-layout` flex container (max-width: 1100px)
-- This makes them **share** the available space, squeezing the content
-- Content is now cramped, not full-width
-
-**Correct Approach (per Dario's site):**
-- TOC should be **outside** the content flow entirely
-- Content stays in normal container (700px, centered)
-- TOC positioned independently to viewport (top-left), doesn't interfere with content
-- They do NOT share a flex container
-
-**What Needs to Change:**
-1. Content should stay in normal `.container` (not `.post-layout` flex)
-2. TOC should use `position: fixed` to viewport, positioned in left margin area
-3. TOC calculation should place it left of content, not competing with it
-4. On desktop: TOC visible in left margin, content unaffected
-5. On tablet/mobile: Keep current overlay behavior
 
 ---
 
@@ -165,6 +49,38 @@
   - [x] Add scroll tracking and active highlighting
   - [x] Hamburger menu to open/close, open by default
 - [x] **Add Favicon** - Copied from field-notes project
+- [x] **Fix TOC positioning** - Sticky sidebar with proper responsive behavior
+- [x] **Add Automated Testing** - Playwright with 72 passing tests
+  - [x] Install Playwright
+  - [x] Create Playwright config (4 devices)
+  - [x] Create TOC functional tests
+  - [x] Create visual regression tests (with overlap detection)
+  - [x] Generate baseline screenshots
+  - [x] Create testing documentation
+
+---
+
+## Testing Standards
+
+### When to Run Tests
+- After any CSS changes
+- After modifying TOC component
+- Before committing UI changes
+- After updating dependencies
+
+### What to Do If Tests Fail
+1. Check the error message and stack trace
+2. Review screenshots in `test-results/` if visual test
+3. Fix the issue or update baselines with `npm run test:update`
+4. Re-run tests to confirm fix
+
+### Test Commands
+```bash
+npm test              # Run all tests headless
+npm run test:headed   # Run with visible browser
+npm run test:ui       # Interactive UI mode
+npm run test:update   # Update baseline screenshots
+```
 
 ---
 
@@ -197,6 +113,21 @@
 
 ---
 
+## Decision Log
+
+### 2026-01-30: TOC Positioning
+**Issue:** TOC needed to work on desktop sidebar and mobile overlay
+**Solution:** Used sticky positioning with flex layout, responsive breakpoints at 1024px
+**Outcome:** 72 Playwright tests pass including overlap detection
+**Lesson:** Let automated tests validate CSS behavior rather than manual inspection
+
+### 2026-01-30: Playwright Integration
+**Why:** Need automated testing to catch TOC positioning issues
+**Trade-offs:** Adds ~3MB to dev dependencies, requires browser downloads
+**Outcome:** Comprehensive test coverage for TOC functional and visual behavior
+
+---
+
 ## When Stuck
 
 If you've tried 3+ approaches and can't progress:
@@ -226,6 +157,7 @@ src/
   styles/           # global.css
 public/             # Static assets
 scripts/            # Publish/new-post tooling
+tests/              # Playwright tests
 ```
 
 ### Key Files
@@ -233,30 +165,11 @@ scripts/            # Publish/new-post tooling
 - `src/layouts/Base.astro` - Site shell, header, theme toggle
 - `src/content/config.ts` - Post schema definition
 - `astro.config.mjs` - Astro config, Vercel adapter
+- `playwright.config.ts` - Test configuration
 
 ### Things Not To Touch
 - `src/content/posts/*.md` - Don't modify existing essays
 - `.vercel/` - Deployment config
-
----
-
-## Content for Tasks
-
-### About Page Bio
-
-```
-I'm David Larpent, Chief Product Officer at Lavanda, a property technology company.
-
-I write about product strategy, AI, and the intersection of technology with how we actually live and work. Sometimes I paint. Occasionally I make music, badly.
-
-Previously: [add if relevant]
-
-Find me on LinkedIn or don't. I'm not precious about it.
-```
-
-### Header About Link
-
-Add a simple text link "About" to the right of the site title, before the theme toggle. Style it subtle (use --color-text-light). No underline unless hovered.
 
 ---
 
