@@ -112,6 +112,24 @@ a:hover {
   color: var(--color-text-light);
 }
 
+/* Site nav */
+.site-nav {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.nav-link {
+  color: var(--color-text-light);
+  font-size: 0.9rem;
+  border: none;
+}
+
+.nav-link:hover {
+  color: var(--color-text);
+  border-bottom: 1px solid var(--color-text);
+}
+
 /* Theme toggle */
 #theme-toggle {
   background: none;
