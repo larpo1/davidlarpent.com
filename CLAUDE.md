@@ -17,8 +17,9 @@
 5. Run `npm run build` before committing (must pass)
 6. Run `npm test` after UI/visual changes (must pass)
 7. Commit with a clear message: `feat: [what you did]`
-8. Mark the task complete in this file
-9. Move to next task
+8. Push to GitHub: `git push` (keeps commits synchronized)
+9. Mark the task complete in this file
+10. Move to next task
 
 ---
 
@@ -528,6 +529,8 @@ npm run test:update   # Update baseline screenshots
 - Commit after each completed task
 - Commit messages: `feat:`, `fix:`, `refactor:`, `docs:`
 - Never commit if `npm run build` fails
+- Push to GitHub after tests pass: `git push`
+- Why: Keeps commits synchronized, avoids HTTP buffer issues with large batches
 
 ### Design
 - Minimal. Think darioamodei.com
