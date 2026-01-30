@@ -1,0 +1,54 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+
+// Only allow in development mode
+if (!import.meta.env.DEV) {
+  return Astro.redirect('/');
+}
+
+// Get all draft posts, sorted by date (newest first)
+const allPosts = await getCollection('posts');
+const drafts = allPosts
+  .filter(post => post.data.draft === true)
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+---
+
+<Base title="Drafts | David Larpent" description="Draft posts (dev only)">
+  <div style="background: var(--color-code-bg); padding: 1rem; border-radius: 6px; margin-bottom: 2rem; border: 1px solid var(--color-border);">
+    <p style="margin: 0; color: var(--color-text-light); font-size: 0.9rem;">
+      📝 <strong>Drafts</strong> — This page is only visible in development mode
+    </p>
+  </div>
+
+  {drafts.length === 0 ? (
+    <p style="color: var(--color-text-light);">No drafts found. Create one with <code>npm run new "Post Title"</code></p>
+  ) : (
+    <ul class="post-list">
+      {drafts.map(post => {
+        const formattedDate = post.data.date.toLocaleDateString('en-US', {
+          year: 'numeric',
+          month: 'short',
+          day: 'numeric'
+        });
+
+        return (
+          <li class="post-list-item">
+            <h2 class="post-list-title">
+              <a href={`/posts/${post.slug}`}>{post.data.title}</a>
+            </h2>
+            <div class="post-meta">
+              {formattedDate} · <span style="color: #f59e0b;">DRAFT</span>
+            </div>
+            {post.data.description && (
+              <p class="post-description">{post.data.description}</p>
+            )}
+            <p style="font-size: 0.85rem; color: var(--color-text-light); margin-top: 0.5rem;">
+              Publish: <code>npm run publish {post.slug}</code>
+            </p>
+          </li>
+        );
+      })}
+    </ul>
+  )}
+</Base>

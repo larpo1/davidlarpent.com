@@ -7,6 +7,8 @@
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
+    "new": "tsx scripts/new-post.ts",
+    "publish": "tsx scripts/publish.ts",
     "syndicate:substack": "tsx scripts/syndicate-substack.ts",
     "syndicate:linkedin": "tsx scripts/syndicate-linkedin.ts"
   },
@@ -15,5 +17,8 @@
     "@astrojs/sitemap": "^3.7.0",
     "@astrojs/vercel": "^9.0.4",
     "astro": "^5.17.1"
+  },
+  "devDependencies": {
+    "tsx": "^4.21.0"
   }
 }
