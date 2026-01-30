@@ -24,13 +24,7 @@
 
 ## Current Tasks
 
-### Lower Priority
-
-- [ ] Add footnote styling to global.css:
-      - Superscript footnote numbers in text (subtle, smaller)
-      - Footnote section at bottom styled nicely
-      - Footnote text slightly smaller, muted color (--color-text-light)
-      - Match the minimal aesthetic of the site
+*No pending tasks*
 
 ---
 
@@ -57,6 +51,7 @@
   - [x] Create visual regression tests (with overlap detection)
   - [x] Generate baseline screenshots
   - [x] Create testing documentation
+- [x] **Add footnote styling** - Subtle superscript numbers, muted footnote section
 
 ---
 
