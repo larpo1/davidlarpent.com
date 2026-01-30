@@ -80,50 +80,26 @@ export const POST: APIRoute = async ({ request }) => {
       }
     }
 
-    // Update content if provided (convert HTML to Markdown)
+    // Update content if provided (now receives markdown directly from Tiptap)
     let newContent = parsed.content;
     if (content !== undefined && content !== null) {
-      // Extract footnote references from ORIGINAL markdown
-      const footnoteRefs: string[] = [];
+      // Content is already markdown from Tiptap - no conversion needed!
+      newContent = content;
+
+      // Footnote preservation logic
       const footnoteRefRegex = /\[\^(\d+)\]/g;
-      let match;
-      while ((match = footnoteRefRegex.exec(parsed.content)) !== null) {
-        footnoteRefs.push(`[^${match[1]}]`);
-      }
-
-      // Extract footnote definitions from ORIGINAL markdown
       const footnoteDefsRegex = /\[\^(\d+)\]:[^\n]*(?:\n(?!\[\^|\n)[^\n]*)*/g;
-      const footnoteDefs: string[] = [];
-      while ((match = footnoteDefsRegex.exec(parsed.content)) !== null) {
-        footnoteDefs.push(match[0].trim());
+
+      // Extract footnotes from ORIGINAL markdown
+      const originalFootnoteRefs = [...parsed.content.matchAll(footnoteRefRegex)];
+      const originalFootnoteDefs = [...parsed.content.matchAll(footnoteDefsRegex)];
+
+      // If original had footnotes but new content doesn't, preserve them
+      if (originalFootnoteRefs.length > 0 && !content.includes('[^')) {
+        // Append original footnotes
+        const footnoteSection = originalFootnoteDefs.map(match => match[0]).join('\n\n');
+        newContent = content + '\n\n' + footnoteSection;
       }
-
-      // Convert HTML content (without footnotes) to Markdown
-      let convertedContent = turndown.turndown(content);
-
-      // Re-insert footnote references at approximate positions
-      // Since we stripped them from the HTML, we add them back at end of first paragraph
-      // This is best-effort - exact positioning would need more complex logic
-      footnoteRefs.forEach((ref, index) => {
-        if (!convertedContent.includes(ref)) {
-          // Find the nth paragraph end and insert there
-          const paragraphs = convertedContent.split('\n\n');
-          if (paragraphs.length > index) {
-            paragraphs[index] = paragraphs[index] + ref;
-            convertedContent = paragraphs.join('\n\n');
-          } else {
-            // Fallback: add to end of content
-            convertedContent = convertedContent.trimEnd() + ref + '\n';
-          }
-        }
-      });
-
-      // Append footnote definitions at the end
-      if (footnoteDefs.length > 0) {
-        convertedContent = convertedContent.trimEnd() + '\n\n' + footnoteDefs.join('\n\n');
-      }
-
-      newContent = convertedContent;
     }
 
     // Stringify back to markdown with frontmatter

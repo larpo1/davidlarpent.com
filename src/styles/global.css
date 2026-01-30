@@ -684,3 +684,58 @@ a:hover {
   background: #fee2e2;
   color: #991b1b;
 }
+
+/* Tiptap Editor Styles */
+.ProseMirror {
+  outline: none;
+}
+
+.ProseMirror p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  color: var(--color-text-light);
+  opacity: 0.5;
+  pointer-events: none;
+  height: 0;
+}
+
+/* Tiptap link styling */
+.ProseMirror a {
+  color: var(--color-link);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.2s, color 0.2s;
+}
+
+.ProseMirror a:hover {
+  color: var(--color-link-hover);
+  border-bottom-color: var(--color-link-hover);
+}
+
+/* Code blocks in Tiptap */
+.ProseMirror pre {
+  background: var(--color-code-bg);
+  color: var(--color-text);
+  padding: 1rem;
+  border-radius: 4px;
+  overflow-x: auto;
+  font-family: 'Courier New', monospace;
+  font-size: 0.9rem;
+  margin: 1.5rem 0;
+}
+
+.ProseMirror code {
+  background: var(--color-code-bg);
+  padding: 0.2rem 0.4rem;
+  border-radius: 3px;
+  font-family: 'Courier New', monospace;
+  font-size: 0.9rem;
+}
+
+/* Footnote references in Tiptap */
+.footnote-ref {
+  font-size: 0.75em;
+  vertical-align: super;
+  opacity: 0.7;
+  cursor: not-allowed;
+  user-select: none;
+}

@@ -2,6 +2,7 @@
 import Base from './Base.astro';
 import TableOfContents from '../components/TableOfContents.astro';
 import EditSettingsModal from '../components/EditSettingsModal.astro';
+import TiptapEditor from '../components/TiptapEditor.astro';
 
 interface Props {
   title: string;
@@ -38,29 +39,44 @@ const formattedDate = date.toLocaleDateString('en-US', {
 
     <article class="post-article" data-post-slug={slug}>
       <header class="post-header">
-        <h1
-          class="post-title"
-          contenteditable={isDev}
-          data-field="title"
-        >{title}</h1>
-        <p
-          class="post-description"
-          contenteditable={isDev}
-          data-field="description"
-        >{description}</p>
+        {isDev ? (
+          <TiptapEditor
+            fieldName="title"
+            initialContent={title}
+            placeholder="Post title"
+            singleLine={true}
+          />
+        ) : (
+          <h1 class="post-title">{title}</h1>
+        )}
+        {isDev ? (
+          <TiptapEditor
+            fieldName="description"
+            initialContent={description}
+            placeholder="Post description"
+            singleLine={true}
+          />
+        ) : (
+          <p class="post-description">{description}</p>
+        )}
         <div class="post-meta">
           <time datetime={date.toISOString()}>{formattedDate}</time>
           <span> · {readingTime} min read</span>
           {draft && <span class="draft-badge">Draft</span>}
         </div>
       </header>
-      <div
-        class="post-content"
-        contenteditable={isDev}
-        data-field="content"
-      >
-        <slot />
-      </div>
+      {isDev ? (
+        <TiptapEditor
+          fieldName="content"
+          initialContent={content}
+          placeholder="Start writing..."
+          singleLine={false}
+        />
+      ) : (
+        <div class="post-content">
+          <slot />
+        </div>
+      )}
       <a href="/" class="back-link">← Back to essays</a>
     </article>
 
@@ -126,32 +142,21 @@ const formattedDate = date.toLocaleDateString('en-US', {
     const saveStatus = document.querySelector('.save-status') as HTMLElement;
 
     function getEditableContent() {
-      const titleEl = document.querySelector('[data-field="title"]') as HTMLElement;
-      const descriptionEl = document.querySelector('[data-field="description"]') as HTMLElement;
-      const contentEl = document.querySelector('[data-field="content"]') as HTMLElement;
+      // Extract markdown from Tiptap editors
+      const editors = window.editors;
 
-      // Clone content to avoid mutating DOM
-      const contentClone = contentEl?.cloneNode(true) as HTMLElement;
-
-      // Remove footnotes section (will be preserved from original file)
-      const footnotesSection = contentClone?.querySelector('.footnotes');
-      if (footnotesSection) {
-        footnotesSection.remove();
+      if (!editors) {
+        return {
+          title: '',
+          description: '',
+          content: ''
+        };
       }
 
-      // Remove footnote reference superscripts (will be preserved from original)
-      contentClone?.querySelectorAll('sup:has(a[data-footnote-ref]), sup a[data-footnote-ref]').forEach(el => {
-        // Find the parent sup element if we're on the anchor
-        const sup = el.tagName === 'SUP' ? el : el.closest('sup');
-        if (sup) {
-          sup.remove();
-        }
-      });
-
       return {
-        title: titleEl?.textContent?.trim() || '',
-        description: descriptionEl?.textContent?.trim() || '',
-        content: contentClone?.innerHTML || ''
+        title: editors.title?.storage.markdown.getMarkdown() || '',
+        description: editors.description?.storage.markdown.getMarkdown() || '',
+        content: editors.content?.storage.markdown.getMarkdown() || ''
       };
     }
 
