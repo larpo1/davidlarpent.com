@@ -6,6 +6,8 @@ interface Props {
   title: string;
   date: Date;
   description: string;
+  draft?: boolean;
+  slug: string;
   headings: Array<{
     depth: number;
     slug: string;
@@ -13,7 +15,8 @@ interface Props {
   }>;
 }
 
-const { title, date, description, headings } = Astro.props;
+const { title, date, description, draft, slug, headings } = Astro.props;
+const isDev = import.meta.env.DEV;
 
 // Calculate reading time (roughly 200 words per minute)
 const content = await Astro.slots.render('default');
@@ -32,18 +35,131 @@ const formattedDate = date.toLocaleDateString('en-US', {
   <div class="post-layout">
     <TableOfContents headings={headings} />
 
-    <article class="post-article">
+    <article class="post-article" data-post-slug={slug}>
       <header class="post-header">
-        <h1 class="post-title">{title}</h1>
+        <h1
+          class="post-title"
+          contenteditable={isDev}
+          data-field="title"
+        >{title}</h1>
+        <p
+          class="post-description"
+          contenteditable={isDev}
+          data-field="description"
+          style={isDev ? '' : 'display: none;'}
+        >{description}</p>
         <div class="post-meta">
           <time datetime={date.toISOString()}>{formattedDate}</time>
           <span> · {readingTime} min read</span>
+          {draft && <span class="draft-badge">Draft</span>}
         </div>
       </header>
-      <div class="post-content">
+      <div
+        class="post-content"
+        contenteditable={isDev}
+        data-field="content"
+      >
         <slot />
       </div>
       <a href="/" class="back-link">← Back to essays</a>
     </article>
+
+    {isDev && (
+      <div class="edit-controls">
+        <span class="save-status"></span>
+        <button class="settings-button" title="Post settings">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/>
+          </svg>
+        </button>
+        <button class="save-button" title="Save changes">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+            <polyline points="17 21 17 13 7 13 7 21"/>
+            <polyline points="7 3 7 8 15 8"/>
+          </svg>
+        </button>
+      </div>
+    )}
   </div>
 </Base>
+
+{isDev && (
+  <script>
+    // Dev-only inline editing functionality
+    const article = document.querySelector('.post-article') as HTMLElement;
+    const slug = article?.dataset.postSlug;
+    const saveButton = document.querySelector('.save-button') as HTMLButtonElement;
+    const settingsButton = document.querySelector('.settings-button') as HTMLButtonElement;
+    const saveStatus = document.querySelector('.save-status') as HTMLElement;
+
+    function getEditableContent() {
+      const titleEl = document.querySelector('[data-field="title"]') as HTMLElement;
+      const descriptionEl = document.querySelector('[data-field="description"]') as HTMLElement;
+      const contentEl = document.querySelector('[data-field="content"]') as HTMLElement;
+
+      return {
+        title: titleEl?.innerText?.trim() || '',
+        description: descriptionEl?.innerText?.trim() || '',
+        content: contentEl?.innerHTML || ''
+      };
+    }
+
+    function showStatus(message: string, isError = false) {
+      if (!saveStatus) return;
+      saveStatus.textContent = message;
+      saveStatus.classList.toggle('error', isError);
+      saveStatus.classList.toggle('success', !isError && message !== '');
+    }
+
+    async function savePost() {
+      if (!slug) {
+        showStatus('Error: No slug', true);
+        return;
+      }
+
+      showStatus('Saving...');
+
+      const { title, description, content } = getEditableContent();
+
+      try {
+        const response = await fetch('/api/save-post', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ slug, title, description, content })
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          showStatus('Saved!');
+          setTimeout(() => {
+            window.location.reload();
+          }, 500);
+        } else {
+          showStatus(`Error: ${result.message}`, true);
+        }
+      } catch (error) {
+        showStatus(`Error: ${error}`, true);
+      }
+    }
+
+    // Event listeners
+    saveButton?.addEventListener('click', savePost);
+
+    // Keyboard shortcut: Ctrl/Cmd + S to save
+    document.addEventListener('keydown', (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+        e.preventDefault();
+        savePost();
+      }
+    });
+
+    // Settings button (modal will be added later)
+    settingsButton?.addEventListener('click', () => {
+      // TODO: Open settings modal
+      alert('Settings modal coming soon');
+    });
+  </script>
+)}

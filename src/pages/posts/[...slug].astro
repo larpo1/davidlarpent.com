@@ -20,6 +20,8 @@ const { Content, headings } = await post.render();
   title={post.data.title}
   date={post.data.date}
   description={post.data.description}
+  draft={post.data.draft}
+  slug={post.slug}
   headings={headings}
 >
   <Content />
