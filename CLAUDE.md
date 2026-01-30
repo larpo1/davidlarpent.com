@@ -65,24 +65,24 @@
       - **Test:** Select text in content editor - toolbar should appear above selection
       - Commit: `fix: Tiptap toolbar positioning and visibility`
 
-- [ ] **Fix TOC links in dev mode (or document limitation)**
+- [ ] **Document TOC limitation in dev mode**
       - **Problem:** TOC links don't work in dev mode because heading IDs don't exist when content is inside Tiptap editor
-      - **Options:**
-        1. **Accept limitation:** TOC only works in production, not in dev mode with Tiptap
-        2. **Hybrid approach:** Keep both rendered HTML (for TOC) and Tiptap editor (hidden initially, shows on click)
-        3. **Custom Tiptap extension:** Add heading IDs to Tiptap-rendered headings
-      - **Recommended:** Option 1 - accept limitation, add note to dev UI
-        - Add a notice in dev mode: "Note: TOC links disabled in edit mode"
+      - **Solution:** Accept limitation, add visual notice in dev mode
+      - **Implementation:**
+        - Add a small notice near TOC in dev mode: "Note: TOC links disabled during editing"
+        - Style it subtly (small text, muted color)
         - TOC still shows structure, just doesn't scroll
         - This is acceptable for dev-only feature
-      - **Alternative (Option 2 - more complex):**
-        - Render content normally with heading IDs
-        - On click, show Tiptap editor overlay
-        - On save, hide editor, show updated content
-        - This preserves TOC functionality but adds complexity
-      - **Files:** `src/layouts/Post.astro` or `src/components/TableOfContents.astro`
-      - **Decision needed:** Which approach do you prefer?
-      - Commit: `fix: Document TOC limitation in dev mode` or `feat: Hybrid TOC + Tiptap approach`
+      - **Files:** `src/components/TableOfContents.astro`
+      - **Example:**
+        ```astro
+        {isDev && (
+          <p class="toc-dev-notice">Note: TOC links disabled during editing</p>
+        )}
+        ```
+      - **CSS:** `.toc-dev-notice { font-size: 0.75rem; color: var(--color-text-light); opacity: 0.7; }`
+      - **Test:** Visit post in dev mode, should see notice near TOC
+      - Commit: `fix: Add notice about TOC limitation in dev mode`
 
 - [ ] **Verify markdown export is working**
       - **After previous fixes:**
