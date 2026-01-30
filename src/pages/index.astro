@@ -1,0 +1,34 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+
+// Get all posts, filter out drafts, and sort by date (newest first)
+const allPosts = await getCollection('posts');
+const posts = allPosts
+  .filter(post => !post.data.draft)
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+---
+
+<Base title="David Larpent">
+  <ul class="post-list">
+    {posts.map(post => {
+      const formattedDate = post.data.date.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric'
+      });
+
+      return (
+        <li class="post-list-item">
+          <h2 class="post-list-title">
+            <a href={`/posts/${post.slug}`}>{post.data.title}</a>
+          </h2>
+          <div class="post-meta">{formattedDate}</div>
+          {post.data.description && (
+            <p class="post-description">{post.data.description}</p>
+          )}
+        </li>
+      );
+    })}
+  </ul>
+</Base>
