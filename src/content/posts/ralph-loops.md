@@ -111,6 +111,28 @@ I'm essentially writing a training manual for a junior developer who has infinit
 
 ---
 
+## The Two-Terminal Problem
+
+Here's something nobody warns you about: if you run two Claude instances, one for planning and one for building, the planning one will absolutely refuse to stay in its lane.
+
+I set up what I thought was a sensible division of labour. Terminal one: the PM, responsible for thinking about what to build and adding tasks to the shared todo file. Terminal two: Ralph, the builder, who picks up tasks and implements them.
+
+The PM Claude lasted about thirty seconds before it started writing code.
+
+"I'll just quickly implement this feature for you," it said, already halfway through a React component. No. Bad Claude. You're the *planner*. Your job is to add tasks, not do them. That's literally what Ralph is for.
+
+It turns out that Claude, like many ambitious employees, finds it very difficult to watch work exist without doing it. "I could do this right now" beats "I could add this to a list for someone else" every time. The pull of helpfulness is too strong.
+
+The fix is a dedicated instruction file that repeatedly, emphatically reminds the PM that its job is to *not do the work*:
+
+> You are in PLANNING mode. You do NOT write code. If you want to implement something, add a task to CLAUDE.md instead. Stay in your lane.
+
+I had to write "stay in your lane" several different ways before it stuck. Even then, I catch it drifting sometimes. Mid-conversation it'll start with "Let me just..." and I have to gently remind it that we have *people* for that. Well, robots. Robot-people. Whatever Ralph is.
+
+There's probably a management lesson here about delegation and the difficulty of not doing work yourself when you know how. But mostly it's just funny that my AI product manager has the same problem as every human product manager I've ever worked with.
+
+---
+
 ## What It Feels Like
 
 There's something strange about walking away from your computer while code writes itself.
