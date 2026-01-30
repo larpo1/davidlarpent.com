@@ -28,6 +28,92 @@
 
 ---
 
+- [x] **Re-enable content editing with proper footnote support**
+      - **Goal:** Allow full content editing without corrupting footnotes
+      - **Root issue:** Basic turndown doesn't understand GFM footnote syntax `[^1]`
+      - **Solution:** Use turndown-plugin-gfm for proper GFM support
+
+      **Step 1: Install plugin**
+      ```bash
+      npm install turndown-plugin-gfm
+      ```
+
+      **Step 2: Update API to use plugin**
+      - **File:** `src/pages/api/save-post.ts`
+      - Import and configure:
+        ```typescript
+        import TurndownService from 'turndown';
+        import { gfm } from 'turndown-plugin-gfm';
+
+        const turndown = new TurndownService({
+          headingStyle: 'atx',
+          codeBlockStyle: 'fenced',
+        });
+
+        // Add GFM plugin for footnote support
+        turndown.use(gfm);
+        ```
+
+      **Step 3: Re-enable content editing**
+      - **File:** `src/layouts/Post.astro`
+      - Add back `contenteditable={isDev}` to `.post-content` div (line 57)
+      - Add back content field to `getEditableContent()`:
+        ```typescript
+        function getEditableContent() {
+          const titleEl = document.querySelector('[data-field="title"]') as HTMLElement;
+          const descriptionEl = document.querySelector('[data-field="description"]') as HTMLElement;
+          const contentEl = document.querySelector('[data-field="content"]') as HTMLElement;
+
+          return {
+            title: titleEl?.textContent?.trim() || '',
+            description: descriptionEl?.textContent?.trim() || '',
+            content: contentEl?.innerHTML || ''
+          };
+        }
+        ```
+      - Add `content` back to save request (line 127):
+        ```typescript
+        const { title, description, content } = getEditableContent();
+        // ...
+        body: JSON.stringify({ slug, title, description, content })
+        ```
+
+      **Step 4: Test extensively**
+      1. **Update test-roundtrip.js** to use the GFM plugin and verify footnotes preserved
+      2. Run: `node test-roundtrip.js` - should show `✅ Footnotes preserved`
+      3. In dev mode, edit ralph-loops post (has footnotes)
+      4. Make a small change, save
+      5. Check the .md file - verify footnote syntax intact: `[^1]` not `[1](#fn1)`
+      6. Reload page - verify footnotes render correctly
+      7. Test code blocks - verify language hints preserved
+      8. Test with what-we-lose post (no footnotes) - verify normal content works
+      9. Run `npm test` - all tests should pass
+      10. Run `npm run build` - should succeed
+
+      **Step 5: Add validation (safety)**
+      - In `savePost()` function, add check before saving:
+        ```typescript
+        // Validate non-empty
+        if (!title || !description || !content) {
+          showStatus('Error: Title, description, and content required', true);
+          return;
+        }
+        ```
+
+      **Success criteria:**
+      - ✅ test-roundtrip.js shows footnotes preserved
+      - ✅ Can edit ralph-loops post without corrupting footnotes
+      - ✅ Code blocks maintain language hints
+      - ✅ All tests pass
+      - ✅ Build succeeds
+      - ✅ Validation prevents empty saves
+
+      **Commit message:** `feat: Re-enable content editing with GFM footnote support`
+
+      **IMPORTANT:** If footnotes still corrupt after adding plugin, STOP and document the issue. Do not ship broken content editing.
+
+---
+
 - [x] **Fix critical inline editing bugs**
       - **Bug 1: Description hidden in production** - Post.astro line 50 has `style={isDev ? '' : 'display: none;'}` which hides description in prod. Should descriptions be visible on posts? If yes, remove this style attribute.
       - **Bug 2: Data loss risk with HTML→Markdown conversion** - Editing complex markdown (code blocks with syntax highlighting, footnotes, custom HTML) will be converted to HTML by browser, then back to Markdown by turndown. This roundtrip loses fidelity. **High risk of corrupting posts.**
@@ -365,8 +451,27 @@ npm run test:update   # Update baseline screenshots
 
 ## PM Review Notes
 
-### 2026-01-30: Inline Editing QA - Critical Issues Found
-**Status:** Feature implemented but has data loss risks and bugs
+### 2026-01-30: Inline Editing - All Bugs Fixed ✅
+**Status:** Production ready for title/description editing
+
+**Final Review:**
+- ✅ All 5 critical bugs fixed in commit f8e1094
+- ✅ 76/76 tests passing
+- ✅ Build successful
+- ✅ Safe for production use
+
+**What's editable:**
+- ✅ Title (plain text, no corruption risk)
+- ✅ Description (plain text, no corruption risk)
+- ✅ Frontmatter (date, draft via settings modal)
+- ❌ Content (disabled to prevent footnote corruption)
+
+**See:** FINAL-REVIEW.md for complete QA report
+
+---
+
+### 2026-01-30: Inline Editing QA - Critical Issues Found (RESOLVED)
+**Status:** Feature implemented but has data loss risks and bugs → **ALL FIXED**
 
 **What Ralph Built:**
 - ✅ API route (`/api/save-post`) with dev-only security

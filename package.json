@@ -22,7 +22,8 @@
     "@astrojs/vercel": "^9.0.4",
     "astro": "^5.17.1",
     "gray-matter": "^4.0.3",
-    "turndown": "^7.2.2"
+    "turndown": "^7.2.2",
+    "turndown-plugin-gfm": "^1.0.2"
   },
   "devDependencies": {
     "@playwright/test": "^1.58.1",

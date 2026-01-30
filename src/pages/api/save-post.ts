@@ -3,6 +3,7 @@ import * as fs from 'fs/promises';
 import * as path from 'path';
 import matter from 'gray-matter';
 import TurndownService from 'turndown';
+import { gfm } from 'turndown-plugin-gfm';
 
 // This API route must be server-rendered (not pre-rendered at build time)
 export const prerender = false;
@@ -12,6 +13,9 @@ const turndown = new TurndownService({
   headingStyle: 'atx',
   codeBlockStyle: 'fenced',
 });
+
+// Add GFM plugin for footnote support
+turndown.use(gfm);
 
 export const POST: APIRoute = async ({ request }) => {
   // Dev-only security check

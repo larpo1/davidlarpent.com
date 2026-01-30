@@ -54,7 +54,11 @@ const formattedDate = date.toLocaleDateString('en-US', {
           {draft && <span class="draft-badge">Draft</span>}
         </div>
       </header>
-      <div class="post-content">
+      <div
+        class="post-content"
+        contenteditable={isDev}
+        data-field="content"
+      >
         <slot />
       </div>
       <a href="/" class="back-link">← Back to essays</a>
@@ -96,10 +100,12 @@ const formattedDate = date.toLocaleDateString('en-US', {
     function getEditableContent() {
       const titleEl = document.querySelector('[data-field="title"]') as HTMLElement;
       const descriptionEl = document.querySelector('[data-field="description"]') as HTMLElement;
+      const contentEl = document.querySelector('[data-field="content"]') as HTMLElement;
 
       return {
         title: titleEl?.textContent?.trim() || '',
-        description: descriptionEl?.textContent?.trim() || ''
+        description: descriptionEl?.textContent?.trim() || '',
+        content: contentEl?.innerHTML || ''
       };
     }
 
@@ -116,15 +122,21 @@ const formattedDate = date.toLocaleDateString('en-US', {
         return;
       }
 
-      showStatus('Saving...');
+      const { title, description, content } = getEditableContent();
 
-      const { title, description } = getEditableContent();
+      // Validate non-empty
+      if (!title || !description || !content) {
+        showStatus('Error: Title, description, and content required', true);
+        return;
+      }
+
+      showStatus('Saving...');
 
       try {
         const response = await fetch('/api/save-post', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ slug, title, description })
+          body: JSON.stringify({ slug, title, description, content })
         });
 
         const result = await response.json();
