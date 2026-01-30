@@ -280,6 +280,53 @@ a:hover {
   color: var(--color-link);
 }
 
+/* Footnotes */
+.post-content sup {
+  font-size: 0.7em;
+  line-height: 0;
+  position: relative;
+  vertical-align: baseline;
+  top: -0.5em;
+}
+
+.post-content sup a {
+  color: var(--color-text-light);
+  border: none;
+  padding: 0 0.1em;
+}
+
+.post-content sup a:hover {
+  color: var(--color-link);
+}
+
+.post-content .footnotes {
+  margin-top: 4rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--color-border);
+  font-size: 0.85rem;
+  color: var(--color-text-light);
+}
+
+.post-content .footnotes ol {
+  padding-left: 1.5rem;
+}
+
+.post-content .footnotes li {
+  margin: 1rem 0;
+}
+
+.post-content .footnotes p {
+  margin: 0.5rem 0;
+}
+
+.post-content .footnotes a {
+  color: var(--color-text-light);
+}
+
+.post-content .footnotes a:hover {
+  color: var(--color-link);
+}
+
 /* About page */
 .about-content {
   margin-top: 2rem;
