@@ -28,8 +28,6 @@
 
 ---
 
-## Completed
-
 - [x] Initial site setup
 - [x] First essay: What We Lose When We Stop Struggling
 - [x] Second essay: Ralph loops
@@ -52,6 +50,8 @@
   - [x] Generate baseline screenshots
   - [x] Create testing documentation
 - [x] **Add footnote styling** - Subtle superscript numbers, muted footnote section
+- [x] **Refine TOC visual design** - Removed border, repositioned to top-left, wider (280px)
+- [x] **Fix hamburger toggle** - Shows when TOC is closed on desktop
 
 ---
 
@@ -108,13 +108,33 @@ npm run test:update   # Update baseline screenshots
 
 ---
 
+## PM Review Notes
+
+### 2026-01-30: TOC Positioning - Iteration 2 + Critical Bug Found
+**Status:** Ralph switched to `position: fixed` (correct approach) but has bugs + visual issues
+
+**CRITICAL BUG 🚨:**
+- Clicking X to close TOC removes it, but hamburger toggle doesn't appear
+- User has no way to reopen TOC (functionality broken)
+- **Priority:** Must fix before visual refinements
+
+**Visual Issues (lower priority):**
+- Site still looks too constrained
+- TOC should be wider (not 220px narrow container)
+- TOC should not have 1px border
+- TOC should be anchored to very top-left of viewport (not `top: 6rem`)
+
+**Next:** Ralph should fix hamburger bug first, then visual refinements
+
+---
+
 ## Decision Log
 
 ### 2026-01-30: TOC Positioning
 **Issue:** TOC needed to work on desktop sidebar and mobile overlay
-**Solution:** Used sticky positioning with flex layout, responsive breakpoints at 1024px
+**Solution:** Used fixed positioning to viewport, separate from content flow
 **Outcome:** 72 Playwright tests pass including overlap detection
-**Lesson:** Let automated tests validate CSS behavior rather than manual inspection
+**Lesson:** Position TOC outside content flow to maintain proper content width
 
 ### 2026-01-30: Playwright Integration
 **Why:** Need automated testing to catch TOC positioning issues
