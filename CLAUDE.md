@@ -28,6 +28,42 @@
 
 ---
 
+- [x] **Fix critical inline editing bugs**
+      - **Bug 1: Description hidden in production** - Post.astro line 50 has `style={isDev ? '' : 'display: none;'}` which hides description in prod. Should descriptions be visible on posts? If yes, remove this style attribute.
+      - **Bug 2: Data loss risk with HTML→Markdown conversion** - Editing complex markdown (code blocks with syntax highlighting, footnotes, custom HTML) will be converted to HTML by browser, then back to Markdown by turndown. This roundtrip loses fidelity. **High risk of corrupting posts.**
+      - **Bug 3: No validation** - API accepts empty title/content, no checks for broken markdown
+      - **Bug 4: innerText vs textContent** - Post.astro line 107 uses `innerText` which can include hidden elements, should use `textContent`
+      - **Bug 5: No keyboard shortcut indication** - Ctrl/Cmd+S works but users don't know about it
+
+      **Testing needed:**
+      1. Edit a post with code blocks - does it preserve syntax?
+      2. Edit a post with footnotes - do they survive?
+      3. Edit with complex formatting - check for data loss
+      4. Try to save empty content - does it break?
+
+      **Recommended fixes:**
+      - **Option A (Safe):** Only allow title + description editing, disable content editing
+      - **Option B (Risky):** Add turndown-plugin-gfm for better footnote handling, test extensively
+      - Add validation: require non-empty title/content
+      - Add warning modal: "Editing content with footnotes will corrupt them. Edit title/description only."
+      - Add keyboard shortcut hint to UI (show "Ctrl/Cmd+S to save")
+      - Change `innerText` to `textContent` (line 107 of Post.astro)
+      - Consider visual indicator: make footnotes non-editable or warn on hover
+
+      **Quick fix for now:**
+      - Disable content editing: remove `contenteditable={isDev}` from `.post-content` div
+      - Keep title/description editing only (safe because they're plain text)
+      - Add this to Post.astro line 58-62:
+        ```astro
+        <div class="post-content">
+          <slot />
+        </div>
+        ```
+
+      Commit: `fix: Disable content editing to prevent footnote corruption`
+
+---
+
 ## Inline Editing Feature (Completed)
 
 - [x] **Install dependencies for inline editing**
@@ -324,6 +360,89 @@ npm run test:update   # Update baseline screenshots
 - **Dark mode default:** Intentional. Don't change.
 - **No analytics yet:** Will add Plausible later if needed.
 - **No comments:** Intentional. Not a community, just essays.
+
+---
+
+## PM Review Notes
+
+### 2026-01-30: Inline Editing QA - Critical Issues Found
+**Status:** Feature implemented but has data loss risks and bugs
+
+**What Ralph Built:**
+- ✅ API route (`/api/save-post`) with dev-only security
+- ✅ Contenteditable UI for title, description, content
+- ✅ Settings modal for frontmatter (date, draft)
+- ✅ Save button + keyboard shortcut (Ctrl/Cmd+S)
+- ✅ Auto-reload after save
+- ✅ HTML→Markdown conversion with turndown
+- ✅ Dev-only visibility (hidden in production)
+- ✅ Nice SVG icons for buttons
+- ✅ Build passes, no errors
+
+**Critical Issues:**
+
+**🚨 Bug 1: Data Loss Risk (HIGH SEVERITY) - CONFIRMED**
+- User edits rendered HTML (with syntax highlighting, footnotes, etc.)
+- Browser's contenteditable gives you HTML with all the styling
+- Turndown converts back to Markdown
+- **Problem:** Roundtrip HTML→Markdown loses formatting fidelity
+- **Tested:** Created test-roundtrip.js to verify
+- **Results:**
+  - ✅ Code blocks: Language hints preserved (good!)
+  - ❌ Footnotes: **BROKEN** - `[^1]` becomes `[1](#fn1)`, footnote definition becomes numbered list
+  - ❌ Footnote syntax completely corrupted, will break site
+- **Impact:** Editing any post with footnotes will break them. Ralph-loops post has footnotes - DO NOT EDIT with this feature yet.
+- **Evidence:** Run `node test-roundtrip.js` to see the problem
+
+**🐛 Bug 2: Description Hidden in Production**
+- Line 50 of Post.astro: `style={isDev ? '' : 'display: none;'}`
+- Description is hidden from readers in production
+- Was this intentional? Original plan didn't specify this.
+- If descriptions should be visible, this needs fixing
+
+**🐛 Bug 3: No Validation**
+- API accepts empty title, empty content, empty description
+- No check for minimum length or broken markdown
+- Could save completely blank posts
+
+**🐛 Bug 4: innerText vs textContent**
+- Line 107 uses `innerText` which includes hidden elements
+- Should use `textContent` for more predictable behavior
+
+**🐛 Bug 5: No User Guidance**
+- Ctrl/Cmd+S shortcut exists but users don't know
+- No warning about data loss risk
+- No indication what's safe to edit vs risky
+
+**What Works Well:**
+- ✅ Dev-only security (returns 403 in production)
+- ✅ Path traversal validation (no `../` attacks)
+- ✅ Clean UI with nice icons
+- ✅ Modal for frontmatter editing
+- ✅ Auto-reload UX is smooth
+- ✅ Save status indicators work
+
+**Testing Results:**
+- ✅ Build passes
+- ✅ Edit controls appear in dev (`contenteditable="true"`)
+- ✅ Edit controls hidden in prod (`contenteditable="false"`, no buttons)
+- ✅ API route has `prerender: false`
+- ❌ Haven't tested complex markdown roundtrip
+- ❌ Haven't tested validation edge cases
+- ❌ Haven't tested footnote preservation
+
+**Recommendation:**
+Feature is 80% there but needs safety guardrails before real use:
+1. Add validation (non-empty checks)
+2. Add warning modal about data loss risk
+3. Test extensively with complex posts
+4. Consider: only allow title/description editing, not full content (too risky)
+5. Fix innerText→textContent
+6. Add keyboard shortcut hint
+
+**Risk Assessment:**
+- **Current state:** Functional but dangerous - could corrupt posts
+- **After fixes:** Acceptable for dev use, still recommend manual backups
 
 ---
 
