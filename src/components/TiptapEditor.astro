@@ -222,19 +222,14 @@ const editorId = `editor-${fieldName}`;
           attributes: {
             class: `${fieldName === 'content' ? 'post-content' : ''}`,
           },
-        },
-        onCreate: () => {
-          // Single-line mode: prevent Enter key from creating new paragraphs
-          if (singleLine) {
-            editor.on('update', ({ editor: ed }) => {
-              const content = ed.getHTML();
-              // If multiple paragraphs created, merge them
-              if (content.match(/<\/p>\s*<p>/)) {
-                const text = ed.getText();
-                ed.commands.setContent(`<p>${text}</p>`);
-              }
-            });
-          }
+          handleKeyDown: (view, event) => {
+            // Prevent Enter key in single-line mode
+            if (singleLine && event.key === 'Enter') {
+              event.preventDefault();
+              return true;
+            }
+            return false;
+          },
         },
         onUpdate: () => {
           // Show toolbar when content editor has selection
@@ -264,21 +259,6 @@ const editorId = `editor-${fieldName}`;
           }
         },
       });
-
-      // Prevent Enter key in single-line mode
-      if (singleLine) {
-        editor.setOptions({
-          editorProps: {
-            handleKeyDown: (view, event) => {
-              if (event.key === 'Enter') {
-                event.preventDefault();
-                return true;
-              }
-              return false;
-            },
-          },
-        });
-      }
 
       // Store editor instance
       window.editors[fieldName] = editor;
