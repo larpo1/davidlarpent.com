@@ -25,7 +25,82 @@
 
 ## Current Tasks
 
-*No pending tasks*
+- [ ] **Fix Tiptap initialization - content showing as raw HTML**
+      - **Problem:** HTML content is stored in `data-initial-content` attribute and displays as raw text before Tiptap loads
+      - **Root cause:** Ralph tried to pass HTML via data attributes instead of rendering it server-side
+      - **Solution:** Render HTML content inside the div on server, then let Tiptap take over that existing HTML element
+      - **Files to modify:**
+        - `src/components/TiptapEditor.astro` - Change approach:
+          - Instead of storing content in data attribute, use `<slot />` or `<Fragment set:html={initialContent} />`
+          - Render the HTML inside the div
+          - Tiptap will parse the existing HTML when it mounts
+        - Remove `data-initial-content` attribute
+        - Pass empty content to Editor, or let it read from the existing HTML in the element
+      - **Example structure:**
+        ```astro
+        <div id={editorId} class={`tiptap-editor tiptap-${fieldName}`}>
+          <Fragment set:html={initialContent} />
+        </div>
+        ```
+      - **Tiptap will automatically parse the HTML in the div**
+      - **Test:** Visit /posts/ralph-loops/ - should see rendered content, not raw HTML tags
+      - Commit: `fix: Render HTML content server-side for Tiptap initialization`
+
+- [ ] **Fix Tiptap toolbar not appearing**
+      - **Problem:** Toolbar doesn't show when selecting text
+      - **Possible causes:**
+        1. Tiptap not initializing (blocked by previous task)
+        2. Toolbar positioning logic broken
+        3. JavaScript errors preventing initialization
+      - **Debug steps:**
+        1. Open browser console on /posts/ralph-loops/
+        2. Check for JavaScript errors (especially Tiptap import errors)
+        3. Check if `window.editors` object exists
+        4. Try selecting text and check if `onUpdate` event fires
+      - **Fix:**
+        - Ensure Tiptap initializes successfully
+        - Fix toolbar positioning (may need to use `getBoundingClientRect()` instead of `coordsAtPos`)
+        - Add console.log to debug toolbar show/hide logic
+      - **Files:** `src/components/TiptapEditor.astro`
+      - **Test:** Select text in content editor - toolbar should appear above selection
+      - Commit: `fix: Tiptap toolbar positioning and visibility`
+
+- [ ] **Fix TOC links in dev mode (or document limitation)**
+      - **Problem:** TOC links don't work in dev mode because heading IDs don't exist when content is inside Tiptap editor
+      - **Options:**
+        1. **Accept limitation:** TOC only works in production, not in dev mode with Tiptap
+        2. **Hybrid approach:** Keep both rendered HTML (for TOC) and Tiptap editor (hidden initially, shows on click)
+        3. **Custom Tiptap extension:** Add heading IDs to Tiptap-rendered headings
+      - **Recommended:** Option 1 - accept limitation, add note to dev UI
+        - Add a notice in dev mode: "Note: TOC links disabled in edit mode"
+        - TOC still shows structure, just doesn't scroll
+        - This is acceptable for dev-only feature
+      - **Alternative (Option 2 - more complex):**
+        - Render content normally with heading IDs
+        - On click, show Tiptap editor overlay
+        - On save, hide editor, show updated content
+        - This preserves TOC functionality but adds complexity
+      - **Files:** `src/layouts/Post.astro` or `src/components/TableOfContents.astro`
+      - **Decision needed:** Which approach do you prefer?
+      - Commit: `fix: Document TOC limitation in dev mode` or `feat: Hybrid TOC + Tiptap approach`
+
+- [ ] **Verify markdown export is working**
+      - **After previous fixes:**
+        - Make an edit in title, description, content
+        - Add some bold text, italic text, a link
+        - Click save
+        - Check the .md file to ensure markdown is correct (not HTML)
+        - Verify `**bold**`, `*italic*`, `[link](url)` syntax
+      - **If markdown export broken:**
+        - Check if `tiptap-markdown` extension is configured correctly
+        - Verify `editor.storage.markdown.getMarkdown()` is being called
+        - Check browser console for errors
+      - **Test with footnotes:**
+        - Edit ralph-loops post (has footnotes)
+        - Make changes around footnotes
+        - Save and verify footnotes preserved
+      - **Files:** `src/components/TiptapEditor.astro`, `src/layouts/Post.astro`
+      - Commit: `fix: Ensure markdown export working correctly`
 
 ---
 
