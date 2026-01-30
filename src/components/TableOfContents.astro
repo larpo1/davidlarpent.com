@@ -1,0 +1,121 @@
+---
+interface Props {
+  headings: Array<{
+    depth: number;
+    slug: string;
+    text: string;
+  }>;
+}
+
+const { headings } = Astro.props;
+
+// Filter for h2 and h3 headings only
+const tocHeadings = headings.filter(h => h.depth === 2 || h.depth === 3);
+---
+
+{tocHeadings.length > 0 && (
+  <>
+    <button id="toc-toggle" class="toc-toggle" aria-label="Toggle table of contents">
+      ☰
+    </button>
+
+    <aside id="toc-container" class="toc-container" data-open="true">
+      <div class="toc-header">
+        <h2>Contents</h2>
+        <button id="toc-close" class="toc-close" aria-label="Close table of contents">
+          ×
+        </button>
+      </div>
+      <nav class="toc-nav">
+        <ul class="toc-list">
+          {tocHeadings.map((heading) => (
+            <li class={`toc-item toc-depth-${heading.depth}`}>
+              <a href={`#${heading.slug}`} class="toc-link" data-slug={heading.slug}>
+                {heading.text}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+    </aside>
+  </>
+)}
+
+<script>
+  // Toggle functionality
+  const toggleButton = document.getElementById('toc-toggle');
+  const closeButton = document.getElementById('toc-close');
+  const tocContainer = document.getElementById('toc-container');
+
+  // Get initial state from localStorage or default to open
+  const initialState = localStorage.getItem('tocOpen') !== 'false';
+
+  if (tocContainer) {
+    tocContainer.setAttribute('data-open', initialState.toString());
+  }
+
+  function toggleToc(shouldOpen: boolean) {
+    if (!tocContainer) return;
+
+    tocContainer.setAttribute('data-open', shouldOpen.toString());
+    localStorage.setItem('tocOpen', shouldOpen.toString());
+  }
+
+  toggleButton?.addEventListener('click', () => {
+    toggleToc(true);
+  });
+
+  closeButton?.addEventListener('click', () => {
+    toggleToc(false);
+  });
+
+  // Close TOC on mobile when clicking a link
+  const isMobile = () => window.innerWidth <= 768;
+
+  document.querySelectorAll('.toc-link').forEach(link => {
+    link.addEventListener('click', (e) => {
+      e.preventDefault();
+      const target = (e.currentTarget as HTMLElement).getAttribute('href');
+
+      if (target) {
+        // Smooth scroll to section
+        const element = document.querySelector(target);
+        element?.scrollIntoView({ behavior: 'smooth' });
+
+        // Close TOC on mobile after clicking
+        if (isMobile()) {
+          toggleToc(false);
+        }
+      }
+    });
+  });
+
+  // Active section highlighting with Intersection Observer
+  const observerOptions = {
+    rootMargin: '-20% 0px -35% 0px',
+    threshold: 0
+  };
+
+  const observerCallback = (entries: IntersectionObserverEntry[]) => {
+    entries.forEach(entry => {
+      const id = entry.target.getAttribute('id');
+      const tocLink = document.querySelector(`.toc-link[data-slug="${id}"]`);
+
+      if (entry.isIntersecting) {
+        // Remove active from all links
+        document.querySelectorAll('.toc-link').forEach(link => {
+          link.classList.remove('active');
+        });
+        // Add active to current link
+        tocLink?.classList.add('active');
+      }
+    });
+  };
+
+  const observer = new IntersectionObserver(observerCallback, observerOptions);
+
+  // Observe all headings
+  document.querySelectorAll('h2[id], h3[id]').forEach(heading => {
+    observer.observe(heading);
+  });
+</script>
