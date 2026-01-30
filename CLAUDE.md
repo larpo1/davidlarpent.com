@@ -23,7 +23,11 @@
 
 ## Current Tasks
 
-*No pending tasks*
+- [ ] Add footnote styling to global.css:
+      - Superscript footnote numbers in text (subtle, smaller)
+      - Footnote section at bottom styled nicely
+      - Footnote text slightly smaller, muted color (--color-text-light)
+      - Match the minimal aesthetic of the site
 
 ## Completed
 

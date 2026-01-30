@@ -5,7 +5,7 @@ description: "Ralph Wiggum loops are a ridiculous way to build software. I've be
 draft: false
 ---
 
-There's a technique doing the rounds called "Ralph Wiggum loops." Named after the Simpsons character who keeps trying despite overwhelming evidence that he should stop.
+There's a technique doing the rounds called "Ralph Wiggum loops."[^1] Named after the Simpsons character who keeps trying despite overwhelming evidence that he should stop.
 
 The idea is that you put Claude Code in a bash loop, give it a task, and walk away. It runs, fails, runs again, fails differently, runs again, and eventually either succeeds or sets fire to something. You come back to either working code or a cautionary tale.
 
@@ -77,7 +77,7 @@ The `--max-iterations` is important unless you enjoy explaining large API bills 
 
 ### Option 3: Full Production Setup
 
-Chris MDP has a [whole system](https://github.com/chrismdp/ralph) with work queues, separate PM sessions, git worktrees for parallel execution...
+Chris MDP has a [whole system](https://github.com/chrismdp/ralph) with work queues, separate PM sessions, git worktrees for parallel execution...[^2]
 
 At this point you're building infrastructure to manage your AI that's building infrastructure for you. It's loops all the way down.
 
@@ -127,7 +127,7 @@ We're through the looking glass, people.
 
 ## Honest Caveats
 
-**This burns money.** Running Claude in a loop for hours is not cheap. One person I read about exhausted their monthly allocation in an afternoon. Budget accordingly.
+**This burns money.** Running Claude in a loop for hours is not cheap. One practitioner reported exhausting their monthly API allocation in a single afternoon.[^3] Budget accordingly.
 
 **The code needs review.** It works, in the sense that the tests pass. Whether it's *good* code is a separate question that requires human eyes.
 
@@ -154,3 +154,11 @@ The trajectory is interesting. Where it lands, I genuinely don't know.
 In the meantime, I'm going to keep playing with it. Responsibly. On side projects. With extensive code review.
 
 And a healthy sense of the absurd.
+
+---
+
+[^1]: The technique and plugin are documented at [awesomeclaude.ai/ralph-wiggum](https://awesomeclaude.ai/ralph-wiggum). The name references Ralph Wiggum from The Simpsons, a character whose defining trait is cheerful persistence despite consistent failure.
+
+[^2]: Chris MDP's implementation adds sophisticated features like "beads" (units of work), a separate PM session for task management, and git worktrees for parallel execution. His detailed writeup: [chrismdp.com/running-ralph-loops-is-easy](https://www.chrismdp.com/running-ralph-loops-is-easy/)
+
+[^3]: From Chris MDP's blog: "I exhausted my Max5 allocation within a few hours. The value exceeded the cost, so I upgraded to Max20 without hesitation." Your mileage may vary, but assume this will burn through tokens quickly.
