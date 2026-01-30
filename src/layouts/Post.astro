@@ -1,13 +1,19 @@
 ---
 import Base from './Base.astro';
+import TableOfContents from '../components/TableOfContents.astro';
 
 interface Props {
   title: string;
   date: Date;
   description: string;
+  headings: Array<{
+    depth: number;
+    slug: string;
+    text: string;
+  }>;
 }
 
-const { title, date, description } = Astro.props;
+const { title, date, description, headings } = Astro.props;
 
 // Calculate reading time (roughly 200 words per minute)
 const content = await Astro.slots.render('default');
@@ -23,17 +29,21 @@ const formattedDate = date.toLocaleDateString('en-US', {
 ---
 
 <Base title={`${title} | David Larpent`} description={description}>
-  <article>
-    <header class="post-header">
-      <h1 class="post-title">{title}</h1>
-      <div class="post-meta">
-        <time datetime={date.toISOString()}>{formattedDate}</time>
-        <span> · {readingTime} min read</span>
+  <div class="post-layout">
+    <TableOfContents headings={headings} />
+
+    <article class="post-article">
+      <header class="post-header">
+        <h1 class="post-title">{title}</h1>
+        <div class="post-meta">
+          <time datetime={date.toISOString()}>{formattedDate}</time>
+          <span> · {readingTime} min read</span>
+        </div>
+      </header>
+      <div class="post-content">
+        <slot />
       </div>
-    </header>
-    <div class="post-content">
-      <slot />
-    </div>
-    <a href="/" class="back-link">← Back to essays</a>
-  </article>
+      <a href="/" class="back-link">← Back to essays</a>
+    </article>
+  </div>
 </Base>
