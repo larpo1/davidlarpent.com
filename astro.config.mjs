@@ -6,7 +6,7 @@ import sitemap from '@astrojs/sitemap';
 // https://astro.build/config
 export default defineConfig({
   site: 'https://davidlarpent.com',
-  output: 'hybrid',
+  output: 'static',
   adapter: vercel({
     webAnalytics: {
       enabled: false
