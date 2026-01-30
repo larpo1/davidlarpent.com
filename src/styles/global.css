@@ -480,16 +480,24 @@ a:hover {
   transform: translateX(-50%) translateY(-50%) rotate(-45deg);
 }
 
-/* Hide toggle when TOC is open on desktop (avoid overlap with CONTENTS heading) */
+/* Desktop: TOC always visible, toggle always hidden (not needed) */
 @media (min-width: 1201px) {
-  .toc-toggle.open {
-    display: none;
+  .toc-toggle {
+    display: none; /* No toggle needed on desktop */
+  }
+
+  .toc-container {
+    display: block !important; /* Always visible */
+  }
+
+  .toc-container[data-open="false"] {
+    display: block !important; /* Override - always show on desktop */
   }
 }
 
-/* Responsive - Hide fixed TOC when viewport too narrow for left margin */
+/* Mobile/Tablet: Toggle controls overlay */
 @media (max-width: 1200px) {
-  /* Hide desktop TOC - convert to overlay */
+  /* Convert TOC to overlay */
   .toc-container {
     display: none !important;
     position: fixed;

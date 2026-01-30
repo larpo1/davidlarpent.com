@@ -28,6 +28,95 @@
 
 ---
 
+- [x] **Fix TOC toggle button - currently invisible when TOC is open**
+      - **Critical Bug:** Toggle button is hidden when TOC is open on desktop (display: none)
+      - **Impact:** Users cannot close an open TOC - button disappears, functionality broken
+      - **Root cause:** Tried to fix overlap by hiding button, but removed close functionality
+
+      - **Why tests didn't catch this:**
+        - Test was written to VALIDATE the bug: `await expect(toggle).not.toBeVisible()`
+        - Test verified implementation (button hidden) instead of behavior (user can close TOC)
+        - Need to test USER NEEDS not implementation details
+
+      - **Correct Solution Options:**
+
+        **Option 1: Always-visible TOC on desktop (RECOMMENDED)**
+        - On desktop (>1200px): TOC is permanently visible, no close button needed
+        - On mobile/tablet: Keep toggle for overlay behavior
+        - Simplest, matches minimalist design philosophy
+        - CSS: Remove ability to close on desktop, keep hamburger visible only on small screens
+
+        **Option 2: Move toggle when open**
+        - When TOC opens, slide toggle to the right (e.g., `left: 300px`)
+        - Sits next to TOC instead of overlapping
+        - More complex animation
+
+        **Option 3: Bring back X inside TOC**
+        - Add close button in TOC header next to "CONTENTS"
+        - Toggle button opens, X button closes
+        - More elements to manage
+
+      - **Recommended Implementation (Option 1):**
+        ```css
+        /* Desktop: TOC always visible, toggle always hidden */
+        @media (min-width: 1201px) {
+          .toc-toggle {
+            display: none; /* No toggle needed on desktop */
+          }
+
+          .toc-container {
+            display: block !important; /* Always visible */
+          }
+
+          .toc-container[data-open="false"] {
+            display: block !important; /* Override - always show */
+          }
+        }
+
+        /* Mobile/tablet: Keep toggle functionality */
+        @media (max-width: 1200px) {
+          .toc-toggle {
+            display: flex; /* Show toggle */
+          }
+
+          .toc-container[data-open="false"] {
+            display: none; /* Hide when closed */
+          }
+        }
+        ```
+
+      - **Update JavaScript:**
+        - Disable toggle click handler on desktop
+        - Only allow toggle on mobile/tablet widths
+
+      - **Fix the test:**
+        ```javascript
+        test('user can always see TOC on desktop', async ({ page }) => {
+          await page.setViewportSize({ width: 1400, height: 800 });
+          // TOC should always be visible
+          const toc = page.locator('.toc-container');
+          await expect(toc).toBeVisible();
+
+          // Toggle button should not exist on desktop
+          const toggle = page.locator('.toc-toggle');
+          await expect(toggle).not.toBeVisible();
+        });
+        ```
+
+      - **Files to modify:**
+        - `src/styles/global.css` - Media query logic
+        - `src/components/TableOfContents.astro` - JavaScript to disable toggle on desktop
+        - `tests/toc.spec.ts` - Fix test to verify behavior not implementation
+
+      - **Test:**
+        1. Desktop (>1200px): TOC always visible, no toggle button
+        2. Mobile (<1200px): Toggle works to open/close overlay
+        3. No overlap, no broken functionality
+
+      - Commit: `fix: Make TOC always visible on desktop, toggle for mobile only`
+
+---
+
 - [x] **Fix TOC toggle button issues (overlap + animation quality)**
       - **Issue 1:** X button overlaps with "CONTENTS" text when TOC is open (both at same position)
       - **Issue 2:** Animation is not as smooth/elegant as reference material
@@ -228,20 +317,29 @@ npm run test:update   # Update baseline screenshots
 
 ## PM Review Notes
 
-### 2026-01-30: TOC Toggle Animation - Overlap Issue Found
-**Status:** Animation implemented but X overlaps with CONTENTS heading
+### 2026-01-30: TOC Toggle - Critical Bug After Attempted Fix
+**Status:** Ralph's fix for overlap created a worse bug - X button now invisible, users can't close TOC
 
-**Completed by Ralph:**
-- ✅ Hamburger to X animation working (smooth morph with CSS transitions)
-- ✅ No border on toggle button
-- ✅ Three-bar structure animating correctly
+**What Happened:**
+1. ✅ Animation improved (absolute positioning, cubic-bezier, bars meet at center)
+2. ❌ Fixed overlap by hiding toggle when open (`display: none`)
+3. ❌ **NEW CRITICAL BUG:** Users cannot close TOC on desktop - button is gone!
+4. ❌ Test validated the bug instead of catching it
 
-**New Issue Discovered:**
-- ❌ Toggle button overlaps "CONTENTS" text when TOC is open
-- Both positioned at `top: 1.5rem; left: 1.5rem`
-- X button should be hidden on desktop when TOC is open
+**Why Tests Failed to Catch This:**
+- Ralph wrote test that asserts `toggle.not.toBeVisible()` - testing the broken implementation
+- Test should verify "user can close TOC", not "button is hidden"
+- Classic case: testing implementation details instead of user behavior
 
-**Fix Required:** Hide toggle button when TOC open on desktop (>=1201px)
+**The Real Issue:**
+- We don't need a toggle on desktop - TOC should be always-visible
+- Toggle is only needed for mobile/tablet overlay mode
+- Trying to have one button do double-duty (open/close) on all screen sizes is overcomplicating
+
+**Correct Solution:**
+- Desktop: TOC permanently visible, no toggle button at all
+- Mobile/Tablet: Toggle button controls overlay
+- Simpler, matches minimalist design, no overlap possible
 
 ---
 
@@ -257,6 +355,14 @@ npm run test:update   # Update baseline screenshots
 **Why:** Need automated testing to catch TOC positioning issues
 **Trade-offs:** Adds ~3MB to dev dependencies, requires browser downloads
 **Outcome:** Comprehensive test coverage for TOC functional and visual behavior
+
+### 2026-01-30: Test-Driven Bug - Toggle Button Hidden
+**Issue:** Ralph hid toggle button when TOC open to fix overlap, broke close functionality
+**Why tests didn't catch it:** Test validated the implementation (`expect(toggle).not.toBeVisible()`) instead of testing user behavior ("can user close the TOC?")
+**Lesson:** Tests must verify USER NEEDS and BEHAVIORS, not implementation details
+**Example of bad test:** Asserting button is hidden
+**Example of good test:** Verifying user can complete the open/close cycle
+**Fix:** TOC should be always-visible on desktop (no toggle needed), toggle only for mobile overlay
 
 ---
 

@@ -62,22 +62,27 @@ test.describe('Table of Contents - Desktop', () => {
     await expect(targetElement).toBeInViewport();
   });
 
-  test('toggle button is hidden when TOC open on desktop', async ({ page }) => {
+  test('TOC always visible on desktop, no toggle button', async ({ page }) => {
     await page.setViewportSize({ width: 1400, height: 800 });
     await page.goto(POST_URL);
-    await page.evaluate(() => localStorage.setItem('tocOpen', 'true'));
-    await page.reload();
     await page.waitForTimeout(300);
 
     const toc = page.locator('.toc-container');
     const toggle = page.locator('.toc-toggle');
 
-    // TOC is visible
+    // TOC is always visible on desktop
     await expect(toc).toBeVisible();
 
-    // Toggle button should be hidden on desktop when TOC is open (avoids overlap with CONTENTS heading)
+    // Toggle button should be hidden on desktop (not needed)
     await expect(toggle).not.toBeVisible();
-    await expect(toggle).toHaveClass(/open/);
+
+    // Even if localStorage says closed, TOC should still be visible on desktop
+    await page.evaluate(() => localStorage.setItem('tocOpen', 'false'));
+    await page.reload();
+    await page.waitForTimeout(300);
+
+    await expect(toc).toBeVisible();
+    await expect(toggle).not.toBeVisible();
   });
 
   test('toggle button works on medium screens', async ({ page }) => {
@@ -111,8 +116,9 @@ test.describe('Table of Contents - Desktop', () => {
     await expect(toggle).toHaveClass(/open/);
   });
 
-  test('state persists across reload', async ({ page }) => {
-    await page.setViewportSize({ width: 1400, height: 800 });
+  test('state persists across reload on mobile', async ({ page }) => {
+    // Test state persistence on mobile where it matters
+    await page.setViewportSize({ width: 375, height: 667 });
     await page.goto(POST_URL);
 
     // Close TOC
@@ -123,15 +129,16 @@ test.describe('Table of Contents - Desktop', () => {
 
     // TOC should be closed
     const toc = page.locator('.toc-container');
-    await expect(toc).toHaveAttribute('data-open', 'false');
+    await expect(toc).not.toBeVisible();
 
     // Reopen and reload
     await page.evaluate(() => {
       localStorage.setItem('tocOpen', 'true');
     });
     await page.reload();
+    await page.waitForTimeout(300);
 
-    await expect(toc).toHaveAttribute('data-open', 'true');
+    await expect(toc).toBeVisible();
   });
 });
 
