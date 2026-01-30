@@ -25,24 +25,23 @@
 
 ### Priority: Fix TOC Positioning Bug
 
-- [x] **Fix TOC positioning in global.css** ✅ APPROVED BY PM
-      - Problem: TOC uses `position: fixed` with complex viewport calc, causing overlap with main content
-      - Solution: Switch to document-flow sidebar with `position: sticky`
+- [ ] **REVERT and fix TOC positioning correctly** ⚠️ REQUIRED
+      - **Issue with previous attempt:** Content too narrow because TOC/content share flex container
+      - **Correct approach:** TOC should be OUTSIDE content flow, positioned to viewport
       - File: `src/styles/global.css`
-      - Changes needed:
-        - Update `.post-layout` to wider max-width (1200px) with flexbox layout
-        - Change `.toc-container` from `position: fixed` to `position: sticky` with `top: 2rem`
-        - Remove complex `left: max(1.5rem, calc(...))` calculation
-        - Update `.post-article` to `max-width: 700px` for readability
-        - Update `@media (max-width: 1200px)` to hide TOC (not just reposition)
-        - Keep mobile overlay behavior unchanged
-      - Test: Desktop should show TOC beside content with no overlap
-      - Commit: `fix: Correct TOC positioning to use sticky sidebar layout`
-
-- [x] **Verify Post.astro structure** ✅ APPROVED BY PM
-      - ✅ Structure confirmed correct: `.post-layout` wraps TOC and article as siblings
-      - ✅ No changes needed
-      - File: `src/layouts/Post.astro`
+      - Required changes:
+        1. **Remove/revert `.post-layout` flexbox container** - content should use normal `.container`
+        2. **TOC positioning:** Use `position: fixed` to viewport (not sticky in document flow)
+        3. **TOC placement:** Position in left margin area, left of centered content
+        4. **Left calculation:** Place TOC so it sits left of content without overlap
+           - Simple approach: `left: max(1rem, calc(50% - 700px/2 - 280px))`
+           - This puts TOC 280px to the left of content edge
+        5. **Content:** Keep in normal `.container` (max-width: 700px, centered)
+        6. **Responsive:** Hide TOC on smaller screens (under 1200px viewport)
+        7. **Mobile:** Keep existing overlay behavior
+      - **Reference:** See darioamodei.com - TOC at top-left viewport, content full-width centered
+      - Test: Desktop shows TOC in left margin, content stays centered at 700px width
+      - Commit: `fix: Position TOC outside content flow to maintain content width`
 
 ### Priority: Add Automated Testing
 
@@ -126,12 +125,28 @@
 
 ## PM Review Notes
 
-### 2026-01-30: TOC Positioning Fix Review
-**Tasks #1-2 Approved**
-- Implementation uses `position: sticky` correctly (core fix ✅)
-- Layout decisions reasonable: 1100px width, 2rem gap, 1024px breakpoint
-- Post.astro structure verified correct
-- **Next:** Ralph should test manually, run build, and commit with message: `fix: Correct TOC positioning to use sticky sidebar layout`
+### 2026-01-30: TOC Positioning Fix Review - REVISION REQUIRED ⚠️
+
+**Tasks #1-2 - APPROVAL REVOKED**
+
+**Problem Identified:**
+- Current implementation makes content TOO NARROW
+- Root cause: TOC and content are siblings in `.post-layout` flex container (max-width: 1100px)
+- This makes them **share** the available space, squeezing the content
+- Content is now cramped, not full-width
+
+**Correct Approach (per Dario's site):**
+- TOC should be **outside** the content flow entirely
+- Content stays in normal container (700px, centered)
+- TOC positioned independently to viewport (top-left), doesn't interfere with content
+- They do NOT share a flex container
+
+**What Needs to Change:**
+1. Content should stay in normal `.container` (not `.post-layout` flex)
+2. TOC should use `position: fixed` to viewport, positioned in left margin area
+3. TOC calculation should place it left of content, not competing with it
+4. On desktop: TOC visible in left margin, content unaffected
+5. On tablet/mobile: Keep current overlay behavior
 
 ---
 
