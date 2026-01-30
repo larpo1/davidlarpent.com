@@ -28,6 +28,18 @@
 
 ---
 
+## Inline Editing Feature (Completed)
+
+- [x] **Install dependencies for inline editing**
+- [x] **Create save-post API route**
+- [x] **Make post content editable in dev mode**
+- [x] **Add inline editing styles**
+- [x] **Add client-side save logic**
+- [x] **Create frontmatter settings modal**
+- [x] **Test inline editing feature** (automated tests pass, manual testing recommended)
+
+---
+
 - [x] **Fix TOC toggle button - currently invisible when TOC is open**
       - **Critical Bug:** Toggle button is hidden when TOC is open on desktop (display: none)
       - **Impact:** Users cannot close an open TOC - button disappears, functionality broken
