@@ -1,0 +1,258 @@
+---
+interface Props {
+  date: Date;
+  draft?: boolean;
+  slug: string;
+}
+
+const { date, draft = false, slug } = Astro.props;
+
+// Format date for input
+const dateValue = date.toISOString().split('T')[0];
+---
+
+<div id="settings-modal" class="settings-modal" data-open="false">
+  <div class="settings-modal-backdrop"></div>
+  <div class="settings-modal-content">
+    <h2>Post Settings</h2>
+
+    <form id="settings-form">
+      <input type="hidden" name="slug" value={slug} />
+
+      <div class="form-group">
+        <label for="post-date">Publication Date</label>
+        <input
+          type="date"
+          id="post-date"
+          name="date"
+          value={dateValue}
+        />
+      </div>
+
+      <div class="form-group checkbox-group">
+        <input
+          type="checkbox"
+          id="post-draft"
+          name="draft"
+          checked={draft}
+        />
+        <label for="post-draft">Draft (hidden from homepage)</label>
+      </div>
+
+      <div class="form-actions">
+        <button type="button" class="cancel-button">Cancel</button>
+        <button type="submit" class="submit-button">Save Settings</button>
+      </div>
+    </form>
+
+    <span class="modal-status"></span>
+  </div>
+</div>
+
+<style>
+  .settings-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 200;
+  }
+
+  .settings-modal[data-open="true"] {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .settings-modal-backdrop {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+  }
+
+  .settings-modal-content {
+    position: relative;
+    background: var(--color-background);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    padding: 2rem;
+    max-width: 400px;
+    width: 90%;
+  }
+
+  .settings-modal-content h2 {
+    margin: 0 0 1.5rem;
+    font-size: 1.25rem;
+  }
+
+  .form-group {
+    margin-bottom: 1.25rem;
+  }
+
+  .form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+    color: var(--color-text-light);
+  }
+
+  .form-group input[type="date"] {
+    width: 100%;
+    padding: 0.5rem;
+    font-size: 1rem;
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    background: var(--color-code-bg);
+    color: var(--color-text);
+  }
+
+  .checkbox-group {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .checkbox-group label {
+    margin: 0;
+    cursor: pointer;
+  }
+
+  .checkbox-group input[type="checkbox"] {
+    width: 1.25rem;
+    height: 1.25rem;
+    cursor: pointer;
+  }
+
+  .form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+  }
+
+  .cancel-button,
+  .submit-button {
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+    border-radius: 4px;
+    cursor: pointer;
+    border: none;
+  }
+
+  .cancel-button {
+    background: var(--color-code-bg);
+    color: var(--color-text-light);
+    border: 1px solid var(--color-border);
+  }
+
+  .cancel-button:hover {
+    background: var(--color-border);
+  }
+
+  .submit-button {
+    background: var(--color-link);
+    color: white;
+  }
+
+  .submit-button:hover {
+    background: var(--color-link-hover);
+  }
+
+  .modal-status {
+    display: block;
+    margin-top: 1rem;
+    font-size: 0.85rem;
+    text-align: center;
+  }
+
+  .modal-status.error {
+    color: #f87171;
+  }
+
+  .modal-status.success {
+    color: #4ade80;
+  }
+</style>
+
+<script>
+  const modal = document.getElementById('settings-modal');
+  const form = document.getElementById('settings-form') as HTMLFormElement;
+  const backdrop = modal?.querySelector('.settings-modal-backdrop');
+  const cancelButton = modal?.querySelector('.cancel-button');
+  const modalStatus = modal?.querySelector('.modal-status') as HTMLElement;
+  const settingsButton = document.querySelector('.settings-button');
+
+  function openModal() {
+    modal?.setAttribute('data-open', 'true');
+  }
+
+  function closeModal() {
+    modal?.setAttribute('data-open', 'false');
+    if (modalStatus) {
+      modalStatus.textContent = '';
+      modalStatus.className = 'modal-status';
+    }
+  }
+
+  function showModalStatus(message: string, isError = false) {
+    if (!modalStatus) return;
+    modalStatus.textContent = message;
+    modalStatus.classList.toggle('error', isError);
+    modalStatus.classList.toggle('success', !isError);
+  }
+
+  // Open modal from settings button
+  settingsButton?.addEventListener('click', openModal);
+
+  // Close modal
+  backdrop?.addEventListener('click', closeModal);
+  cancelButton?.addEventListener('click', closeModal);
+
+  // Close on Escape key
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modal?.getAttribute('data-open') === 'true') {
+      closeModal();
+    }
+  });
+
+  // Handle form submit
+  form?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const formData = new FormData(form);
+    const slug = formData.get('slug') as string;
+    const date = formData.get('date') as string;
+    const draft = formData.get('draft') === 'on';
+
+    showModalStatus('Saving...');
+
+    try {
+      const response = await fetch('/api/save-post', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          slug,
+          frontmatter: { date, draft }
+        })
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        showModalStatus('Saved!');
+        setTimeout(() => {
+          window.location.reload();
+        }, 500);
+      } else {
+        showModalStatus(`Error: ${result.message}`, true);
+      }
+    } catch (error) {
+      showModalStatus(`Error: ${error}`, true);
+    }
+  });
+</script>
