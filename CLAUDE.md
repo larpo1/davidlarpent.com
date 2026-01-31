@@ -25,6 +25,51 @@
 
 ## Current Tasks
 
+- [ ] **Redesign toolbar - vertical layout in left margin**
+      - **Current issue:** Toolbar is horizontal, appears above text, covers the selection
+      - **New design:**
+        - Position toolbar to the LEFT of content block
+        - Vertical orientation (buttons stacked vertically)
+        - Align inline with selected text (same Y position as selection)
+        - Place in the margin area, not overlapping content
+      - **Implementation:**
+        - Change toolbar positioning logic:
+          ```javascript
+          const range = selection.getRangeAt(0);
+          const rect = range.getBoundingClientRect();
+          const contentRect = contentEditable.getBoundingClientRect();
+
+          toolbar.style.display = 'flex';
+          toolbar.style.flexDirection = 'column'; // Vertical stack
+          toolbar.style.top = `${rect.top + window.scrollY}px`; // Inline with selection
+          toolbar.style.left = `${contentRect.left - 60}px`; // 60px to left of content
+          toolbar.style.transform = 'none'; // Remove centering transform
+          ```
+        - Update CSS:
+          ```css
+          .edit-toolbar {
+            flex-direction: column; /* Stack buttons vertically */
+            gap: 0.5rem; /* Space between buttons */
+            padding: 0.5rem;
+            width: auto; /* Let buttons determine width */
+          }
+
+          .edit-toolbar button {
+            padding: 0.5rem; /* Square buttons */
+            min-width: 2.5rem; /* Consistent width */
+            min-height: 2.5rem; /* Square shape */
+            font-size: 0.85rem; /* Slightly smaller */
+          }
+          ```
+      - **Test:**
+        - Select text in content
+        - Toolbar should appear to the LEFT in margin
+        - Buttons stacked vertically
+        - Inline with selected text (not above/below)
+        - Doesn't cover content
+      - **Files:** `src/components/EditToolbar.astro`
+      - Commit: `refactor: Move toolbar to vertical layout in left margin`
+
 - [x] **Remove Tiptap, revert to contenteditable**
       - **Decision:** Tiptap is too complex for this use case. Going back to simple contenteditable with toolbar.
       - **What to do:**
