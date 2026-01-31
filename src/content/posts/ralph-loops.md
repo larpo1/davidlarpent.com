@@ -1,16 +1,14 @@
 ---
 title: On Ralph Loops
 date: 2026-01-30T00:00:00.000Z
-description: >-
-  Ralph Wiggum loops are a ridiculous way to build software. I've been playing
-  with them anyway.
+description: Or how to run Claude Code like a sweatshop
 draft: false
 ---
-There's a technique doing the rounds called "Ralph Wiggum loops."[^1] Named after the Simpsons character who keeps trying despite overwhelming evidence that he should stop.
+There’s a technique doing the rounds called “Ralph Wiggum loops.” Named after the Simpsons character who keeps trying despite overwhelming evidence that he should stop.
 
 The idea is that you spin up one Claude Code instance as your PM to work on tasks, todos, docs and tests, and then a second Claude Code instance which you run in a bash loop, picking tasks, executing, going again. 
 
-I’ve been playing with this. It’s ridiculous. It also kind of works.
+I’ve been playing with this. It’s fun. 
 
 * * *
 
@@ -78,7 +76,7 @@ The `--max-iterations` is important unless you enjoy explaining large API bills 
 
 ### Option 3: Full Production Setup
 
-Chris MDP has a [whole system](https://github.com/chrismdp/ralph) with work queues, separate PM sessions, git worktrees for parallel execution…[^2]
+Chris MDP has a [whole system](https://github.com/chrismdp/ralph) with work queues, separate PM sessions, git worktrees for parallel execution…
 
 At this point you’re building infrastructure to manage your AI that’s building infrastructure for you. It’s loops all the way down.
 
@@ -138,7 +136,7 @@ We’re through the looking glass, people.
 
 ## Honest Caveats
 
-**This burns money.** Running Claude in a loop for hours is not cheap. One practitioner reported exhausting their monthly API allocation in a single afternoon.[^3] Budget accordingly.
+**This burns money.** Running Claude in a loop for hours is not cheap. One practitioner reported exhausting their monthly API allocation in a single afternoon. Budget accordingly.
 
 **The code needs review.** It works, in the sense that the tests pass. Whether it’s _good_ code is a separate question that requires human eyes.
 
