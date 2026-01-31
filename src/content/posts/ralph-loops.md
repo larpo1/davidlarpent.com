@@ -20,7 +20,7 @@ At its most basic:
 while :; do cat PROMPT.md | claude ; done
 ```
 
-That’s the whole thing. Claude reads your prompt, does some work, tries to exit like a professional, and the loop shoves it back in the room like a disappointed parent. “You’re not done. Try again.”
+That’s the whole thing. Claude reads your prompt, does some work, tries to exit like a professional, and the loop shoves it back in the room like a whip cracker in a sweatshop.
 
 It picks up where it left off because the codebase has changed. The tests that were failing are now… different tests that are failing. Progress.
 
