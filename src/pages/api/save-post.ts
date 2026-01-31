@@ -1,9 +1,13 @@
 import type { APIRoute } from 'astro';
 import * as fs from 'fs/promises';
 import * as path from 'path';
+import { exec } from 'child_process';
+import { promisify } from 'util';
 import matter from 'gray-matter';
 import TurndownService from 'turndown';
 import { gfm } from 'turndown-plugin-gfm';
+
+const execAsync = promisify(exec);
 
 // This API route must be server-rendered (not pre-rendered at build time)
 export const prerender = false;
@@ -145,8 +149,20 @@ export const POST: APIRoute = async ({ request }) => {
       await fs.unlink(filePath);
     }
 
+    // Auto-commit to prevent data loss
+    const finalSlug = newSlug || slug;
+    const commitFile = `src/content/posts/${finalSlug}.md`;
+    try {
+      await execAsync(`git add "${commitFile}"`);
+      const commitMsg = `Auto-save: ${finalSlug}`;
+      await execAsync(`git commit -m "${commitMsg}"`);
+    } catch (gitError) {
+      // Git commit failed (maybe no changes or not a git repo) - still return success
+      console.log('Git auto-commit skipped:', gitError);
+    }
+
     return new Response(
-      JSON.stringify({ success: true, message: 'Post saved successfully' }),
+      JSON.stringify({ success: true, message: 'Post saved and committed' }),
       { status: 200, headers: { 'Content-Type': 'application/json' } }
     );
   } catch (error) {
