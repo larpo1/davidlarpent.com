@@ -25,26 +25,39 @@
 
 ## Current Tasks
 
-- [ ] **Fix Tiptap initialization - content showing as raw HTML**
-      - **Problem:** HTML content is stored in `data-initial-content` attribute and displays as raw text before Tiptap loads
-      - **Root cause:** Ralph tried to pass HTML via data attributes instead of rendering it server-side
-      - **Solution:** Render HTML content inside the div on server, then let Tiptap take over that existing HTML element
-      - **Files to modify:**
-        - `src/components/TiptapEditor.astro` - Change approach:
-          - Instead of storing content in data attribute, use `<slot />` or `<Fragment set:html={initialContent} />`
-          - Render the HTML inside the div
-          - Tiptap will parse the existing HTML when it mounts
-        - Remove `data-initial-content` attribute
-        - Pass empty content to Editor, or let it read from the existing HTML in the element
-      - **Example structure:**
+- [ ] **Fix Tiptap initialization - title and description showing duplicated**
+      - **Problem:** Title and description appear twice on the page in dev mode
+      - **Root cause:**
+        - Ralph is rendering content with `<Fragment set:html={initialContent} />`
+        - For title/description, `initialContent` is plain text (not HTML)
+        - Tiptap initializes, sees plain text, wraps it in `<p>` tag
+        - Original text node is still there → duplication
+      - **Solution:** Wrap plain text in proper HTML before rendering, OR pass content to Tiptap instead
+      - **Option A (Recommended):** Pass content to Tiptap, don't render in div
         ```astro
-        <div id={editorId} class={`tiptap-editor tiptap-${fieldName}`}>
-          <Fragment set:html={initialContent} />
+        <div
+          id={editorId}
+          class={`tiptap-editor tiptap-${fieldName}`}
+          data-field={fieldName}
+          data-single-line={singleLine}
+          data-placeholder={placeholder}
+          data-initial-content={initialContent}
+        >
+          <!-- Empty - Tiptap will populate -->
         </div>
         ```
-      - **Tiptap will automatically parse the HTML in the div**
-      - **Test:** Visit /posts/ralph-loops/ - should see rendered content, not raw HTML tags
-      - Commit: `fix: Render HTML content server-side for Tiptap initialization`
+        Then in script: `content: element.getAttribute('data-initial-content')`
+      - **Option B:** Wrap plain text in HTML tags before rendering
+        ```astro
+        {fieldName === 'content' ? (
+          <Fragment set:html={initialContent} />
+        ) : (
+          <p>{initialContent}</p>
+        )}
+        ```
+      - **Files to modify:** `src/components/TiptapEditor.astro`
+      - **Test:** Visit /posts/ralph-loops/ - title, description, content should each appear once
+      - Commit: `fix: Prevent duplication by passing content to Tiptap correctly`
 
 - [ ] **Fix Tiptap toolbar not appearing**
       - **Problem:** Toolbar doesn't show when selecting text
