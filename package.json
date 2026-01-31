@@ -20,13 +20,8 @@
     "@astrojs/rss": "^4.0.15",
     "@astrojs/sitemap": "^3.7.0",
     "@astrojs/vercel": "^9.0.4",
-    "@tiptap/core": "^3.18.0",
-    "@tiptap/extension-link": "^3.18.0",
-    "@tiptap/extension-placeholder": "^3.18.0",
-    "@tiptap/starter-kit": "^3.18.0",
     "astro": "^5.17.1",
     "gray-matter": "^4.0.3",
-    "tiptap-markdown": "^0.9.0",
     "turndown": "^7.2.2",
     "turndown-plugin-gfm": "^1.0.2"
   },

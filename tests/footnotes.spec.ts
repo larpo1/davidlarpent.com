@@ -5,11 +5,11 @@ test.describe('Footnote Editing Protection', () => {
     await page.goto('/posts/ralph-loops/');
     await page.waitForLoadState('domcontentloaded');
 
-    // Wait for Tiptap to initialize
-    await page.waitForTimeout(1000);
+    // Wait for DOM initialization script to run
+    await page.waitForTimeout(500);
 
-    // Check if footnote references exist in Tiptap editor
-    const footnoteRefs = page.locator('.ProseMirror .footnote-ref');
+    // Check if footnote references exist in content
+    const footnoteRefs = page.locator('.post-content sup a[data-footnote-ref]');
     const count = await footnoteRefs.count();
     expect(count).toBeGreaterThan(0);
 
@@ -26,15 +26,12 @@ test.describe('Footnote Editing Protection', () => {
     await page.goto('/posts/ralph-loops/');
     await page.waitForLoadState('domcontentloaded');
 
-    // Wait for Tiptap to initialize
-    await page.waitForTimeout(1000);
+    // Check if post-content exists and is contenteditable in dev mode
+    const contentDiv = page.locator('.post-content');
+    await expect(contentDiv).toBeVisible();
 
-    // Check if TiptapEditor exists for content
-    const tiptapEditor = page.locator('.tiptap-content .ProseMirror');
-    await expect(tiptapEditor).toBeVisible();
-
-    // Tiptap editor should be editable (has contenteditable set by Tiptap)
-    const contenteditable = await tiptapEditor.getAttribute('contenteditable');
+    // Content should be editable in dev mode
+    const contenteditable = await contentDiv.getAttribute('contenteditable');
     expect(contenteditable).toBe('true');
   });
 
@@ -42,15 +39,12 @@ test.describe('Footnote Editing Protection', () => {
     await page.goto('/posts/ralph-loops/');
     await page.waitForLoadState('domcontentloaded');
 
-    // Wait for Tiptap to initialize
-    await page.waitForTimeout(1000);
+    // Check if title exists and is contenteditable
+    const titleEl = page.locator('.post-title');
+    await expect(titleEl).toBeVisible();
 
-    // Check if TiptapEditor exists for title
-    const tiptapEditor = page.locator('.tiptap-title .ProseMirror');
-    await expect(tiptapEditor).toBeVisible();
-
-    // Tiptap editor should be editable
-    const contenteditable = await tiptapEditor.getAttribute('contenteditable');
+    // Title should be editable in dev mode
+    const contenteditable = await titleEl.getAttribute('contenteditable');
     expect(contenteditable).toBe('true');
   });
 });
