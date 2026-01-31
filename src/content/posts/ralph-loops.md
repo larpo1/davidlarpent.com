@@ -28,17 +28,13 @@ Someone made a plugin for this. Because of course they did.
 
 * * *
 
-## Why This Is Absurd
+## "Pretengineering"
 
-Let me be clear about what’s happening here.
+You heard it here first. OK fine. "Vibe Coding". Whatever. 
 
-You’re asking an AI to do work. It does some work. Then it tries to leave. You don’t let it leave. It sighs (metaphorically) and does more work. It tries to leave again. You still don’t let it leave. This continues until either success or you run out of money.
+You’re asking an AI to do work. It does some work. Then it tries to leave. You don’t let it leave. It sighs and does more work. This continues until either success or you run out of money.
 
-This is not how serious software gets built. This is how you train a puppy, or wear down a toddler, or solve a Rubik’s cube by just… turning it randomly until the colours line up.
-
-And yet.
-
-I’ve shipped actual features this way. Not production features at my day job, let me be extremely clear. But side projects, prototypes, things where “does it work?” is a more important question than “would a senior engineer approve of this?”
+This is how you train a puppy, or solve a Rubik’s cube by randomly turning bits 'til the colours line up.
 
 * * *
 
