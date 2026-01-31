@@ -25,6 +25,129 @@
 
 ## Current Tasks
 
+- [ ] **CRITICAL: Fix save API - TOC disappears after save**
+      - **Problem:** After saving changes, TOC disappears because headings are corrupted
+      - **Root cause:** API comment says "Content is already markdown from Tiptap" (line 86) but we removed Tiptap
+        - contenteditable sends HTML: `<h2>My Heading</h2>`
+        - API saves HTML directly as if it were markdown
+        - On reload, Astro can't parse HTML-in-markdown correctly
+        - Headings aren't extracted → TOC is empty
+      - **Fix:** Re-enable HTML→Markdown conversion using turndown
+      - **Files:** `src/pages/api/save-post.ts`
+      - **Change:**
+        ```typescript
+        // Update content if provided (convert HTML to Markdown using turndown)
+        let newContent = parsed.content;
+        if (content !== undefined && content !== null) {
+          // Convert HTML content to Markdown using turndown
+          let convertedContent = turndown.turndown(content);
+
+          // Footnote preservation logic (keep existing code)
+          const footnoteRefRegex = /\[\^(\d+)\]/g;
+          const footnoteDefsRegex = /\[\^(\d+)\]:[^\n]*(?:\n(?!\[\^|\n)[^\n]*)*/g;
+
+          const originalFootnoteRefs = [...parsed.content.matchAll(footnoteRefRegex)];
+          const originalFootnoteDefs = [...parsed.content.matchAll(footnoteDefsRegex)];
+
+          if (originalFootnoteRefs.length > 0 && !convertedContent.includes('[^')) {
+            const footnoteSection = originalFootnoteDefs.map(match => match[0]).join('\n\n');
+            convertedContent = convertedContent + '\n\n' + footnoteSection;
+          }
+
+          newContent = convertedContent;
+        }
+        ```
+      - **Test:**
+        1. Edit a heading in ralph-loops post
+        2. Save
+        3. Page reloads
+        4. TOC should still be visible with correct headings
+        5. Check .md file - headings should be `## Heading` not `<h2>Heading</h2>`
+      - Commit: `fix: Re-enable HTML→Markdown conversion in save API`
+
+- [ ] **Add slug field to settings modal**
+      - **Problem:** User changed title, but slug (URL) didn't change
+      - **Expected behavior:** Slug should NOT auto-change (would break links)
+      - **Solution:** Add slug field to settings modal so users can manually change it
+      - **Files:** `src/components/EditSettingsModal.astro`
+      - **Implementation:**
+        - Add slug input field:
+          ```astro
+          <div class="form-group">
+            <label for="post-slug">URL Slug</label>
+            <input
+              type="text"
+              id="post-slug"
+              name="slug"
+              value={slug}
+              pattern="[a-z0-9-]+"
+              title="Lowercase letters, numbers, and hyphens only"
+            />
+            <small>Warning: Changing slug will break existing links</small>
+          </div>
+          ```
+        - Update API to handle slug changes:
+          - Rename file from `{oldSlug}.md` to `{newSlug}.md`
+          - Validate new slug (lowercase, no spaces, no special chars)
+          - Check if new slug already exists (conflict)
+        - Update hidden input: remove `<input type="hidden" name="slug" value={slug} />` (now editable)
+      - **API changes in `src/pages/api/save-post.ts`:**
+        - Accept `newSlug` parameter
+        - If `newSlug` different from `slug`: rename file
+        - Validation: check slug format, check if file exists
+      - **Test:**
+        - Open settings modal
+        - Change slug from "ralph-loops" to "ralph-loops-test"
+        - Save
+        - Should redirect to new URL
+        - Old URL should 404
+      - Commit: `feat: Add slug editor to settings modal`
+
+- [ ] **Polish settings/save button styling**
+      - **Problem:** User says buttons are "ugly and agricultural"
+      - **Current design:** Gear icon and save icon in bottom-right corner
+      - **Review current styling:**
+        - Check `.edit-controls` in `src/styles/global.css`
+        - Check `.settings-button` and `.save-button` styling
+      - **Potential improvements:**
+        - Reduce button size (currently 3rem - quite large)
+        - Refine icon styling
+        - Better hover states
+        - Consider moving to different location (less obtrusive)
+      - **Suggested changes:**
+        ```css
+        .edit-controls {
+          position: fixed;
+          bottom: 1.5rem;
+          right: 1.5rem;
+          display: flex;
+          align-items: center;
+          gap: 0.5rem; /* Reduce gap */
+          z-index: 100;
+        }
+
+        .save-button,
+        .settings-button {
+          width: 2.5rem; /* Smaller buttons */
+          height: 2.5rem;
+          padding: 0.5rem;
+          /* More refined styling */
+        }
+
+        /* Consider opacity until hover */
+        .edit-controls {
+          opacity: 0.6;
+          transition: opacity 0.2s;
+        }
+
+        .edit-controls:hover {
+          opacity: 1;
+        }
+        ```
+      - **Files:** `src/styles/global.css`
+      - **Test:** Visit post in dev mode, check if buttons look better
+      - Commit: `style: Polish edit controls button styling`
+
 - [x] **Redesign toolbar - vertical layout in left margin**
       - **Current issue:** Toolbar is horizontal, appears above text, covers the selection
       - **New design:**
