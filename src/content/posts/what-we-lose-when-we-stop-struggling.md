@@ -6,7 +6,7 @@ description: >-
   what we love.
 draft: false
 ---
-Anthropic just published a study showing that developers who use AI assistance score 17% lower on understanding the code they just wrote. They finished the task slightly faster. They apparently learned almost nothing.
+Anthropic just published a study showing that developers who use AI assistance score 17% lower on understanding the code they just wrote.[^1] They finished the task slightly faster. They apparently learned almost nothing.
 
 The researchers watched how people worked. Some handed everything to the AI and breezed through. Others asked the AI questions, then wrote the code themselves. The first group was quickest. The second group actually understood what they’d built.
 
@@ -38,7 +38,7 @@ You don’t learn to write by reading. You learn by writing badly, repeatedly, u
 
 This is annoying. We’d prefer to skip the part where we’re bad at things. AI offers that skip. And the skip feels great, right up until you need the skill you never built.
 
-The pilots who hand-fly the least are worst at hand-flying when the automation fails. The doctors most reliant on diagnostic algorithms are slowest to catch what the algorithm misses. The coders who outsource debugging to AI can’t debug when the AI is confused. We’ve known this pattern for decades. Lisanne Bainbridge called it the “ironies of automation” back in 1983: the more advanced the system, the more crucial the human contribution when things go sideways, and the less capable the human is of making it.
+The pilots who hand-fly the least are worst at hand-flying when the automation fails.[^2] The doctors most reliant on diagnostic algorithms are slowest to catch what the algorithm misses.[^3] The coders who outsource debugging to AI can't debug when the AI is confused. We've known this pattern for decades. Lisanne Bainbridge called it the "ironies of automation" back in 1983:[^4] the more advanced the system, the more crucial the human contribution when things go sideways, and the less capable the human is of making it.
 
 But there’s something else here that bothers me more than the competence question.
 
@@ -64,7 +64,7 @@ I paint because of what happens when I paint. The focus. The frustration when th
 
 That stuff doesn’t happen when you type a prompt. The output might look similar. The experience is nothing alike.
 
-Humans have made art since we had hands and walls. Cave paintings from 36,000 years ago. Not because our ancestors needed interior decorating. Because there’s something in us that wants to make things. Wants to struggle with materials. Wants to leave a mark that says _I was here, and I made this, and it was hard_.
+Humans have made art since we had hands and walls. Cave paintings from 36,000 years ago.[^5] Not because our ancestors needed interior decorating. Because there’s something in us that wants to make things. Wants to struggle with materials. Wants to leave a mark that says _I was here, and I made this, and it was hard_.
 
 The difficulty is the point.
 
@@ -140,4 +140,12 @@ The path of least resistance leads somewhere. I’m just not sure we want to go 
 
 * * *
 
-\[^1\]: Shen, J.H. & Tamkin, A. (2026). "How AI Impacts Skill Formation." arXiv:2601.20245. The study found participants using AI assistance scored 50% on comprehension tests vs. 67% for the control group. \[Full paper\](https://arxiv.org/abs/2601.20245) \[^2\]: The FAA has documented this extensively. A 2013 safety alert noted that pilots who regularly use automated systems "ichever have fewer opportunities to maintain and improve" manual flying skills, creating risks when automation fails or must be overridden. See FAA SAFO 13002. \[^3\]: Studies on automation bias in medicine show clinicians can become over-reliant on clinical decision support systems. See Goddard, K., Roudsari, A., & Wyatt, J.C. (2012). "Automation bias: a systematic review of frequency, effect mediators, and mitigators." Journal of the American Medical Informatics Association, 19(1), 121-127. \[^4\]: Bainbridge, L. (1983). "Ironies of automation." Automatica, 19(6), 775-779. The paper's central argument: "the more advanced a control system is, so the more crucial may be the contribution of the human operator, but the less opportunity the operator has to practice these skills." Still cited heavily 40+ years later. \[^5\]: The Chauvet Cave paintings in France are dated to approximately 30,000-36,000 years ago, making them among the oldest known figurative art. See Clottes, J. (2003). "Chauvet Cave: The Art of Earliest Times." University of Utah Press.
+[^1]: Shen, J.H. & Tamkin, A. (2026). "How AI Impacts Skill Formation." arXiv:2601.20245. The study found participants using AI assistance scored 50% on comprehension tests vs. 67% for the control group. [Full paper](https://arxiv.org/abs/2601.20245)
+
+[^2]: The FAA has documented this extensively. A 2013 safety alert noted that pilots who regularly use automated systems "have fewer opportunities to maintain and improve" manual flying skills, creating risks when automation fails or must be overridden. See FAA SAFO 13002.
+
+[^3]: Studies on automation bias in medicine show clinicians can become over-reliant on clinical decision support systems. See Goddard, K., Roudsari, A., & Wyatt, J.C. (2012). "Automation bias: a systematic review of frequency, effect mediators, and mitigators." Journal of the American Medical Informatics Association, 19(1), 121-127.
+
+[^4]: Bainbridge, L. (1983). "Ironies of automation." Automatica, 19(6), 775-779. The paper's central argument: "the more advanced a control system is, so the more crucial may be the contribution of the human operator, but the less opportunity the operator has to practice these skills." Still cited heavily 40+ years later.
+
+[^5]: The Chauvet Cave paintings in France are dated to approximately 30,000-36,000 years ago, making them among the oldest known figurative art. See Clottes, J. (2003). "Chauvet Cave: The Art of Earliest Times." University of Utah Press.
