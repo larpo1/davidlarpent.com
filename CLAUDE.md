@@ -25,7 +25,7 @@
 
 ## Current Tasks
 
-- [ ] **Remove Tiptap, revert to contenteditable**
+- [x] **Remove Tiptap, revert to contenteditable**
       - **Decision:** Tiptap is too complex for this use case. Going back to simple contenteditable with toolbar.
       - **What to do:**
         1. Delete `src/components/TiptapEditor.astro`
@@ -47,7 +47,7 @@
       - **Test:** Visit /posts/ralph-loops/ - should see normal content, editable with contenteditable
       - Commit: `refactor: Remove Tiptap, revert to contenteditable approach`
 
-- [ ] **Create floating WYSIWYG toolbar component**
+- [x] **Create floating WYSIWYG toolbar component**
       - **What:** Build a simple toolbar that appears when text is selected, uses browser execCommand
       - **Create:** `src/components/EditToolbar.astro`
       - **Structure:**
@@ -160,7 +160,7 @@
         - Click Link - prompts for URL, creates link
       - Commit: `feat: Add floating WYSIWYG toolbar with execCommand`
 
-- [ ] **Add keyboard shortcuts for toolbar commands**
+- [x] **Add keyboard shortcuts for toolbar commands**
       - **What:** Ctrl+B for bold, Ctrl+I for italic, Ctrl+K for link
       - **Where:** Add to the EditToolbar.astro script or Post.astro script
       - **Code:**
@@ -194,7 +194,7 @@
         - Press Ctrl+K - should prompt for URL
       - Commit: `feat: Add keyboard shortcuts for formatting (Ctrl+B/I/K)`
 
-- [ ] **Test and verify all functionality**
+- [x] **Test and verify all functionality**
       - **Tests:**
         1. Visit /posts/ralph-loops/ in dev mode
         2. Edit title - should work, no duplication
