@@ -25,26 +25,52 @@
 
 ## Current Tasks
 
-- [ ] **Restore corrupted post file**
+- [ ] **Convert corrupted post file from HTML to markdown**
       - **Problem:** `what-we-lose-when-we-stop-struggling.md` was corrupted by saves before API fix
       - **Issue:** File contains HTML instead of markdown, causing TOC to not render
-      - **Fix:** Restore clean version from git history
-      - **Command:**
-        ```bash
-        git checkout 465ff30 -- src/content/posts/what-we-lose-when-we-stop-struggling.md
+      - **User wants:** Keep edits (title change, etc), just convert HTML to markdown
+      - **Solution:** Read file, convert HTML content to markdown, write back
+      - **Script to create:** `scripts/fix-html-post.js`
+        ```javascript
+        import fs from 'fs/promises';
+        import matter from 'gray-matter';
+        import TurndownService from 'turndown';
+        import { gfm } from 'turndown-plugin-gfm';
+
+        const turndown = new TurndownService({
+          headingStyle: 'atx',
+          codeBlockStyle: 'fenced',
+        });
+        turndown.use(gfm);
+
+        const filePath = 'src/content/posts/what-we-lose-when-we-stop-struggling.md';
+
+        // Read file
+        const fileContent = await fs.readFile(filePath, 'utf-8');
+        const parsed = matter(fileContent);
+
+        // Convert HTML content to markdown
+        const markdownContent = turndown.turndown(parsed.content);
+
+        // Write back with frontmatter
+        const output = matter.stringify(markdownContent, parsed.data);
+        await fs.writeFile(filePath, output, 'utf-8');
+
+        console.log('✅ Converted HTML to markdown successfully');
         ```
-      - **Then commit:**
+      - **Run:**
         ```bash
+        node scripts/fix-html-post.js
         git add src/content/posts/what-we-lose-when-we-stop-struggling.md
-        git commit -m "fix: Restore corrupted what-we-lose post from git history"
+        git commit -m "fix: Convert corrupted post from HTML to markdown"
         git push
         ```
       - **Verify:**
         - Visit `/posts/what-we-lose-when-we-stop-struggling/` in dev mode
         - TOC should now be visible with proper headings
         - File should have markdown headings (## Heading) not HTML (<h2>)
-      - **Note:** User also changed title to "The Unbearable Lightness of Prompting" - this will be reverted to original title. If they want to keep the new title, they can re-edit after restoration.
-      - Commit: `fix: Restore corrupted what-we-lose post from git history`
+        - Title should still be "The Unbearable Lightness of Prompting" (user's edit preserved)
+      - Commit: `fix: Convert corrupted post from HTML to markdown`
 
 - [x] **CRITICAL: Fix save API - TOC disappears after save**
       - **Problem:** After saving changes, TOC disappears because headings are corrupted
