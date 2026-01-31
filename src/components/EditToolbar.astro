@@ -5,11 +5,11 @@
 <div id="edit-toolbar" class="edit-toolbar" style="display: none;">
   <button data-command="bold" title="Bold (Ctrl+B)"><strong>B</strong></button>
   <button data-command="italic" title="Italic (Ctrl+I)"><em>I</em></button>
-  <button data-command="createLink" title="Add Link (Ctrl+K)">🔗</button>
-  <button data-command="formatBlock" data-value="h2" title="Heading 2">H2</button>
-  <button data-command="formatBlock" data-value="h3" title="Heading 3">H3</button>
-  <button data-command="insertUnorderedList" title="Bullet List">• List</button>
-  <button data-command="formatBlock" data-value="pre" title="Code Block">Code</button>
+  <button data-command="createLink" title="Add Link (Ctrl+K)">L</button>
+  <button data-command="formatBlock" data-value="h2" title="Heading 2">2</button>
+  <button data-command="formatBlock" data-value="h3" title="Heading 3">3</button>
+  <button data-command="insertUnorderedList" title="Bullet List">•</button>
+  <button data-command="formatBlock" data-value="pre" title="Code Block">&lt;&gt;</button>
 </div>
 
 <script>
@@ -35,8 +35,8 @@
       toolbar.style.display = 'flex';
       toolbar.style.flexDirection = 'column'; // Vertical stack
       toolbar.style.top = `${rect.top + window.scrollY}px`; // Inline with selection
-      toolbar.style.left = `${contentRect.left - 60}px`; // 60px to left of content
-      toolbar.style.transform = 'none'; // Remove centering transform
+      toolbar.style.left = `${contentRect.left - 36}px`; // Position in left margin
+      toolbar.style.transform = 'translateX(-100%)'; // Push fully left of anchor point
 
       // Update button active states
       updateToolbarState(toolbar);
@@ -112,30 +112,30 @@
     position: absolute;
     background: var(--color-background);
     border: 1px solid var(--color-border);
-    border-radius: 8px;
-    padding: 0.5rem;
+    border-radius: 4px;
+    padding: 0.2rem;
     display: flex;
-    flex-direction: column; /* Stack buttons vertically */
-    gap: 0.5rem; /* Space between buttons */
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    flex-direction: column;
+    gap: 0.15rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
     z-index: 1000;
-    width: auto; /* Let buttons determine width */
   }
 
   .edit-toolbar button {
     background: transparent;
     border: none;
-    padding: 0.5rem; /* Square buttons */
-    min-width: 2.5rem; /* Consistent width */
-    min-height: 2.5rem; /* Square shape */
-    border-radius: 4px;
+    padding: 0.2rem;
+    width: 1.4rem;
+    height: 1.4rem;
+    border-radius: 3px;
     cursor: pointer;
-    font-size: 0.85rem; /* Slightly smaller */
+    font-size: 0.65rem;
     color: var(--color-text);
     transition: background 0.2s;
     display: flex;
     align-items: center;
     justify-content: center;
+    line-height: 1;
   }
 
   .edit-toolbar button:hover {
