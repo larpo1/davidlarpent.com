@@ -27,13 +27,16 @@
         return;
       }
 
-      // Position toolbar above selection
+      // Position toolbar to the LEFT of content, inline with selection
       const range = selection.getRangeAt(0);
       const rect = range.getBoundingClientRect();
+      const contentRect = contentEditable.getBoundingClientRect();
+
       toolbar.style.display = 'flex';
-      toolbar.style.top = `${rect.top + window.scrollY - 50}px`;
-      toolbar.style.left = `${rect.left + rect.width / 2}px`;
-      toolbar.style.transform = 'translateX(-50%)';
+      toolbar.style.flexDirection = 'column'; // Vertical stack
+      toolbar.style.top = `${rect.top + window.scrollY}px`; // Inline with selection
+      toolbar.style.left = `${contentRect.left - 60}px`; // 60px to left of content
+      toolbar.style.transform = 'none'; // Remove centering transform
 
       // Update button active states
       updateToolbarState(toolbar);
@@ -112,20 +115,27 @@
     border-radius: 8px;
     padding: 0.5rem;
     display: flex;
-    gap: 0.25rem;
+    flex-direction: column; /* Stack buttons vertically */
+    gap: 0.5rem; /* Space between buttons */
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
     z-index: 1000;
+    width: auto; /* Let buttons determine width */
   }
 
   .edit-toolbar button {
     background: transparent;
     border: none;
-    padding: 0.5rem 0.75rem;
+    padding: 0.5rem; /* Square buttons */
+    min-width: 2.5rem; /* Consistent width */
+    min-height: 2.5rem; /* Square shape */
     border-radius: 4px;
     cursor: pointer;
-    font-size: 0.9rem;
+    font-size: 0.85rem; /* Slightly smaller */
     color: var(--color-text);
     transition: background 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .edit-toolbar button:hover {

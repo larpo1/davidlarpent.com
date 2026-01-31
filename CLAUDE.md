@@ -25,7 +25,7 @@
 
 ## Current Tasks
 
-- [ ] **Redesign toolbar - vertical layout in left margin**
+- [x] **Redesign toolbar - vertical layout in left margin**
       - **Current issue:** Toolbar is horizontal, appears above text, covers the selection
       - **New design:**
         - Position toolbar to the LEFT of content block
