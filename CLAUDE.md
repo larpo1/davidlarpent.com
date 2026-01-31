@@ -25,7 +25,7 @@
 
 ## Current Tasks
 
-- [ ] **Convert corrupted post file from HTML to markdown**
+- [x] **Convert corrupted post file from HTML to markdown**
       - **Problem:** `what-we-lose-when-we-stop-struggling.md` was corrupted by saves before API fix
       - **Issue:** File contains HTML instead of markdown, causing TOC to not render
       - **User wants:** Keep edits (title change, etc), just convert HTML to markdown
