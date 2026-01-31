@@ -25,6 +25,27 @@
 
 ## Current Tasks
 
+- [ ] **Restore corrupted post file**
+      - **Problem:** `what-we-lose-when-we-stop-struggling.md` was corrupted by saves before API fix
+      - **Issue:** File contains HTML instead of markdown, causing TOC to not render
+      - **Fix:** Restore clean version from git history
+      - **Command:**
+        ```bash
+        git checkout 465ff30 -- src/content/posts/what-we-lose-when-we-stop-struggling.md
+        ```
+      - **Then commit:**
+        ```bash
+        git add src/content/posts/what-we-lose-when-we-stop-struggling.md
+        git commit -m "fix: Restore corrupted what-we-lose post from git history"
+        git push
+        ```
+      - **Verify:**
+        - Visit `/posts/what-we-lose-when-we-stop-struggling/` in dev mode
+        - TOC should now be visible with proper headings
+        - File should have markdown headings (## Heading) not HTML (<h2>)
+      - **Note:** User also changed title to "The Unbearable Lightness of Prompting" - this will be reverted to original title. If they want to keep the new title, they can re-edit after restoration.
+      - Commit: `fix: Restore corrupted what-we-lose post from git history`
+
 - [x] **CRITICAL: Fix save API - TOC disappears after save**
       - **Problem:** After saving changes, TOC disappears because headings are corrupted
       - **Root cause:** API comment says "Content is already markdown from Tiptap" (line 86) but we removed Tiptap
