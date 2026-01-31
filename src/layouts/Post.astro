@@ -2,6 +2,7 @@
 import Base from './Base.astro';
 import TableOfContents from '../components/TableOfContents.astro';
 import EditSettingsModal from '../components/EditSettingsModal.astro';
+import EditToolbar from '../components/EditToolbar.astro';
 
 interface Props {
   title: string;
@@ -54,6 +55,7 @@ const formattedDate = date.toLocaleDateString('en-US', {
 
     {isDev && (
       <>
+        <EditToolbar />
         <div class="edit-controls">
           <span class="save-status"></span>
           <button class="settings-button" title="Post settings">
