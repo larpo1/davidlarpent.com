@@ -28,7 +28,7 @@ export const POST: APIRoute = async ({ request }) => {
 
   try {
     const body = await request.json();
-    const { slug, title, description, content, frontmatter } = body;
+    const { slug, newSlug, title, description, content, frontmatter } = body;
 
     // Validate slug exists
     if (!slug || typeof slug !== 'string') {
@@ -46,9 +46,26 @@ export const POST: APIRoute = async ({ request }) => {
       );
     }
 
+    // Validate newSlug if provided
+    if (newSlug) {
+      if (typeof newSlug !== 'string' || !/^[a-z0-9-]+$/.test(newSlug)) {
+        return new Response(
+          JSON.stringify({ success: false, message: 'Invalid new slug: must be lowercase letters, numbers, and hyphens only' }),
+          { status: 400, headers: { 'Content-Type': 'application/json' } }
+        );
+      }
+      if (newSlug.includes('..') || newSlug.includes('/') || newSlug.includes('\\')) {
+        return new Response(
+          JSON.stringify({ success: false, message: 'Invalid new slug: path traversal not allowed' }),
+          { status: 400, headers: { 'Content-Type': 'application/json' } }
+        );
+      }
+    }
+
     // Build file path
     const postsDir = path.join(process.cwd(), 'src', 'content', 'posts');
     const filePath = path.join(postsDir, `${slug}.md`);
+    const newFilePath = newSlug ? path.join(postsDir, `${newSlug}.md`) : filePath;
 
     // Check if file exists
     try {
@@ -58,6 +75,19 @@ export const POST: APIRoute = async ({ request }) => {
         JSON.stringify({ success: false, message: `Post not found: ${slug}` }),
         { status: 404, headers: { 'Content-Type': 'application/json' } }
       );
+    }
+
+    // Check if new slug already exists (if renaming)
+    if (newSlug && newSlug !== slug) {
+      try {
+        await fs.access(newFilePath);
+        return new Response(
+          JSON.stringify({ success: false, message: `A post with slug "${newSlug}" already exists` }),
+          { status: 409, headers: { 'Content-Type': 'application/json' } }
+        );
+      } catch {
+        // Good - new slug doesn't exist yet
+      }
     }
 
     // Read existing file
@@ -80,11 +110,11 @@ export const POST: APIRoute = async ({ request }) => {
       }
     }
 
-    // Update content if provided (now receives markdown directly from Tiptap)
+    // Update content if provided (convert HTML to Markdown using turndown)
     let newContent = parsed.content;
     if (content !== undefined && content !== null) {
-      // Content is already markdown from Tiptap - no conversion needed!
-      newContent = content;
+      // Convert HTML content to Markdown using turndown
+      let convertedContent = turndown.turndown(content);
 
       // Footnote preservation logic
       const footnoteRefRegex = /\[\^(\d+)\]/g;
@@ -95,18 +125,25 @@ export const POST: APIRoute = async ({ request }) => {
       const originalFootnoteDefs = [...parsed.content.matchAll(footnoteDefsRegex)];
 
       // If original had footnotes but new content doesn't, preserve them
-      if (originalFootnoteRefs.length > 0 && !content.includes('[^')) {
+      if (originalFootnoteRefs.length > 0 && !convertedContent.includes('[^')) {
         // Append original footnotes
         const footnoteSection = originalFootnoteDefs.map(match => match[0]).join('\n\n');
-        newContent = content + '\n\n' + footnoteSection;
+        convertedContent = convertedContent + '\n\n' + footnoteSection;
       }
+
+      newContent = convertedContent;
     }
 
     // Stringify back to markdown with frontmatter
     const output = matter.stringify(newContent, parsed.data);
 
-    // Write file
-    await fs.writeFile(filePath, output, 'utf-8');
+    // Write file (to new path if renaming)
+    await fs.writeFile(newFilePath, output, 'utf-8');
+
+    // Delete old file if renaming
+    if (newSlug && newSlug !== slug) {
+      await fs.unlink(filePath);
+    }
 
     return new Response(
       JSON.stringify({ success: true, message: 'Post saved successfully' }),

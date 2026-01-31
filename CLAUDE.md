@@ -25,7 +25,7 @@
 
 ## Current Tasks
 
-- [ ] **CRITICAL: Fix save API - TOC disappears after save**
+- [x] **CRITICAL: Fix save API - TOC disappears after save**
       - **Problem:** After saving changes, TOC disappears because headings are corrupted
       - **Root cause:** API comment says "Content is already markdown from Tiptap" (line 86) but we removed Tiptap
         - contenteditable sends HTML: `<h2>My Heading</h2>`
@@ -65,7 +65,7 @@
         5. Check .md file - headings should be `## Heading` not `<h2>Heading</h2>`
       - Commit: `fix: Re-enable HTML→Markdown conversion in save API`
 
-- [ ] **Add slug field to settings modal**
+- [x] **Add slug field to settings modal**
       - **Problem:** User changed title, but slug (URL) didn't change
       - **Expected behavior:** Slug should NOT auto-change (would break links)
       - **Solution:** Add slug field to settings modal so users can manually change it
@@ -103,7 +103,7 @@
         - Old URL should 404
       - Commit: `feat: Add slug editor to settings modal`
 
-- [ ] **Polish settings/save button styling**
+- [x] **Polish settings/save button styling**
       - **Problem:** User says buttons are "ugly and agricultural"
       - **Current design:** Gear icon and save icon in bottom-right corner
       - **Review current styling:**
