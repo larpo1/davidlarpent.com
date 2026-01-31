@@ -25,95 +25,194 @@
 
 ## Current Tasks
 
-- [ ] **Fix Tiptap initialization - title and description showing duplicated**
-      - **Problem:** Title and description appear twice on the page in dev mode
-      - **Root cause:**
-        - Ralph is rendering content with `<Fragment set:html={initialContent} />`
-        - For title/description, `initialContent` is plain text (not HTML)
-        - Tiptap initializes, sees plain text, wraps it in `<p>` tag
-        - Original text node is still there → duplication
-      - **Solution:** Wrap plain text in proper HTML before rendering, OR pass content to Tiptap instead
-      - **Option A (Recommended):** Pass content to Tiptap, don't render in div
+- [ ] **Remove Tiptap, revert to contenteditable**
+      - **Decision:** Tiptap is too complex for this use case. Going back to simple contenteditable with toolbar.
+      - **What to do:**
+        1. Delete `src/components/TiptapEditor.astro`
+        2. Uninstall Tiptap packages: `npm uninstall @tiptap/core @tiptap/starter-kit @tiptap/extension-link @tiptap/extension-placeholder tiptap-markdown`
+        3. Restore contenteditable approach in `src/layouts/Post.astro`:
+           ```astro
+           <h1 class="post-title" contenteditable={isDev} data-field="title">{title}</h1>
+           <p class="post-description" contenteditable={isDev} data-field="description">{description}</p>
+           <div class="post-content" contenteditable={isDev} data-field="content">
+             <slot />
+           </div>
+           ```
+        4. Remove Tiptap CSS from `src/styles/global.css` (keep contenteditable styles)
+      - **Files to modify:**
+        - Delete: `src/components/TiptapEditor.astro`
+        - Restore: `src/layouts/Post.astro` (revert to contenteditable)
+        - Clean: `src/styles/global.css` (remove Tiptap styles, keep contenteditable styles)
+        - Update: `package.json` (remove Tiptap deps)
+      - **Test:** Visit /posts/ralph-loops/ - should see normal content, editable with contenteditable
+      - Commit: `refactor: Remove Tiptap, revert to contenteditable approach`
+
+- [ ] **Create floating WYSIWYG toolbar component**
+      - **What:** Build a simple toolbar that appears when text is selected, uses browser execCommand
+      - **Create:** `src/components/EditToolbar.astro`
+      - **Structure:**
         ```astro
-        <div
-          id={editorId}
-          class={`tiptap-editor tiptap-${fieldName}`}
-          data-field={fieldName}
-          data-single-line={singleLine}
-          data-placeholder={placeholder}
-          data-initial-content={initialContent}
-        >
-          <!-- Empty - Tiptap will populate -->
+        <div id="edit-toolbar" class="edit-toolbar" style="display: none;">
+          <button data-command="bold" title="Bold (Ctrl+B)"><strong>B</strong></button>
+          <button data-command="italic" title="Italic (Ctrl+I)"><em>I</em></button>
+          <button data-command="createLink" title="Add Link (Ctrl+K)">🔗</button>
+          <button data-command="formatBlock" data-value="h2" title="Heading 2">H2</button>
+          <button data-command="formatBlock" data-value="h3" title="Heading 3">H3</button>
+          <button data-command="insertUnorderedList" title="Bullet List">• List</button>
+          <button data-command="formatBlock" data-value="pre" title="Code Block">Code</button>
         </div>
-        ```
-        Then in script: `content: element.getAttribute('data-initial-content')`
-      - **Option B:** Wrap plain text in HTML tags before rendering
-        ```astro
-        {fieldName === 'content' ? (
-          <Fragment set:html={initialContent} />
-        ) : (
-          <p>{initialContent}</p>
-        )}
-        ```
-      - **Files to modify:** `src/components/TiptapEditor.astro`
-      - **Test:** Visit /posts/ralph-loops/ - title, description, content should each appear once
-      - Commit: `fix: Prevent duplication by passing content to Tiptap correctly`
 
-- [ ] **Fix Tiptap toolbar not appearing**
-      - **Problem:** Toolbar doesn't show when selecting text
-      - **Possible causes:**
-        1. Tiptap not initializing (blocked by previous task)
-        2. Toolbar positioning logic broken
-        3. JavaScript errors preventing initialization
-      - **Debug steps:**
-        1. Open browser console on /posts/ralph-loops/
-        2. Check for JavaScript errors (especially Tiptap import errors)
-        3. Check if `window.editors` object exists
-        4. Try selecting text and check if `onUpdate` event fires
-      - **Fix:**
-        - Ensure Tiptap initializes successfully
-        - Fix toolbar positioning (may need to use `getBoundingClientRect()` instead of `coordsAtPos`)
-        - Add console.log to debug toolbar show/hide logic
-      - **Files:** `src/components/TiptapEditor.astro`
-      - **Test:** Select text in content editor - toolbar should appear above selection
-      - Commit: `fix: Tiptap toolbar positioning and visibility`
+        <script>
+          document.addEventListener('DOMContentLoaded', () => {
+            const toolbar = document.getElementById('edit-toolbar');
+            const contentEditable = document.querySelector('[data-field="content"]');
 
-- [ ] **Document TOC limitation in dev mode**
-      - **Problem:** TOC links don't work in dev mode because heading IDs don't exist when content is inside Tiptap editor
-      - **Solution:** Accept limitation, add visual notice in dev mode
-      - **Implementation:**
-        - Add a small notice near TOC in dev mode: "Note: TOC links disabled during editing"
-        - Style it subtly (small text, muted color)
-        - TOC still shows structure, just doesn't scroll
-        - This is acceptable for dev-only feature
-      - **Files:** `src/components/TableOfContents.astro`
-      - **Example:**
-        ```astro
-        {isDev && (
-          <p class="toc-dev-notice">Note: TOC links disabled during editing</p>
-        )}
+            // Show toolbar on text selection
+            document.addEventListener('selectionchange', () => {
+              const selection = window.getSelection();
+              if (!selection || selection.isCollapsed || !contentEditable.contains(selection.anchorNode)) {
+                toolbar.style.display = 'none';
+                return;
+              }
+
+              // Position toolbar above selection
+              const range = selection.getRangeAt(0);
+              const rect = range.getBoundingClientRect();
+              toolbar.style.display = 'flex';
+              toolbar.style.top = `${rect.top + window.scrollY - 50}px`;
+              toolbar.style.left = `${rect.left + rect.width / 2}px`;
+              toolbar.style.transform = 'translateX(-50%)';
+
+              // Update button active states
+              updateToolbarState(toolbar);
+            });
+
+            // Handle toolbar button clicks
+            toolbar.addEventListener('click', (e) => {
+              const button = e.target.closest('button');
+              if (!button) return;
+
+              const command = button.getAttribute('data-command');
+              const value = button.getAttribute('data-value');
+
+              if (command === 'createLink') {
+                const url = prompt('Enter URL:');
+                if (url) document.execCommand(command, false, url);
+              } else if (value) {
+                document.execCommand(command, false, value);
+              } else {
+                document.execCommand(command, false, null);
+              }
+
+              updateToolbarState(toolbar);
+            });
+          });
+
+          function updateToolbarState(toolbar) {
+            toolbar.querySelectorAll('button').forEach(button => {
+              const command = button.getAttribute('data-command');
+              const isActive = document.queryCommandState(command);
+              button.classList.toggle('is-active', isActive);
+            });
+          }
+        </script>
+
+        <style>
+          .edit-toolbar {
+            position: absolute;
+            background: var(--color-background);
+            border: 1px solid var(--color-border);
+            border-radius: 8px;
+            padding: 0.5rem;
+            display: flex;
+            gap: 0.25rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+          }
+
+          .edit-toolbar button {
+            background: transparent;
+            border: none;
+            padding: 0.5rem 0.75rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            color: var(--color-text);
+            transition: background 0.2s;
+          }
+
+          .edit-toolbar button:hover {
+            background: var(--color-code-bg);
+          }
+
+          .edit-toolbar button.is-active {
+            background: var(--color-link);
+            color: white;
+          }
+        </style>
         ```
-      - **CSS:** `.toc-dev-notice { font-size: 0.75rem; color: var(--color-text-light); opacity: 0.7; }`
-      - **Test:** Visit post in dev mode, should see notice near TOC
-      - Commit: `fix: Add notice about TOC limitation in dev mode`
+      - **Include in:** `src/layouts/Post.astro` (inside the dev mode block, after edit controls)
+      - **Test:**
+        - Select text in content area
+        - Toolbar should appear above selection
+        - Click Bold - text becomes bold
+        - Click Italic - text becomes italic
+        - Click Link - prompts for URL, creates link
+      - Commit: `feat: Add floating WYSIWYG toolbar with execCommand`
 
-- [ ] **Verify markdown export is working**
-      - **After previous fixes:**
-        - Make an edit in title, description, content
-        - Add some bold text, italic text, a link
-        - Click save
-        - Check the .md file to ensure markdown is correct (not HTML)
-        - Verify `**bold**`, `*italic*`, `[link](url)` syntax
-      - **If markdown export broken:**
-        - Check if `tiptap-markdown` extension is configured correctly
-        - Verify `editor.storage.markdown.getMarkdown()` is being called
-        - Check browser console for errors
-      - **Test with footnotes:**
-        - Edit ralph-loops post (has footnotes)
-        - Make changes around footnotes
-        - Save and verify footnotes preserved
-      - **Files:** `src/components/TiptapEditor.astro`, `src/layouts/Post.astro`
-      - Commit: `fix: Ensure markdown export working correctly`
+- [ ] **Add keyboard shortcuts for toolbar commands**
+      - **What:** Ctrl+B for bold, Ctrl+I for italic, Ctrl+K for link
+      - **Where:** Add to the EditToolbar.astro script or Post.astro script
+      - **Code:**
+        ```javascript
+        document.addEventListener('keydown', (e) => {
+          if (!e.ctrlKey && !e.metaKey) return;
+
+          const contentEditable = document.querySelector('[data-field="content"]');
+          if (!contentEditable.contains(document.activeElement)) return;
+
+          switch(e.key.toLowerCase()) {
+            case 'b':
+              e.preventDefault();
+              document.execCommand('bold');
+              break;
+            case 'i':
+              e.preventDefault();
+              document.execCommand('italic');
+              break;
+            case 'k':
+              e.preventDefault();
+              const url = prompt('Enter URL:');
+              if (url) document.execCommand('createLink', false, url);
+              break;
+          }
+        });
+        ```
+      - **Test:**
+        - Select text, press Ctrl+B - should become bold
+        - Press Ctrl+I - should become italic
+        - Press Ctrl+K - should prompt for URL
+      - Commit: `feat: Add keyboard shortcuts for formatting (Ctrl+B/I/K)`
+
+- [ ] **Test and verify all functionality**
+      - **Tests:**
+        1. Visit /posts/ralph-loops/ in dev mode
+        2. Edit title - should work, no duplication
+        3. Edit description - should work
+        4. Edit content - should work
+        5. Select text - toolbar appears
+        6. Click Bold - text becomes bold
+        7. Click Italic - text becomes italic
+        8. Click Link - prompts for URL, creates link
+        9. Click H2 - becomes heading 2
+        10. Click save - should save correctly
+        11. Check .md file - should have markdown (not HTML)
+        12. Reload - changes should persist
+        13. Footnotes should be non-editable (faded)
+        14. Footnotes should be preserved after save
+      - **Run:** `npm run build` - must pass
+      - **Run:** `npm test` - should pass (may need to update some tests)
+      - Commit: `test: Verify all editing functionality works`
 
 ---
 

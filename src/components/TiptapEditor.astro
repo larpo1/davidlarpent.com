@@ -15,11 +15,8 @@ const editorId = `editor-${fieldName}`;
   class={`tiptap-editor tiptap-${fieldName}`}
   data-field={fieldName}
   data-single-line={singleLine}
-  data-initial-content={initialContent}
   data-placeholder={placeholder}
->
-  <!-- Tiptap will mount here -->
-</div>
+>{singleLine ? <p>{initialContent}</p> : <Fragment set:html={initialContent} />}</div>
 
 {fieldName === 'content' && (
   <div id="editor-toolbar" class="editor-toolbar" style="display: none;">
@@ -181,8 +178,9 @@ const editorId = `editor-${fieldName}`;
     editorElements.forEach((element) => {
       const fieldName = element.getAttribute('data-field') as string;
       const singleLine = element.getAttribute('data-single-line') === 'true';
-      const initialContent = element.getAttribute('data-initial-content') || '';
       const placeholderText = element.getAttribute('data-placeholder') || 'Type something...';
+      // Read the server-rendered HTML content before Tiptap replaces it
+      const initialContent = element.innerHTML.trim();
 
       // Configure extensions
       const extensions = [
@@ -206,14 +204,18 @@ const editorId = `editor-${fieldName}`;
         Placeholder.configure({
           placeholder: placeholderText,
         }),
-        Markdown.configure({
-          html: false,
-          transformCopiedText: true,
-        }),
+        // Markdown extension commented out for testing - may interfere with HTML parsing
+        // Markdown.configure({
+        //   html: true,
+        //   transformCopiedText: true,
+        // }),
         FootnoteReference, // Custom footnote node
       ];
 
-      // Create editor instance
+      // Clear element before Tiptap mounts (we've already captured the content)
+      element.innerHTML = '';
+
+      // Create editor instance with the captured HTML content
       const editor = new Editor({
         element: element as HTMLElement,
         extensions: extensions,
