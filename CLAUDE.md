@@ -25,7 +25,7 @@
 
 ## Current Tasks
 
-- [ ] **Add Google Analytics to all pages**
+- [x] **Add Google Analytics to all pages**
       - **What:** Add Google Analytics tracking snippet to site-wide layout
       - **Snippet:**
         ```html
