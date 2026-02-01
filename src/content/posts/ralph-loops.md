@@ -4,15 +4,15 @@ date: 2026-01-30T00:00:00.000Z
 description: Or how to run Claude Code like a sweatshop
 draft: false
 ---
-There's a technique doing the rounds called "Ralph Wiggum loops."[^1] Named after the Simpsons character who keeps trying despite overwhelming evidence that he should stop.
+There’s a technique doing the rounds called “Ralph Wiggum loops.” Named after the Simpsons character who keeps trying despite overwhelming evidence that he should stop.
 
-The idea is that you spin up one Claude Code instance as your PM to work on tasks, todos, docs and tests, and then a second Claude Code instance which you run in a bash loop, picking tasks, executing, going again. 
+The idea is that you spin up one Claude Code instance as your PM to work on tasks, todos, docs and tests and limit it to iteratively update only a CLAUDE.md file. You then spin up a second Claude Code instance (Ralph) which you run in a bash loop, picking tasks, executing, going again. 
 
 I’ve been playing with this. It’s fun. 
 
 * * *
 
-## What We’re Actually Talking About
+## The basic setup
 
 At its most basic:
 
@@ -28,17 +28,17 @@ Someone made a plugin for this. Because of course they did.
 
 * * *
 
-## "Pretengineering"
+## ”Pretengineering”
 
-You heard it here first. OK fine. "Vibe Coding". Whatever. 
+You heard it here first. OK fine. “Vibe Coding”. Whatever. 
 
 You’re asking an AI to do work. It does some work. Then it tries to leave. You don’t let it leave. It sighs and does more work. This continues until either success or you run out of money.
 
-This is how you train a puppy, or solve a Rubik’s cube by randomly turning bits 'til the colours line up.
+This is how you train a puppy, or solve a Rubik’s cube by randomly turning bits ‘til the colours line up.
 
 * * *
 
-## The Actual How-To
+## How to start
 
 ### Option 1: Artisanal Hand-Crafted Loop
 
@@ -74,35 +74,19 @@ The `--max-iterations` is important unless you enjoy explaining large API bills 
 
 Chris MDP has a [whole system](https://github.com/chrismdp/ralph) with work queues, separate PM sessions, git worktrees for parallel execution…
 
-At this point you're building infrastructure to manage your AI that's building infrastructure for you. It's loops all the way down.[^2]
+At this point you’re building infrastructure to manage your AI that’s building infrastructure for you. It’s loops all the way down.
 
 * * *
 
-## When This Actually Works
+## When This Works
 
 The sweet spot is narrower than the hype suggests.
 
 **Works:** Clear success criteria, automated verification, you can walk away, scope is contained.
 
-“Make the tests pass” is a good Ralph task. “Make the architecture elegant” is how you get a codebase that looks like it was designed by a committee of sleep-deprived raccoons.
+“Make the tests pass” is a good Ralph task. “Make the architecture elegant” is how you get a codebase that looks like it was designed by a committee of sleep-deprived squirrels.
 
 **Doesn’t work:** Design judgment, subjective quality, tight deadlines, anything going near production.
-
-I cannot stress this enough: I am not shipping Ralph-generated code to real users without reading every line. This is a toy. A very interesting toy. But a toy.
-
-* * *
-
-## The Prompt Is The Product
-
-Here’s what I’ve actually learned.
-
-Your prompt is executable now. If you write vague instructions, you get vague code. If you write precise instructions, you get precise code. The mapping is uncomfortably direct.
-
-This means all the things you were too lazy to specify? Claude will make those decisions for you. Naming conventions. Error handling. Whether to use tabs or spaces. (It’s spaces. Claude is not a monster.)
-
-I’ve found myself writing documentation I never would have written before. Not for humans. For the robot. “When building API endpoints, use this pattern. When handling errors, do it this way. When you’re stuck, here’s what to try.”
-
-I’m essentially writing a training manual for a junior developer who has infinite patience and no judgment.
 
 * * *
 
@@ -114,53 +98,25 @@ Thirty seconds into its planning role, mine was already writing React components
 
 The fix is a `PM.md` file that repeatedly insists it stay in its lane. Even then, it drifts. Some things are universal.
 
-* * *
-
-## What It Feels Like
-
-There’s something strange about walking away from your computer while code writes itself.
-
-Part of me loves it. I went to make dinner. When I came back, there was a working feature. I didn’t write it, but I specified it, reviewed it, and shipped it. Is this what being a manager feels like?
-
-Part of me finds it unsettling. I used to know every line of my codebases. Now I review code that a robot wrote based on instructions I wrote. The authorship question gets weird fast.
-
-And part of me just thinks it’s funny. We’ve built a system where persistence beats intelligence. Ralph Wiggum, the character who eats paste and thinks the leprechaun tells him to burn things, is now a software development methodology.
-
-We’re through the looking glass, people.
-
-* * *
-
 ## Honest Caveats
 
-**This burns money.** Running Claude in a loop for hours is not cheap. One practitioner reported exhausting their monthly API allocation in a single afternoon.[^3] Budget accordingly.
+**This burns money.** Running Claude in a loop for hours is not cheap. Budget accordingly.
 
-**The code needs review.** It works, in the sense that the tests pass. Whether it’s _good_ code is a separate question that requires human eyes.
+**The code needs review.** It works, in the sense that the tests pass. Whether it’s _good_ code is a separate question.
 
-**It’s not pair programming.** I miss the back-and-forth of working with another human. Ralph doesn’t push back on your ideas or suggest better approaches. It just… does what you said, over and over, until something works.
-
-**It doesn’t belong in production.** Yet. Maybe ever. I’m not willing to bet my company on code I didn’t understand while it was being written.
+**It’s not pair programming.** Ralph doesn’t push back on your ideas or suggest better approaches. It just… does what you said, over and over, until something works.
 
 * * *
 
 ## So Why Bother?
 
-Because it’s genuinely fun.
+Because it’s fun.
 
 Because there’s something delightful about waking up to a feature that didn’t exist when you went to sleep.
 
 Because it forces you to think clearly about what you actually want, which turns out to be useful even when humans are writing the code.
 
-And because I suspect this is a preview of something. I don’t know what exactly. But the fact that “put the AI in a loop until it works” is a viable strategy tells us something about where we are.
-
-Two years ago this would have produced garbage. Now it produces… mostly working code that sometimes solves problems correctly.
-
-The trajectory is interesting. Where it lands, I genuinely don’t know.
-
-In the meantime, I’m going to keep playing with it. Responsibly. On side projects. With extensive code review.
-
-And a healthy sense of the absurd.
-
-* * *
+And because I suspect this is a preview of something. Two years ago this would have produced garbage. Now it produces… something.
 
 [^1]: The technique and plugin are documented at [awesomeclaude.ai/ralph-wiggum](https://awesomeclaude.ai/ralph-wiggum). The name references Ralph Wiggum from The Simpsons, a character whose defining trait is cheerful persistence despite consistent failure.
 
