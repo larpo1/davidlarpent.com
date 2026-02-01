@@ -25,6 +25,49 @@
 
 ## Current Tasks
 
+- [ ] **Add Google Analytics to all pages**
+      - **What:** Add Google Analytics tracking snippet to site-wide layout
+      - **Snippet:**
+        ```html
+        <!-- Google tag (gtag.js) -->
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-M2Q4Q201KD"></script>
+        <script>
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+
+          gtag('config', 'G-M2Q4Q201KD');
+        </script>
+        ```
+      - **Where to add:** `src/layouts/Base.astro` in the `<head>` section
+      - **Implementation:**
+        - Open `src/layouts/Base.astro`
+        - Add snippet at the end of `<head>`, before `</head>`
+        - Should appear on all pages (index, about, posts, drafts)
+      - **Optional improvement:** Only load in production (not dev)
+        ```astro
+        {!import.meta.env.DEV && (
+          <>
+            <!-- Google tag (gtag.js) -->
+            <script async src="https://www.googletagmanager.com/gtag/js?id=G-M2Q4Q201KD"></script>
+            <script is:inline>
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+
+              gtag('config', 'G-M2Q4Q201KD');
+            </script>
+          </>
+        )}
+        ```
+      - **Files:** `src/layouts/Base.astro`
+      - **Test:**
+        - Run `npm run build`
+        - Deploy to production
+        - Visit site, check browser console/network tab for gtag.js request
+        - Verify Google Analytics dashboard receives pageviews
+      - Commit: `feat: Add Google Analytics tracking`
+
 - [x] **Convert corrupted post file from HTML to markdown**
       - **Problem:** `what-we-lose-when-we-stop-struggling.md` was corrupted by saves before API fix
       - **Issue:** File contains HTML instead of markdown, causing TOC to not render
