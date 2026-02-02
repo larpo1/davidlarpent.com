@@ -78,7 +78,7 @@ If you’re raising kids, you’re deciding what struggles to protect. Your chil
 
 That the point of writing is to have written?
 
-## A personal manifesto
+## A Struggle Manifesto
 
 I don’t think there’s one right answer. Different people, different teams, different cultures will draw the line in different places. But I think we need to draw it consciously, rather than letting the logic of efficiency draw it for us.
 
