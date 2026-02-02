@@ -20,7 +20,7 @@ Most decisions benefit from sitting with them. Turning them over. Feeling the fr
 
 These decisions don’t need speed. They need the slow work of judgment forming. And judgment doesn’t form when you skip to the answer.
 
-The Anthropic study makes this concrete. Developers who let AI do the thinking finished a bit faster. But when tested on what they’d learned minutes later, they were hopeless. The gap was biggest on debugging questions. The exact skill you need when something goes wrong.
+The Anthropic study makes a sharp point. This study in Nature drives it home: "[Human-generative AI collaboration enhances task performance but undermines human’s intrinsic motivation](https://www.nature.com/articles/s41598-025-98385-2)". Uff.
 
 ## The Formation Problem
 
