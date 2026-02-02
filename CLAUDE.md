@@ -266,7 +266,7 @@ Before marking ANY test task [x] complete, you MUST:
       - **Files:** src/components/EditToolbar.astro
       - **Commit:** See below
 
-- [ ] **URGENT: EditToolbar STILL not working - investigate properly** 🚨 BLOCKING
+- [x] **URGENT: EditToolbar STILL not working - investigate properly** 🚨 FIXED
       - **Problem:** User still cannot see toolbar when highlighting text
       - **Ralph's previous fix didn't work**
       - **This is BLOCKING content editing - highest priority**
