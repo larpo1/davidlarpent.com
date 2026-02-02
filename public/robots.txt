@@ -1,0 +1,64 @@
+# robots.txt for davidlarpent.com
+# Welcoming all crawlers, especially AI/LLM crawlers
+
+# Allow all bots to crawl everything
+User-agent: *
+Allow: /
+
+# Block dev-only API endpoints (even though they return 403 in production)
+Disallow: /api/
+
+# Sitemap location
+Sitemap: https://davidlarpent.com/sitemap.xml
+
+# Explicitly allow AI/LLM crawlers
+# OpenAI (ChatGPT, GPT-4, etc.)
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+# Common Crawl (used by many AI models for training)
+User-agent: CCBot
+Allow: /
+
+# Anthropic (Claude)
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+# Perplexity
+User-agent: PerplexityBot
+Allow: /
+
+# Google (Search and Bard/Gemini)
+User-agent: Googlebot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+# Bing (Search and Copilot)
+User-agent: Bingbot
+Allow: /
+
+# Meta (Facebook, Instagram)
+User-agent: FacebookBot
+Allow: /
+
+User-agent: Facebot
+Allow: /
+
+# Twitter/X
+User-agent: Twitterbot
+Allow: /
+
+# LinkedIn
+User-agent: LinkedInBot
+Allow: /
+
+# Be respectful to servers
+Crawl-delay: 1
