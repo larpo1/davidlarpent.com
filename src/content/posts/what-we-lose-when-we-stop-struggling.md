@@ -1,7 +1,7 @@
 ---
 title: The Unbearable Lightness of Prompting
 date: 2026-01-30T00:00:00.000Z
-description: On skill atrophy and relearning how to struggle.
+description: On skill atrophy and relearning the value of struggle.
 draft: false
 tags:
   - AI
