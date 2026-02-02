@@ -4,11 +4,16 @@ import Post from '../../layouts/Post.astro';
 
 export async function getStaticPaths() {
   const allPosts = await getCollection('posts');
-  const publishedPosts = allPosts.filter(post => !post.data.draft);
 
-  return publishedPosts.map(post => {
+  // In dev: show all posts (including drafts). In prod: only published.
+  const visiblePosts = import.meta.env.DEV
+    ? allPosts
+    : allPosts.filter(post => !post.data.draft);
+
+  return visiblePosts.map(post => {
     // Find related posts (posts with at least one shared tag)
-    const relatedPosts = publishedPosts
+    // Related posts should only link to posts visible in current env
+    const relatedPosts = visiblePosts
       .filter(p => p.slug !== post.slug) // Exclude current post
       .filter(p => p.data.tags.some(tag => post.data.tags.includes(tag))) // Has shared tag
       .map(p => ({

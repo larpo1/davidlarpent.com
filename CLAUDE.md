@@ -214,59 +214,14 @@ Before marking ANY test task [x] complete, you MUST:
 
 ### Development Experience
 
-- [ ] **Show draft posts in development mode**
-      - **What:** Make draft posts viewable at their URLs during local development
-      - **Why:** Better dev experience - preview drafts without changing draft status
-      - **Current behavior:**
-        - Draft posts are filtered out in getStaticPaths
-        - Can't visit /posts/draft-slug/ even in dev mode
-        - Must set draft: false to preview, then remember to change back
-      - **Desired behavior:**
-        - Dev mode (import.meta.env.DEV): Show ALL posts (drafts + published)
-        - Production: Only published posts (current behavior)
-      - **Implementation:**
-        ```typescript
-        // src/pages/posts/[...slug].astro
-        export async function getStaticPaths() {
-          const allPosts = await getCollection('posts');
-
-          // In dev: show all posts. In prod: only published.
-          const posts = import.meta.env.DEV
-            ? allPosts
-            : allPosts.filter(post => !post.data.draft);
-
-          return posts.map(post => {
-            // Related posts should only link to posts visible in current env
-            const visiblePosts = import.meta.env.DEV
-              ? allPosts
-              : allPosts.filter(p => !p.data.draft);
-
-            const relatedPosts = visiblePosts
-              .filter(p => p.slug !== post.slug)
-              .filter(p => p.data.tags.some(tag => post.data.tags.includes(tag)))
-              .map(p => ({ ... }))
-              .sort((a, b) => b.sharedTags.length - a.sharedTags.length)
-              .slice(0, 3);
-
-            return {
-              params: { slug: post.slug },
-              props: { post, relatedPosts },
-            };
-          });
-        }
-        ```
-      - **Edge cases:**
-        - Related posts in dev mode: OK to show draft→draft links
-        - Related posts in prod: Must only link to published posts
-        - Homepage/tags: Keep current behavior (only show published)
-      - **Test:**
-        1. Set a post to draft: true
-        2. Run npm run dev
-        3. Visit /posts/draft-slug/ - should work
-        4. Run npm run build
-        5. Visit /posts/draft-slug/ in preview - should 404
+- [x] **Show draft posts in development mode**
+      - **Status:** Complete
+      - **What was done:**
+        - Updated getStaticPaths to include drafts in dev mode
+        - Production build still filters out drafts
+        - Related posts respect same visibility rules
       - **Files:** src/pages/posts/[...slug].astro
-      - **Commit:** `feat: Show draft posts in development mode`
+      - **Commit:** See below
 
 ---
 
