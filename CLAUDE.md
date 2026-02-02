@@ -25,6 +25,40 @@
 
 ## Current Tasks
 
+- [ ] **Fix EditToolbar to work on About page**
+      - **Problem:** Toolbar doesn't appear when selecting text on About page
+      - **Root cause:** EditToolbar is hard-coded to look for `[data-field="content"]` (line 18)
+        - About page uses `data-field="about"`
+        - Script can't find the element, returns early
+      - **Fix:** Make toolbar work with any contenteditable element
+      - **File:** `src/components/EditToolbar.astro`
+      - **Change on line 18:**
+        ```javascript
+        // OLD:
+        const contentEditable = document.querySelector('[data-field="content"]');
+
+        // NEW:
+        const contentEditable = document.querySelector('[contenteditable="true"][data-field]');
+        ```
+      - This will match any contenteditable element with a data-field attribute (content, about, etc.)
+      - **Also update line 70:**
+        ```javascript
+        // OLD:
+        const contentEditable = document.querySelector('[data-field="content"]');
+
+        // NEW:
+        const contentEditable = document.querySelector('[contenteditable="true"][data-field]');
+        ```
+      - **Test:**
+        1. Visit `/about` in dev mode
+        2. Select text in About content
+        3. Toolbar should appear in left margin
+        4. Format buttons should work
+        5. Visit `/posts/ralph-loops/`
+        6. Select text in post content
+        7. Toolbar should still work (regression test)
+      - Commit: `fix: Make EditToolbar work with any contenteditable field`
+
 - [x] **Make About page inline editable**
       - **What:** Make About page content editable in dev mode, just like essay content
       - **Current state:** About page content is hard-coded in `about.astro`
