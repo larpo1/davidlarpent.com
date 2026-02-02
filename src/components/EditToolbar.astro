@@ -15,7 +15,7 @@
 <script>
   document.addEventListener('DOMContentLoaded', () => {
     const toolbar = document.getElementById('edit-toolbar');
-    const contentEditable = document.querySelector('[data-field="content"]');
+    const contentEditable = document.querySelector('[contenteditable="true"][data-field]');
 
     if (!toolbar || !contentEditable) return;
 

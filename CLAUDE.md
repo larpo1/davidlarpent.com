@@ -25,7 +25,7 @@
 
 ## Current Tasks
 
-- [ ] **Fix EditToolbar to work on About page**
+- [x] **Fix EditToolbar to work on About page**
       - **Problem:** Toolbar doesn't appear when selecting text on About page
       - **Root cause:** EditToolbar is hard-coded to look for `[data-field="content"]` (line 18)
         - About page uses `data-field="about"`
