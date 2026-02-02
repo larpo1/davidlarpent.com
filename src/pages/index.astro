@@ -33,15 +33,6 @@ const websiteSchema = {
 <Base title="David Larpent">
   <script slot="head" type="application/ld+json" set:html={JSON.stringify(websiteSchema)} />
 
-  {isDev && (
-    <div class="dev-controls">
-      <label class="toggle-label">
-        <input type="checkbox" id="show-drafts" checked />
-        <span>Show drafts</span>
-      </label>
-    </div>
-  )}
-
   <ul class="post-list">
     {posts.map(post => {
       const formattedDate = post.data.date.toLocaleDateString('en-US', {
@@ -75,6 +66,16 @@ const websiteSchema = {
       );
     })}
   </ul>
+
+  {isDev && (
+    <div class="drafts-toggle">
+      <label class="toggle-pill">
+        <input type="checkbox" id="show-drafts" checked />
+        <span class="toggle-slider"></span>
+        <span class="toggle-text">Drafts</span>
+      </label>
+    </div>
+  )}
 </Base>
 
 {isDev && (
@@ -94,25 +95,71 @@ const websiteSchema = {
 )}
 
 <style>
-  .dev-controls {
-    margin-bottom: 2rem;
-    padding: 0.75rem 1rem;
-    background: var(--color-code-bg);
-    border: 1px solid var(--color-border);
-    border-radius: 6px;
-    display: inline-block;
+  .drafts-toggle {
+    position: fixed;
+    bottom: 1.5rem;
+    right: 1.5rem;
+    z-index: 100;
+    opacity: 0.7;
+    transition: opacity 0.2s;
   }
 
-  .toggle-label {
+  .drafts-toggle:hover {
+    opacity: 1;
+  }
+
+  .toggle-pill {
     display: flex;
     align-items: center;
     gap: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    background: var(--color-code-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 2rem;
     cursor: pointer;
-    font-size: 0.85rem;
-    color: var(--color-text-light);
+    transition: border-color 0.2s;
   }
 
-  .toggle-label input {
-    cursor: pointer;
+  .toggle-pill:hover {
+    border-color: var(--color-link);
+  }
+
+  .toggle-pill input[type="checkbox"] {
+    display: none;
+  }
+
+  .toggle-slider {
+    position: relative;
+    width: 2rem;
+    height: 1rem;
+    background: var(--color-border);
+    border-radius: 1rem;
+    transition: background 0.2s;
+  }
+
+  .toggle-slider::after {
+    content: '';
+    position: absolute;
+    top: 0.125rem;
+    left: 0.125rem;
+    width: 0.75rem;
+    height: 0.75rem;
+    background: var(--color-background);
+    border-radius: 50%;
+    transition: transform 0.2s;
+  }
+
+  .toggle-pill input:checked + .toggle-slider {
+    background: var(--color-link);
+  }
+
+  .toggle-pill input:checked + .toggle-slider::after {
+    transform: translateX(1rem);
+  }
+
+  .toggle-text {
+    font-size: 0.75rem;
+    color: var(--color-text-light);
+    user-select: none;
   }
 </style>

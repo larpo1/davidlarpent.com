@@ -224,12 +224,22 @@ Before marking ANY test task [x] complete, you MUST:
       - **Commit:** See below
 
 - [x] **Add "Show drafts" toggle to homepage in dev mode**
-      - **Status:** Complete
+      - **Status:** Complete but needs refinement
       - **What was done:**
         - Homepage shows all posts in dev mode (including drafts)
         - Toggle checkbox to show/hide drafts
         - Drafts marked with "Draft" badge
         - Production unchanged (only published posts)
+      - **Issue:** Control placed inline above post list (wrong location/styling)
+      - **Files:** src/pages/index.astro
+      - **Commit:** See below
+
+- [x] **FOLLOW-UP: Fix drafts toggle placement and styling**
+      - **Status:** Complete
+      - **What was done:**
+        - Moved toggle to fixed bottom-right position
+        - Implemented pill toggle control with slider
+        - Toggle starts semi-transparent, full opacity on hover
       - **Files:** src/pages/index.astro
       - **Commit:** See below
 
@@ -260,13 +270,23 @@ Before marking ANY test task [x] complete, you MUST:
 ### Design Polish
 
 - [x] **Move tags beneath TOC in TOC panel**
-      - **Status:** Complete
+      - **Status:** Complete but needs refinement
       - **What was done:**
         - Tags moved from post header to TOC sidebar
         - TableOfContents accepts tags prop
         - Tags displayed under "Topics" heading in TOC
         - Added TOC tags styling to global.css
+      - **Issue:** "Topics" heading should be removed (too formal/unnecessary)
       - **Files:** src/layouts/Post.astro, src/components/TableOfContents.astro, src/styles/global.css
+      - **Commit:** See below
+
+- [x] **FOLLOW-UP: Remove "Topics" heading from TOC tags**
+      - **Status:** Complete
+      - **What was done:**
+        - Removed "Topics" h3 heading from TOC tags section
+        - Removed unused .toc-tags-title CSS
+        - Tags now display directly with border separator
+      - **Files:** src/components/TableOfContents.astro, src/styles/global.css
       - **Commit:** See below
 
 - [x] **Only underline links in post body content**

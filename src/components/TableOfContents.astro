@@ -40,7 +40,6 @@ const tocHeadings = headings.filter(h => h.depth === 2 || h.depth === 3);
 
       {tags.length > 0 && (
         <div class="toc-tags">
-          <h3 class="toc-tags-title">Topics</h3>
           <div class="toc-tags-list">
             {tags.map(tag => (
               <a href={`/tags/${tag.toLowerCase()}`} class="toc-tag-link">
