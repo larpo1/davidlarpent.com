@@ -152,20 +152,16 @@ a:hover {
 .theme-logo {
   width: 2rem;
   height: 2rem;
-  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: filter 0.3s ease, transform 0.2s ease;
 }
 
 #theme-toggle:hover .theme-logo {
   transform: scale(1.1);
 }
 
-/* Rotate logo 180° in light mode */
-[data-theme="light"] .theme-logo {
-  transform: rotate(180deg);
-}
-
-[data-theme="light"] #theme-toggle:hover .theme-logo {
-  transform: rotate(180deg) scale(1.1);
+/* Invert logo colors in dark mode for visibility */
+[data-theme="dark"] .theme-logo {
+  filter: invert(1);
 }
 
 /* Post list */

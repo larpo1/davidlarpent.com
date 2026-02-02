@@ -290,13 +290,27 @@ Before marking ANY test task [x] complete, you MUST:
       - **Commit:** See below
 
 - [x] **Replace theme toggle with Bauhaus logo**
-      - **Status:** Complete
+      - **Status:** Complete but needs fix
       - **What was done:**
         - Moved sitelogo.png to public/
         - Updated Base.astro to use img instead of ◐ character
         - Added rotation animation (180° in light mode)
         - Hover scales to 1.1
+      - **Issues found:**
+        - Logo almost invisible in dark mode
+        - 180° rotation is too "hammy" (over the top)
+        - Black parts should be white in dark mode for visibility
       - **Files:** public/sitelogo.png, src/layouts/Base.astro, src/styles/global.css
+      - **Commit:** See below
+
+- [x] **FOLLOW-UP: Fix logo toggle - use inversion not rotation**
+      - **Status:** Complete
+      - **What was done:**
+        - Removed 180° rotation animation
+        - Added filter: invert(1) in dark mode
+        - Logo now visible in both themes (inverted in dark mode)
+        - Keep hover scale effect
+      - **Files:** src/styles/global.css
       - **Commit:** See below
 
 - [x] **Change all hyperlinks to white (not blue)**
