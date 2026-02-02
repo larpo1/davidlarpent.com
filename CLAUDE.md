@@ -301,6 +301,44 @@ Before marking ANY test task [x] complete, you MUST:
         - src/styles/global.css (any CSS hiding .edit-toolbar?)
       - **Commit:** `fix: Actually fix EditToolbar (verify it works this time)`
 
+- [x] **Fix tag pages 404ing in dev mode for draft-only tags**
+      - **Problem:** Tag pages like /tags/architecture return 404 in dev mode because they only generate pages for published posts, but "architecture" tag only exists on draft posts
+      - **User report:** "tags are 404ing http://localhost:4321/tags/architecture"
+      - **Root cause:** Line 7 in src/pages/tags/[tag].astro filters `publishedPosts` which excludes drafts, even in dev mode
+      - **Solution:** Include drafts in dev mode, same pattern as index.astro and posts/[...slug].astro
+      - **Implementation:**
+        ```astro
+        export async function getStaticPaths() {
+          const allPosts = await getCollection('posts');
+
+          // In dev: show all posts (including drafts). In prod: only published.
+          const visiblePosts = import.meta.env.DEV
+            ? allPosts
+            : allPosts.filter(post => !post.data.draft);
+
+          // Get all unique tags (normalized to lowercase for consistent URLs)
+          const allTags = [...new Set(visiblePosts.flatMap(post =>
+            post.data.tags.map(tag => tag.toLowerCase())
+          ))];
+
+          // Create a page for each tag
+          return allTags.map(tag => ({
+            params: { tag },
+            props: {
+              posts: visiblePosts
+                .filter(post => post.data.tags.map(t => t.toLowerCase()).includes(tag))
+                .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
+            }
+          }));
+        }
+        ```
+      - **Testing:**
+        - In dev mode: Visit /tags/architecture - should show draft posts with that tag
+        - In dev mode: Visit /tags/ai - should show both published and draft posts with AI tag
+        - Production build: Tag pages should only include published posts
+      - **Files:** src/pages/tags/[tag].astro
+      - **Commit:** `fix: Include drafts in tag pages in dev mode`
+
 - [x] **Fix toolbar buttons and save button - revert to blue**
       - **Problem:** When hyperlinks were changed to white in body copy, toolbar buttons and save button also became white, making them hard to see/use
       - **User feedback:** "when you ralph applied the white hyperlinks in body copy he also made active toolbar buttons and the save button white too. This doesn't work. Let's make those blue again"
