@@ -2,8 +2,8 @@
 title: AI Data Readiness for 'Decision First' Analysis
 date: 2026-02-02T00:00:00.000Z
 description: >-
-  On data architecture, the semantic layer, and the prep work that improves AI
-  project outcomes
+  On data architecture, the semantic layer, and the prep work that de-risks the
+  ROI on expensive AI projects
 draft: true
 tags:
   - AI
@@ -14,7 +14,7 @@ tags:
 ---
 Gartner puts AI-ready organisations at 43%; McKinsey’s State of AI survey found 88% using AI but two-thirds still stuck in pilot mode. In real estate specifically, JLL’s 2025 technology survey found more than 60% of firms remain unprepared strategically, organisationally and technically. The immediate advcie is often: “get your data house in order”. 
 
-This note is to explore what that means, and what AI-ready data architecture looks like. Not the abstract principle, but the practical structure. Here's a mental model that’s been useful to me, and might be useful to others thinking through the same problem.
+This note is to explore what that means, and what AI-ready data architecture looks like. Not the abstract principle, but the practical structure. Here’s a mental model that’s been useful to me, and might be useful to others thinking through the same problem.
 
 ## Three layers
 
