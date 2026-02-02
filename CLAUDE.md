@@ -25,6 +25,205 @@
 
 ## Current Tasks
 
+- [ ] **Make About page inline editable**
+      - **What:** Make About page content editable in dev mode, just like essay content
+      - **Current state:** About page content is hard-coded in `about.astro`
+      - **Goal:** Store About content in a markdown file, make it editable in dev mode with toolbar + save
+
+      **Step 1: Create About content file**
+      - Create: `src/content/about.md`
+        ```markdown
+        I'm David Larpent, Chief Product Officer at Lavanda, a property technology company.
+
+        I write about product strategy, AI, and the intersection of technology with how we actually live and work. Sometimes I paint. Occasionally I make music, badly.
+
+        Find me on [LinkedIn](https://www.linkedin.com/in/davidlarpent) or don't. I'm not precious about it.
+        ```
+
+      **Step 2: Update About page to read from file**
+      - Update `src/pages/about.astro`:
+        ```astro
+        ---
+        import Base from '../layouts/Base.astro';
+        import EditToolbar from '../components/EditToolbar.astro';
+        import fs from 'fs/promises';
+        import { marked } from 'marked';
+
+        const isDev = import.meta.env.DEV;
+
+        // Read About content from file
+        const aboutPath = 'src/content/about.md';
+        const aboutMarkdown = await fs.readFile(aboutPath, 'utf-8');
+        const aboutHtml = marked.parse(aboutMarkdown);
+        ---
+
+        <Base title="About | David Larpent" description="About David Larpent">
+          <article>
+            <h1>About</h1>
+            <div
+              class="about-content"
+              contenteditable={isDev}
+              data-field="about"
+            >
+              <Fragment set:html={aboutHtml} />
+            </div>
+          </article>
+
+          {isDev && (
+            <>
+              <EditToolbar />
+              <div class="edit-controls">
+                <span class="save-status"></span>
+                <button class="save-button" title="Save changes (Ctrl/Cmd+S)">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+                    <polyline points="17 21 17 13 7 13 7 21"/>
+                    <polyline points="7 3 7 8 15 8"/>
+                  </svg>
+                </button>
+              </div>
+            </>
+          )}
+        </Base>
+
+        {isDev && (
+          <script>
+            const saveButton = document.querySelector('.save-button') as HTMLButtonElement;
+            const saveStatus = document.querySelector('.save-status') as HTMLElement;
+            const aboutContent = document.querySelector('[data-field="about"]') as HTMLElement;
+
+            function showStatus(message: string, isError = false) {
+              if (!saveStatus) return;
+              saveStatus.textContent = message;
+              saveStatus.classList.toggle('error', isError);
+              saveStatus.classList.toggle('success', !isError && message !== '');
+            }
+
+            async function saveAbout() {
+              const content = aboutContent?.innerHTML || '';
+
+              if (!content.trim()) {
+                showStatus('Error: Content required', true);
+                return;
+              }
+
+              showStatus('Saving...');
+
+              try {
+                const response = await fetch('/api/save-about', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ content })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                  showStatus('Saved!');
+                  setTimeout(() => {
+                    window.location.reload();
+                  }, 500);
+                } else {
+                  showStatus(`Error: ${result.message}`, true);
+                }
+              } catch (error) {
+                showStatus(`Error: ${error}`, true);
+              }
+            }
+
+            saveButton?.addEventListener('click', saveAbout);
+
+            document.addEventListener('keydown', (e) => {
+              if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+                e.preventDefault();
+                saveAbout();
+              }
+            });
+          </script>
+        )}
+        ```
+
+      **Step 3: Create save API endpoint**
+      - Create: `src/pages/api/save-about.ts`
+        ```typescript
+        import type { APIRoute } from 'astro';
+        import * as fs from 'fs/promises';
+        import TurndownService from 'turndown';
+        import { gfm } from 'turndown-plugin-gfm';
+
+        export const prerender = false;
+
+        const turndown = new TurndownService({
+          headingStyle: 'atx',
+          codeBlockStyle: 'fenced',
+        });
+        turndown.use(gfm);
+
+        export const POST: APIRoute = async ({ request }) => {
+          if (!import.meta.env.DEV) {
+            return new Response(
+              JSON.stringify({ success: false, message: 'API only available in development mode' }),
+              { status: 403, headers: { 'Content-Type': 'application/json' } }
+            );
+          }
+
+          try {
+            const body = await request.json();
+            const { content } = body;
+
+            if (!content || !content.trim()) {
+              return new Response(
+                JSON.stringify({ success: false, message: 'Content required' }),
+                { status: 400, headers: { 'Content-Type': 'application/json' } }
+              );
+            }
+
+            // Convert HTML to Markdown
+            const markdown = turndown.turndown(content);
+
+            // Write to file
+            const filePath = 'src/content/about.md';
+            await fs.writeFile(filePath, markdown, 'utf-8');
+
+            return new Response(
+              JSON.stringify({ success: true, message: 'About page saved successfully' }),
+              { status: 200, headers: { 'Content-Type': 'application/json' } }
+            );
+          } catch (error) {
+            console.error('Error saving about page:', error);
+            return new Response(
+              JSON.stringify({
+                success: false,
+                message: error instanceof Error ? error.message : 'Unknown error'
+              }),
+              { status: 500, headers: { 'Content-Type': 'application/json' } }
+            );
+          }
+        };
+        ```
+
+      **Step 4: Install marked (if not already installed)**
+      - Check if `marked` package is installed: `npm list marked`
+      - If not: `npm install marked`
+
+      **Files:**
+      - Create: `src/content/about.md`
+      - Create: `src/pages/api/save-about.ts`
+      - Modify: `src/pages/about.astro`
+      - Maybe install: `marked` package
+
+      **Test:**
+      1. Visit `/about` in dev mode
+      2. Content should be editable
+      3. Select text - toolbar appears
+      4. Make bold/italic/link edits
+      5. Click save (or Ctrl+S)
+      6. Page reloads with changes
+      7. Check `src/content/about.md` - should have markdown
+      8. Production: content not editable, renders normally
+
+      - Commit: `feat: Make About page inline editable`
+
 - [x] **Add Google Analytics to all pages**
       - **What:** Add Google Analytics tracking snippet to site-wide layout
       - **Snippet:**
