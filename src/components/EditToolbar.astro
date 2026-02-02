@@ -12,7 +12,7 @@
   <button data-command="formatBlock" data-value="pre" title="Code Block">&lt;&gt;</button>
 </div>
 
-<script>
+<script is:inline>
   document.addEventListener('DOMContentLoaded', () => {
     const toolbar = document.getElementById('edit-toolbar');
     const contentEditable = document.querySelector('[contenteditable="true"][data-field]');
@@ -44,7 +44,7 @@
 
     // Handle toolbar button clicks
     toolbar.addEventListener('click', (e) => {
-      const button = (e.target as HTMLElement).closest('button');
+      const button = e.target.closest('button');
       if (!button) return;
 
       const command = button.getAttribute('data-command');
@@ -90,7 +90,7 @@
     });
   });
 
-  function updateToolbarState(toolbar: HTMLElement) {
+  function updateToolbarState(toolbar) {
     toolbar.querySelectorAll('button').forEach(button => {
       const command = button.getAttribute('data-command');
       if (!command) return;

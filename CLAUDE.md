@@ -223,9 +223,245 @@ Before marking ANY test task [x] complete, you MUST:
       - **Files:** src/pages/posts/[...slug].astro
       - **Commit:** See below
 
+- [ ] **Add "Show drafts" toggle to homepage in dev mode**
+      - **What:** Toggle control on homepage to show/hide draft posts in the main list
+      - **Why:** Better dev workflow - see how drafts appear in main list without visiting /drafts
+      - **Current behavior:**
+        - Homepage only shows published posts (even in dev mode)
+        - Must visit /drafts page to see draft posts
+        - Can't see how drafts will look in the main list
+      - **Desired behavior:**
+        - Dev mode: Show drafts in main list by default (or via toggle)
+        - Drafts clearly marked with badge/indicator
+        - Toggle button to show/hide drafts
+        - Production: unchanged (only published posts)
+      - **Implementation:**
+        ```astro
+        ---
+        // src/pages/index.astro
+        const allPosts = await getCollection('posts');
+
+        // In dev: include all posts. In prod: only published.
+        const posts = import.meta.env.DEV
+          ? allPosts.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
+          : allPosts
+              .filter(post => !post.data.draft)
+              .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+        ---
+
+        <Base title="David Larpent">
+          <script slot="head" type="application/ld+json" set:html={JSON.stringify(websiteSchema)} />
+
+          {import.meta.env.DEV && (
+            <div class="dev-controls">
+              <label>
+                <input type="checkbox" id="show-drafts" checked />
+                Show drafts
+              </label>
+            </div>
+          )}
+
+          <ul class="post-list">
+            {posts.map(post => {
+              const formattedDate = post.data.date.toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
+              });
+
+              return (
+                <li class="post-list-item" data-draft={post.data.draft}>
+                  <h2 class="post-list-title">
+                    <a href={`/posts/${post.slug}`}>{post.data.title}</a>
+                  </h2>
+                  <div class="post-meta">
+                    {formattedDate}
+                    {post.data.draft && <span class="draft-badge">Draft</span>}
+                  </div>
+                  {/* ... rest of template */}
+                </li>
+              );
+            })}
+          </ul>
+        </Base>
+
+        {import.meta.env.DEV && (
+          <script>
+            const checkbox = document.getElementById('show-drafts');
+            const postList = document.querySelector('.post-list');
+
+            checkbox?.addEventListener('change', (e) => {
+              const showDrafts = (e.target as HTMLInputElement).checked;
+              const draftPosts = postList?.querySelectorAll('[data-draft="true"]');
+
+              draftPosts?.forEach(post => {
+                (post as HTMLElement).style.display = showDrafts ? '' : 'none';
+              });
+            });
+          </script>
+        )}
+        ```
+      - **Styling for draft badge:**
+        ```css
+        .draft-badge {
+          display: inline-block;
+          margin-left: 0.5rem;
+          padding: 0.2rem 0.5rem;
+          font-size: 0.7rem;
+          color: var(--color-text);
+          background: var(--color-code-bg);
+          border: 1px solid var(--color-border);
+          border-radius: 0.25rem;
+          font-family: system-ui, -apple-system, sans-serif;
+        }
+
+        .dev-controls {
+          margin-bottom: 2rem;
+          padding: 1rem;
+          background: var(--color-code-bg);
+          border: 1px solid var(--color-border);
+          border-radius: 0.5rem;
+        }
+
+        .dev-controls label {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          cursor: pointer;
+          font-size: 0.9rem;
+        }
+        ```
+      - **Alternative:** Use localStorage to persist toggle state across page loads
+      - **Test:**
+        1. Run npm run dev
+        2. Visit homepage - should see drafts mixed with published posts
+        3. Drafts should have "Draft" badge
+        4. Toggle "Show drafts" - drafts should hide/show
+        5. Run npm run build - drafts should not appear in production
+      - **Files:** src/pages/index.astro, src/styles/global.css
+      - **Commit:** `feat: Add "Show drafts" toggle to homepage in dev mode`
+
+---
+
+### Bug Fixes
+
+- [x] **Fix tag page 404s - case sensitivity issue**
+      - **Status:** Complete
+      - **What was done:**
+        - Normalized all tags to lowercase in tag page generation
+        - Updated related posts matching to use case-insensitive comparison
+        - Tag pages now generated at /tags/ai/, /tags/philosophy/, etc.
+      - **Files:** src/pages/tags/[tag].astro, src/pages/posts/[...slug].astro
+      - **Commit:** See below
+
+- [x] **Fix EditToolbar not appearing on ANY posts**
+      - **Status:** Complete
+      - **What was done:**
+        - Added `is:inline` to toolbar script for direct browser execution
+        - Removed TypeScript annotations (not compatible with inline scripts)
+        - Toolbar now properly shows when selecting text in dev mode
+      - **Files:** src/components/EditToolbar.astro
+      - **Commit:** See below
+
 ---
 
 ### Design Polish
+
+- [ ] **Move tags beneath TOC in TOC panel**
+      - **What:** Relocate post tags from post header into the TOC sidebar
+      - **Why:** Cleaner post header, tags logically grouped with navigation
+      - **Current location:** Tags appear in post header after meta (date, reading time)
+      - **New location:** Inside TOC panel, below the heading list
+      - **Implementation:**
+        - Remove tags from Post.astro header section
+        - Add tags to TableOfContents.astro component
+        - Pass tags as prop to TableOfContents component
+        - Style tags to fit TOC aesthetic
+      - **Changes needed:**
+        1. **Post.astro** - remove tags from header:
+           ```astro
+           <header class="post-header">
+             <h1>{title}</h1>
+             <p class="post-description">{description}</p>
+             <div class="post-meta">
+               <time>{formattedDate}</time>
+               <span> · {readingTime} min read</span>
+               {draft && <span class="draft-badge">Draft</span>}
+             </div>
+             {/* REMOVE tags from here */}
+           </header>
+           ```
+        2. **Post.astro** - pass tags to TOC:
+           ```astro
+           <TableOfContents headings={headings} tags={tags} />
+           ```
+        3. **TableOfContents.astro** - accept tags prop and display:
+           ```astro
+           interface Props {
+             headings: Array<{...}>;
+             tags?: string[];
+           }
+           const { headings, tags = [] } = Astro.props;
+
+           {/* After headings list */}
+           {tags.length > 0 && (
+             <div class="toc-tags">
+               <h3 class="toc-tags-title">Topics</h3>
+               <div class="toc-tags-list">
+                 {tags.map(tag => (
+                   <a href={`/tags/${tag.toLowerCase()}`} class="toc-tag-link">
+                     #{tag}
+                   </a>
+                 ))}
+               </div>
+             </div>
+           )}
+           ```
+        4. **Styling:**
+           ```css
+           .toc-tags {
+             margin-top: 2rem;
+             padding-top: 1.5rem;
+             border-top: 1px solid var(--color-border);
+           }
+
+           .toc-tags-title {
+             font-size: 0.75rem;
+             text-transform: uppercase;
+             letter-spacing: 0.05em;
+             color: var(--color-text-muted);
+             margin-bottom: 0.75rem;
+           }
+
+           .toc-tags-list {
+             display: flex;
+             flex-direction: column;
+             gap: 0.5rem;
+           }
+
+           .toc-tag-link {
+             font-size: 0.85rem;
+             color: var(--color-text-muted);
+             text-decoration: none;
+             font-style: italic;
+             transition: color 0.3s ease;
+           }
+
+           .toc-tag-link:hover {
+             color: var(--color-link);
+           }
+           ```
+      - **Files:**
+        - src/layouts/Post.astro (remove tags, pass to TOC)
+        - src/components/TableOfContents.astro (add tags section)
+        - src/styles/global.css (add .toc-tags styles)
+      - **Test:**
+        - Tags removed from post header
+        - Tags appear in TOC panel below headings
+        - Tags styled consistently with TOC
+        - Clicking tag goes to tag page
+        - Works on mobile (TOC overlay)
+      - **Commit:** `refactor: Move tags to TOC sidebar`
 
 - [x] **Only underline links in post body content**
       - **Status:** Complete

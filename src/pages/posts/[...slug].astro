@@ -13,14 +13,16 @@ export async function getStaticPaths() {
   return visiblePosts.map(post => {
     // Find related posts (posts with at least one shared tag)
     // Related posts should only link to posts visible in current env
+    // Use case-insensitive matching for tags
+    const postTagsLower = post.data.tags.map(t => t.toLowerCase());
     const relatedPosts = visiblePosts
       .filter(p => p.slug !== post.slug) // Exclude current post
-      .filter(p => p.data.tags.some(tag => post.data.tags.includes(tag))) // Has shared tag
+      .filter(p => p.data.tags.some(tag => postTagsLower.includes(tag.toLowerCase()))) // Has shared tag
       .map(p => ({
         slug: p.slug,
         title: p.data.title,
         description: p.data.description,
-        sharedTags: p.data.tags.filter(tag => post.data.tags.includes(tag))
+        sharedTags: p.data.tags.filter(tag => postTagsLower.includes(tag.toLowerCase()))
       }))
       .sort((a, b) => b.sharedTags.length - a.sharedTags.length) // Sort by number of shared tags
       .slice(0, 3); // Maximum 3 related posts
