@@ -194,6 +194,7 @@ a:hover {
   margin: 0.75rem 0 0;
   font-size: 1rem;
   line-height: 1.5;
+  font-style: italic;
 }
 
 /* Post page */
@@ -591,7 +592,6 @@ a:hover {
   color: var(--color-text-light);
   font-size: 1rem;
   margin: 0.5rem 0 1rem;
-  font-style: italic;
 }
 
 .draft-badge {
