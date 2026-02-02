@@ -301,6 +301,28 @@ Before marking ANY test task [x] complete, you MUST:
         - src/styles/global.css (any CSS hiding .edit-toolbar?)
       - **Commit:** `fix: Actually fix EditToolbar (verify it works this time)`
 
+- [x] **Fix toolbar buttons and save button - revert to blue**
+      - **Problem:** When hyperlinks were changed to white in body copy, toolbar buttons and save button also became white, making them hard to see/use
+      - **User feedback:** "when you ralph applied the white hyperlinks in body copy he also made active toolbar buttons and the save button white too. This doesn't work. Let's make those blue again"
+      - **What needs to happen:**
+        1. Keep body content links white (`.post-content a` should remain white with underline)
+        2. Revert EditToolbar button active states to blue
+        3. Revert save button to blue
+      - **Files to update:**
+        - `src/styles/global.css`:
+          - Find `.edit-toolbar button.is-active` or similar selector
+          - Override with blue color (use `#6ba4ff` or original link color)
+          - Find `.save-button` or save status button
+          - Override with blue color
+          - Keep `.post-content a` white as currently implemented
+      - **Testing:**
+        - Visit /posts/ralph-loops in dev mode
+        - Highlight text - toolbar should appear
+        - Active toolbar button should be blue (visible and clear)
+        - Make an edit - save button should be blue (visible and clear)
+        - Body content links should still be white with underline
+      - **Commit:** `fix: Revert toolbar and save buttons to blue (keep body links white)`
+
 ---
 
 ### Design Polish
