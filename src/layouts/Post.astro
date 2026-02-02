@@ -83,7 +83,7 @@ const articleSchema = {
 >
   <script slot="head" type="application/ld+json" set:html={JSON.stringify(articleSchema)} />
   <div class="post-layout">
-    <TableOfContents headings={headings} />
+    <TableOfContents headings={headings} tags={tags} />
 
     <article class="post-article" data-post-slug={slug}>
       <header class="post-header">
@@ -94,15 +94,6 @@ const articleSchema = {
           <span> · {readingTime} min read</span>
           {draft && <span class="draft-badge">Draft</span>}
         </div>
-        {tags.length > 0 && (
-          <div class="post-tags">
-            {tags.map(tag => (
-              <a href={`/tags/${tag.toLowerCase()}`} class="tag-link">
-                #{tag}
-              </a>
-            ))}
-          </div>
-        )}
       </header>
       <div class="post-content" contenteditable={isDev} data-field="content">
         <slot />
