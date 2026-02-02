@@ -1,5 +1,7 @@
-I'm David Larpent, Chief Product Officer at Lavanda, a property technology company.
+I'm David Larpent, I lead Product and Engineering at Lavanda, a property technology company.
 
-I write about product strategy, AI, and the intersection of technology with how we actually live and work. Sometimes I paint. Occasionally I make music, badly.
+I write about things that interest me, to help me organise my thoughts. Generally that is product strategy, AI, philosophy and cognitive science. 
 
-Find me on [LinkedIn](https://www.linkedin.com/in/davidlarpent) or don't. I'm not precious about it.
+Sometimes I paint. Occasionally I make music, badly.
+
+Find me on [LinkedIn](https://www.linkedin.com/in/davidlarpent) or Substack.

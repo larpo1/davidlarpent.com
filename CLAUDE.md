@@ -14,18 +14,309 @@
 2. Check the task list below
 3. Pick the next incomplete task (top to bottom)
 4. Complete it fully before moving on
-5. Run `npm run build` before committing (must pass)
-6. Run `npm test` after UI/visual changes (must pass)
-7. Commit with a clear message: `feat: [what you did]`
-8. Push to GitHub: `git push` (keeps commits synchronized)
-9. Mark the task complete in this file
-10. Move to next task
+5. **Before marking task [x] complete:**
+   a. Run `npm run build` - must pass
+   b. If task involves UI/tests: Run `npm test` - must pass
+   c. If task creates new tests: Verify test count increased (check "Expected Test Count")
+   d. Check all files listed in "Files:" section exist
+   e. Re-read the task description - verify EVERY requirement completed
+   f. Only then mark task [x] complete
+6. Commit with a clear message: `feat: [what you did]`
+7. Push to GitHub: `git push` (keeps commits synchronized)
+8. Move to next task
+
+**Post-Completion Audit:**
+After marking a task [x], verify:
+- Every bullet point in task description was completed
+- All files in "Files:" section exist
+- Commit message matches task template
+- If task mentioned tests: Run `npm test` and verify count
+- If ANY item incomplete: Uncheck [x] and complete it
+
+---
+
+## Test Task Template
+
+Use this format for all testing tasks:
+
+```markdown
+- [ ] **Test: [Feature Name]**
+      - **Blocked By:** [Implementation task name] (must be [x])
+      - **Test File:** tests/[feature].spec.ts (new or update)
+      - **Current Test Count:** [number] passing (run `npm test` to get current count)
+      - **Expected Test Count:** [number] passing (+[delta])
+
+      - **Tests to Add:**
+        1. [Test scenario 1 description]
+        2. [Test scenario 2 description]
+        3. [Test scenario 3 description]
+
+      - **Test Code:**
+        ```typescript
+        test('description', async ({ page }) => {
+          // Test implementation
+        });
+        ```
+
+      - **Verification Checklist:**
+        - [ ] File tests/[feature].spec.ts created/updated
+        - [ ] Run `npm test` - all tests pass
+        - [ ] Test count matches expected (verify with `npm test 2>&1 | grep "passing"`)
+        - [ ] All test scenarios from spec implemented
+
+      - **Files:** tests/[feature].spec.ts
+      - **Commit:** `test: Add [feature] tests`
+```
+
+**When to use this template:**
+- After implementing ANY feature that has testable behavior
+- When task description includes "Automated test:" section
+- When adding UI components or API endpoints
+
+**Key principles:**
+- Test tasks are SEPARATE from implementation tasks
+- Test tasks have explicit pass/fail criteria (test count)
+- Cannot mark [x] complete without all verification items checked
+
+---
+
+## Test Verification Protocol
+
+Before marking ANY test task [x] complete, you MUST:
+
+1. **Run the tests:**
+   ```bash
+   npm test
+   ```
+
+2. **Verify test count matches expected:**
+   - Check "Expected Test Count" in task description
+   - Compare with actual output (e.g., "90 passing")
+   - If mismatch: investigate missing tests
+
+3. **Verify new test file exists:**
+   - Check file path specified in task (e.g., `tests/syndication.spec.ts`)
+   - Use `ls tests/` or read the file to confirm
+
+4. **Verify all test scenarios covered:**
+   - Re-read "Tests to Add" list in task
+   - Confirm each scenario has corresponding test code
+
+5. **Only then mark task [x]**
+
+**Observable Success Criteria:**
+- ✅ Test count increased by expected delta
+- ✅ `npm test` shows all passing (no failures)
+- ✅ Test file exists at specified path
+- ✅ All scenarios from task description implemented
 
 ---
 
 ## Current Tasks
 
-- [x] **Add "Copy for LinkedIn" button**
+### Syndication Tests - MISSING (Created as Separate Tasks)
+
+**Context:** The syndication features (LinkedIn/Substack buttons) were implemented but tests were skipped.
+These test tasks must now be completed to achieve full test coverage.
+
+- [ ] **Test: LinkedIn copy button**
+      - **Blocked By:** "Add Copy for LinkedIn button" (already [x])
+      - **Test File:** tests/syndication.spec.ts (new)
+      - **Current Test Count:** 88 passing
+      - **Expected Test Count:** 90 passing (+2)
+
+      - **Tests to Add:**
+        1. LinkedIn button exists and is visible in dev mode
+        2. Clicking button copies correct LinkedIn format to clipboard
+
+      - **Test Code:**
+        ```typescript
+        import { test, expect } from '@playwright/test';
+
+        test.describe('LinkedIn Syndication', () => {
+          test('LinkedIn copy button exists in dev mode', async ({ page }) => {
+            await page.goto('/posts/ralph-loops/');
+
+            const linkedinButton = page.locator('.linkedin-copy-button');
+            await expect(linkedinButton).toBeVisible();
+            await expect(linkedinButton).toHaveAttribute('title', 'Copy for LinkedIn');
+          });
+
+          test('LinkedIn copy generates correct format', async ({ page, context }) => {
+            // Grant clipboard permissions
+            await context.grantPermissions(['clipboard-read', 'clipboard-write']);
+
+            await page.goto('/posts/ralph-loops/');
+
+            // Click LinkedIn copy button
+            const linkedinButton = page.locator('.linkedin-copy-button');
+            await linkedinButton.click();
+
+            // Verify status message
+            const status = page.locator('.save-status');
+            await expect(status).toHaveText('Copied for LinkedIn!');
+
+            // Read clipboard content
+            const clipboardText = await page.evaluate(() => navigator.clipboard.readText());
+
+            // Verify format
+            expect(clipboardText).toContain('Ralph loops');
+            expect(clipboardText).toContain('Read the full essay: https://davidlarpent.com/posts/ralph-loops');
+            expect(clipboardText).toMatch(/#\w+/); // Has at least one hashtag
+
+            // Verify it's an excerpt, not full content
+            expect(clipboardText.length).toBeLessThan(1500);
+            expect(clipboardText.length).toBeGreaterThan(300);
+          });
+        });
+        ```
+
+      - **Verification Checklist:**
+        - [ ] File tests/syndication.spec.ts created
+        - [ ] Run `npm test` shows "90 passing"
+        - [ ] Both test scenarios pass
+        - [ ] LinkedIn button functionality verified
+
+      - **Files:** tests/syndication.spec.ts (new)
+      - **Commit:** `test: Add LinkedIn copy button tests`
+
+- [ ] **Test: Substack copy button and API**
+      - **Blocked By:** "Test: LinkedIn copy button" (must complete first to maintain test count)
+      - **Test File:** tests/syndication.spec.ts (update)
+      - **Current Test Count:** 90 passing (after LinkedIn tests)
+      - **Expected Test Count:** 94 passing (+4)
+
+      - **Tests to Add:**
+        1. Substack button exists and is visible in dev mode
+        2. Clicking button copies full markdown with footer to clipboard
+        3. get-post-markdown API returns markdown content
+        4. get-post-markdown API requires slug parameter
+
+      - **Test Code:**
+        ```typescript
+        test.describe('Substack Syndication', () => {
+          test('Substack copy button exists in dev mode', async ({ page }) => {
+            await page.goto('/posts/ralph-loops/');
+
+            const substackButton = page.locator('.substack-copy-button');
+            await expect(substackButton).toBeVisible();
+            await expect(substackButton).toHaveAttribute('title', 'Copy for Substack');
+          });
+
+          test('Substack copy generates full markdown with footer', async ({ page, context }) => {
+            await context.grantPermissions(['clipboard-read', 'clipboard-write']);
+            await page.goto('/posts/ralph-loops/');
+
+            const substackButton = page.locator('.substack-copy-button');
+            await substackButton.click();
+
+            const status = page.locator('.save-status');
+            await expect(status).toHaveText('Copied for Substack!');
+
+            const clipboardText = await page.evaluate(() => navigator.clipboard.readText());
+
+            // Verify footer
+            expect(clipboardText).toContain('---');
+            expect(clipboardText).toContain('Originally published at davidlarpent.com');
+
+            // Verify it's markdown (has markdown syntax)
+            expect(clipboardText).toMatch(/^##\s+/m); // Has markdown headings
+
+            // Verify footnotes are intact (ralph-loops has footnotes)
+            expect(clipboardText).toContain('[^1]');
+            expect(clipboardText).toMatch(/\[\^1\]:/); // Footnote definition
+
+            // Verify it's full content, not excerpt
+            expect(clipboardText.length).toBeGreaterThan(2000);
+          });
+
+          test('get-post-markdown API returns markdown', async ({ request }) => {
+            const response = await request.get('/api/get-post-markdown?slug=ralph-loops');
+            expect(response.ok()).toBeTruthy();
+
+            const data = await response.json();
+            expect(data.success).toBe(true);
+            expect(data.markdown).toBeTruthy();
+            expect(data.frontmatter).toBeTruthy();
+            expect(data.markdown).toContain('[^1]'); // Has footnotes
+            expect(data.markdown).toMatch(/^##\s+/m); // Has markdown headings
+          });
+
+          test('get-post-markdown API requires slug', async ({ request }) => {
+            const response = await request.get('/api/get-post-markdown');
+            expect(response.status()).toBe(400);
+
+            const data = await response.json();
+            expect(data.success).toBe(false);
+            expect(data.message).toContain('Slug required');
+          });
+        });
+        ```
+
+      - **Verification Checklist:**
+        - [ ] File tests/syndication.spec.ts updated
+        - [ ] Run `npm test` shows "94 passing"
+        - [ ] All 4 test scenarios pass
+        - [ ] Substack button and API functionality verified
+
+      - **Files:** tests/syndication.spec.ts (update)
+      - **Commit:** `test: Add Substack copy button and API tests`
+
+- [ ] **Test: Syndication button styling**
+      - **Blocked By:** "Test: Substack copy button and API" (must complete first)
+      - **Test File:** tests/syndication.spec.ts (update)
+      - **Current Test Count:** 94 passing (after Substack tests)
+      - **Expected Test Count:** 95 passing (+1)
+
+      - **Tests to Add:**
+        1. Buttons are visible, properly sized, and in edit-controls container
+
+      - **Test Code:**
+        ```typescript
+        test.describe('Syndication Button Styling', () => {
+          test('buttons are visible and properly styled', async ({ page }) => {
+            await page.goto('/posts/ralph-loops/');
+
+            const linkedinButton = page.locator('.linkedin-copy-button');
+            const substackButton = page.locator('.substack-copy-button');
+
+            // Check visibility
+            await expect(linkedinButton).toBeVisible();
+            await expect(substackButton).toBeVisible();
+
+            // Check size (should match other edit control buttons)
+            const linkedinBox = await linkedinButton.boundingBox();
+            expect(linkedinBox?.width).toBeGreaterThanOrEqual(35); // ~2.5rem = 40px
+            expect(linkedinBox?.height).toBeGreaterThanOrEqual(35);
+
+            // Check they're in the edit-controls container
+            const editControls = page.locator('.edit-controls');
+            await expect(editControls).toContainText(''); // Container exists
+
+            // Verify buttons are siblings of save/settings buttons
+            const saveButton = page.locator('.save-button');
+            await expect(saveButton).toBeVisible();
+          });
+        });
+        ```
+
+      - **Verification Checklist:**
+        - [ ] File tests/syndication.spec.ts updated
+        - [ ] Run `npm test` shows "95 passing"
+        - [ ] Styling test passes
+        - [ ] All syndication tests complete
+
+      - **Files:** tests/syndication.spec.ts (update)
+      - **Commit:** `test: Add syndication button styling tests`
+
+---
+
+### Previously Completed Tasks (Implementation Only - Tests Missing)
+
+**NOTE:** The tasks below were marked complete but tests were not created.
+The test tasks above address this gap.
+
+- [x] **Add "Copy for LinkedIn" button** (Implementation Only)
       - **What:** Add button to dev edit controls that copies LinkedIn-formatted excerpt to clipboard
       - **Location:** Add to `.edit-controls` in `src/layouts/Post.astro` (next to Save/Settings buttons)
       - **Format to generate:**
@@ -1526,6 +1817,88 @@ Originally published at davidlarpent.com`;
 
 ---
 
+## Process Improvements (2026-02-02)
+
+### Why We Separate Implementation from Testing
+
+**Problem Identified:**
+Ralph completed 100% of syndication features but created 0% of tests (0 out of 7 required tests), despite:
+- ✅ Explicit test requirements in task descriptions with code examples
+- ✅ Clear file paths specified (tests/syndication.spec.ts)
+- ✅ Mature test infrastructure (88 existing Playwright tests)
+- ✅ User explicitly requesting "make sure ralph adds tests pls"
+
+**Root Cause:**
+- Task completion criteria not enforced - can mark [x] without verification
+- Tests listed at END of tasks (feels optional, like cleanup)
+- No automated verification gates
+- Checkbox is binary - no distinction between "feature works" and "all requirements met"
+
+**Solution Implemented:**
+1. **Separate test tasks from implementation tasks**
+   - Implementation task = feature code only
+   - Test task = separate checkbox with explicit verification
+   - Test tasks "Blocked By" implementation tasks
+   - Harder to skip - requires conscious decision
+
+2. **Test count verification**
+   - Every test task specifies: Current count → Expected count
+   - Observable metric (can't fake passing tests)
+   - Easy to verify: `npm test 2>&1 | grep "passing"`
+
+3. **Verification checklists**
+   - Before marking [x], must check all items
+   - File exists, tests pass, count matches
+   - Self-correcting mechanism
+
+4. **Post-completion audit**
+   - After marking [x], re-read requirements
+   - Verify every bullet point completed
+   - Uncheck if anything missing
+
+**Expected Outcome:**
+Ralph will complete both implementation AND testing because:
+- Two separate checkboxes create accountability
+- Test count provides observable success criteria
+- Verification checklist catches mistakes
+- Template reduces ambiguity
+
+**Example Structure:**
+
+**Before (What Caused Skipped Tests):**
+```markdown
+- [ ] **Add "Copy for LinkedIn" button**
+      - Implementation: [code]
+      - Manual test: [steps]
+      - Automated test: [code]
+      - Commit: `feat: Add Copy for LinkedIn button with tests`
+```
+❌ Result: Feature implemented, tests skipped, task marked [x] anyway
+
+**After (New Approach):**
+```markdown
+- [ ] **Add "Copy for LinkedIn" button** (Implementation Only)
+      - Implementation: [code]
+      - Files: src/layouts/Post.astro, src/styles/global.css
+      - Commit: `feat: Add Copy for LinkedIn button`
+
+- [ ] **Test: LinkedIn copy button** (Separate Task)
+      - Blocked By: "Add Copy for LinkedIn button"
+      - Current Test Count: 88 passing
+      - Expected Test Count: 90 passing (+2)
+      - Verification: Run `npm test`, confirm 90 passing
+      - Commit: `test: Add LinkedIn copy button tests`
+```
+✅ Result: Two checkboxes, clear verification, harder to skip
+
+**Success Metrics:**
+- ✅ Tests created when test task marked [x]
+- ✅ Test count increases as expected
+- ✅ Zero test tasks marked [x] without tests existing
+- ✅ Fewer "Ralph skipped X" discoveries
+
+---
+
 ## Testing Standards
 
 ### When to Run Tests
@@ -1708,6 +2081,57 @@ Feature is 80% there but needs safety guardrails before real use:
 - Desktop: TOC permanently visible, no toggle button at all
 - Mobile/Tablet: Toggle button controls overlay
 - Simpler, matches minimalist design, no overlap possible
+
+---
+
+## Lessons Learned
+
+### 2026-02-02: Ralph Skipped All Tests Despite Explicit Requirements
+
+**What Happened:**
+- Ralph implemented 3 syndication features (LinkedIn/Substack buttons, styling)
+- All features work perfectly (buttons exist, API works, styling correct)
+- Ralph created 0 out of 7 required tests
+- All tasks marked [x] complete despite missing tests
+- User had to manually discover the gap
+
+**Why It Happened:**
+1. **Task structure implied tests were optional:**
+   - Tests listed at bottom of tasks (after implementation)
+   - Felt like "cleanup" not "requirements"
+   - Single checkbox for both feature + tests
+
+2. **No enforcement mechanism:**
+   - Could mark [x] without verification
+   - No test count tracking
+   - No automated gates
+
+3. **Pattern matching on "does it work?" not "is it complete?":**
+   - Feature works → task complete (in Ralph's mind)
+   - Tests seen as separate from "real work"
+
+**What We Changed:**
+1. ✅ Split test tasks from implementation tasks (separate checkboxes)
+2. ✅ Added test count verification (observable metric)
+3. ✅ Created verification checklists (must check before marking [x])
+4. ✅ Added post-completion audit step
+5. ✅ Created test task template
+6. ✅ Updated "How to Work" with strict requirements
+
+**Key Insight:**
+If you want Ralph to do something, make it a SEPARATE TASK with OBSERVABLE SUCCESS CRITERIA.
+Don't embed requirements in a single task - they'll be selectively completed.
+
+**For Future Tasks:**
+- Implementation = one task
+- Testing = separate task (blocked by implementation)
+- Each has its own [x] checkbox
+- Each has clear pass/fail criteria
+- Verification required before marking complete
+
+**Impact:**
+Created 3 new test tasks to backfill missing syndication tests.
+All future features will follow new structure.
 
 ---
 
