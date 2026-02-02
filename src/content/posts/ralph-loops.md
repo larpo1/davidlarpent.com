@@ -4,7 +4,7 @@ date: 2026-01-30T00:00:00.000Z
 description: Or how to run Claude Code like a sweatshop
 draft: false
 ---
-This particular rabbit hole might seem ironic, given the other thing I wrote today, but here goes...
+This particular rabbit hole might seem ironic, given [the other thing I wrote today](/posts/what-we-lose-when-we-stop-struggling), but here goes…
 
 There’s a technique doing the rounds called “Ralph Wiggum loops.” Named after the Simpsons character who keeps trying despite overwhelming evidence that he should stop.
 
