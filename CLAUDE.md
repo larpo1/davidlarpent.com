@@ -25,6 +25,225 @@
 
 ## Current Tasks
 
+- [ ] **Add "Copy for LinkedIn" button**
+      - **What:** Add button to dev edit controls that copies LinkedIn-formatted excerpt to clipboard
+      - **Location:** Add to `.edit-controls` in `src/layouts/Post.astro` (next to Save/Settings buttons)
+      - **Format to generate:**
+        - Title (as first line)
+        - Blank line
+        - First 2-3 paragraphs (aim for ~400-500 words max)
+        - Blank line
+        - "Read the full essay: https://davidlarpent.com/posts/{slug}"
+        - Blank line
+        - Optional hashtags (e.g., "#AI #ProductThinking")
+      - **Implementation:**
+        ```astro
+        <button class="linkedin-copy-button" title="Copy for LinkedIn">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
+          </svg>
+        </button>
+        ```
+      - **Script logic:**
+        ```typescript
+        const linkedinButton = document.querySelector('.linkedin-copy-button');
+
+        linkedinButton?.addEventListener('click', async () => {
+          const slug = article?.dataset.postSlug;
+          const titleEl = document.querySelector('[data-field="title"]') as HTMLElement;
+          const contentEl = document.querySelector('[data-field="content"]') as HTMLElement;
+
+          const title = titleEl?.textContent?.trim() || '';
+
+          // Get first few paragraphs from content
+          const paragraphs = Array.from(contentEl?.querySelectorAll('p') || [])
+            .slice(0, 3)
+            .map(p => p.textContent?.trim())
+            .filter(Boolean);
+
+          const excerpt = paragraphs.join('\n\n');
+
+          // Build LinkedIn post
+          const linkedinPost = `${title}
+
+${excerpt}
+
+Read the full essay: https://davidlarpent.com/posts/${slug}
+
+#AI #ProductThinking`;
+
+          // Copy to clipboard
+          await navigator.clipboard.writeText(linkedinPost);
+
+          // Show feedback
+          showStatus('Copied for LinkedIn!');
+          setTimeout(() => showStatus(''), 2000);
+        });
+        ```
+      - **Styling:** Match existing button styles (`.save-button`, `.settings-button`)
+      - **Test:**
+        1. Visit post in dev mode
+        2. Click LinkedIn button
+        3. Should see "Copied for LinkedIn!" status
+        4. Paste into text editor - verify format is correct (title + excerpt + link + hashtags)
+        5. Check character count is reasonable (~600-800 chars)
+      - **Files:** `src/layouts/Post.astro`, `src/styles/global.css` (if new styles needed)
+      - Commit: `feat: Add Copy for LinkedIn button`
+
+- [ ] **Add "Copy for Substack" button**
+      - **What:** Add button to dev edit controls that copies full markdown to clipboard
+      - **Location:** Add to `.edit-controls` in `src/layouts/Post.astro` (next to LinkedIn button)
+      - **Format to generate:**
+        - Full markdown content (read from .md file, not DOM HTML)
+        - Preserve all formatting, footnotes, code blocks
+        - Add footer: `---\nOriginally published at davidlarpent.com`
+      - **Implementation:**
+        ```astro
+        <button class="substack-copy-button" title="Copy for Substack">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M22.539 8.242H1.46V5.406h21.08v2.836zM1.46 10.812V24L12 18.11 22.54 24V10.812H1.46zM22.54 0H1.46v2.836h21.08V0z"/>
+          </svg>
+        </button>
+        ```
+      - **Script logic:**
+        ```typescript
+        const substackButton = document.querySelector('.substack-copy-button');
+
+        substackButton?.addEventListener('click', async () => {
+          const slug = article?.dataset.postSlug;
+
+          // Fetch the raw markdown from the file via API
+          const response = await fetch(`/api/get-post-markdown?slug=${slug}`);
+          const data = await response.json();
+
+          if (!data.success) {
+            showStatus('Error: Could not fetch markdown', true);
+            return;
+          }
+
+          // Add canonical footer
+          const substackContent = `${data.markdown}
+
+---
+Originally published at davidlarpent.com`;
+
+          // Copy to clipboard
+          await navigator.clipboard.writeText(substackContent);
+
+          // Show feedback
+          showStatus('Copied for Substack!');
+          setTimeout(() => showStatus(''), 2000);
+        });
+        ```
+      - **New API endpoint needed:** `src/pages/api/get-post-markdown.ts`
+        ```typescript
+        import type { APIRoute } from 'astro';
+        import * as fs from 'fs/promises';
+        import * as path from 'path';
+        import matter from 'gray-matter';
+
+        export const prerender = false;
+
+        export const GET: APIRoute = async ({ url }) => {
+          if (!import.meta.env.DEV) {
+            return new Response(
+              JSON.stringify({ success: false, message: 'API only available in development mode' }),
+              { status: 403, headers: { 'Content-Type': 'application/json' } }
+            );
+          }
+
+          const slug = url.searchParams.get('slug');
+
+          if (!slug) {
+            return new Response(
+              JSON.stringify({ success: false, message: 'Slug required' }),
+              { status: 400, headers: { 'Content-Type': 'application/json' } }
+            );
+          }
+
+          try {
+            const filePath = path.join(process.cwd(), 'src', 'content', 'posts', `${slug}.md`);
+            const fileContent = await fs.readFile(filePath, 'utf-8');
+            const parsed = matter(fileContent);
+
+            return new Response(
+              JSON.stringify({
+                success: true,
+                markdown: parsed.content,
+                frontmatter: parsed.data
+              }),
+              { status: 200, headers: { 'Content-Type': 'application/json' } }
+            );
+          } catch (error) {
+            return new Response(
+              JSON.stringify({
+                success: false,
+                message: error instanceof Error ? error.message : 'Unknown error'
+              }),
+              { status: 500, headers: { 'Content-Type': 'application/json' } }
+            );
+          }
+        };
+        ```
+      - **Test:**
+        1. Visit post in dev mode
+        2. Click Substack button
+        3. Should see "Copied for Substack!" status
+        4. Paste into text editor - verify it's full markdown with footer
+        5. Check footnotes are intact (test with ralph-loops post)
+        6. Paste into Substack editor - should render correctly
+      - **Files:**
+        - `src/layouts/Post.astro`
+        - `src/pages/api/get-post-markdown.ts` (new)
+        - `src/styles/global.css` (if new styles needed)
+      - Commit: `feat: Add Copy for Substack button`
+
+- [ ] **Style syndication buttons**
+      - **What:** Make LinkedIn and Substack buttons look good, consistent with other edit controls
+      - **Design:**
+        - Same size as Save/Settings buttons
+        - Use brand colors (LinkedIn blue #0077b5, Substack orange-red #FF6719) on hover
+        - Keep monochrome default to match site aesthetic
+        - Place in edit-controls bar
+      - **Suggested layout in `.edit-controls`:**
+        ```
+        [Save Status]  [🔗] [📰]  [⚙️] [💾]
+        (LinkedIn, Substack, Settings, Save)
+        ```
+      - **CSS:**
+        ```css
+        .linkedin-copy-button,
+        .substack-copy-button {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 2.5rem;
+          height: 2.5rem;
+          padding: 0.5rem;
+          border-radius: 50%;
+          border: none;
+          cursor: pointer;
+          transition: background-color 0.2s, transform 0.2s;
+          background: var(--color-code-bg);
+          color: var(--color-text);
+        }
+
+        .linkedin-copy-button:hover {
+          background: #0077b5;
+          color: white;
+          transform: scale(1.05);
+        }
+
+        .substack-copy-button:hover {
+          background: #FF6719;
+          color: white;
+          transform: scale(1.05);
+        }
+        ```
+      - **Files:** `src/styles/global.css`
+      - **Test:** Visual check - buttons should look clean and professional
+      - Commit: `style: Add styling for syndication buttons`
+
 - [x] **Fix EditToolbar to work on About page**
       - **Problem:** Toolbar doesn't appear when selecting text on About page
       - **Root cause:** EditToolbar is hard-coded to look for `[data-field="content"]` (line 18)
