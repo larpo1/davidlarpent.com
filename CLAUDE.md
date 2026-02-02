@@ -289,6 +289,25 @@ Before marking ANY test task [x] complete, you MUST:
       - **Files:** src/components/TableOfContents.astro, src/styles/global.css
       - **Commit:** See below
 
+- [x] **Replace theme toggle with Bauhaus logo**
+      - **Status:** Complete
+      - **What was done:**
+        - Moved sitelogo.png to public/
+        - Updated Base.astro to use img instead of ◐ character
+        - Added rotation animation (180° in light mode)
+        - Hover scales to 1.1
+      - **Files:** public/sitelogo.png, src/layouts/Base.astro, src/styles/global.css
+      - **Commit:** See below
+
+- [x] **Change all hyperlinks to white (not blue)**
+      - **Status:** Complete
+      - **What was done:**
+        - Changed --color-link to match --color-text in both themes
+        - Dark mode: links are #e8e8e8, hover #ffffff
+        - Light mode: links are #111, hover #000
+      - **Files:** src/styles/global.css
+      - **Commit:** See below
+
 - [x] **Only underline links in post body content**
       - **Status:** Complete
       - **What was done:**
