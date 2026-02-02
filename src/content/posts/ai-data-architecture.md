@@ -12,15 +12,13 @@ tags:
   - product
   - strategy
 ---
-In professional kitchens, mise en place is sacred. It translates loosely as “everything in its place.” Before service begins, every ingredient is prepped, measured, and positioned within arm’s reach. The actual cooking, the part that looks impressive, is only possible because of the boring work that preceded it.
+Gartner puts AI-ready organisations at 43%; McKinsey’s State of AI survey found 88% using AI but two-thirds still stuck in pilot mode. In real estate specifically, JLL’s 2025 technology survey found more than 60% of firms remain unprepared strategically, organisationally and technically. “Get your data house in order” advice is annually repeated by the big consulting firms as step one solution to this. 
 
-There’s an obvious parallel to AI adoption, and I want to take it seriously rather than let it collapse into another “get your data house in order” platitude. That advice is everywhere. Gartner puts AI-ready organisations at 43%; McKinsey’s State of AI survey found 88% using AI but two-thirds still stuck in pilot mode. In real estate specifically, JLL’s 2025 technology survey found more than 60% of firms remain unprepared strategically, organisationally and technically. The diagnosis is clear. What’s less clear is what to actually do about it.
-
-What I want to explore is what AI-ready data architecture actually looks like. Not the abstract principle, but the practical structure. A mental model that’s been useful to me, and might be useful to others thinking through the same problem.
+This note is to explore what AI-ready data architecture looks like. Not the abstract principle, but the practical structure. A mental model that’s been useful to me, and might be useful to others thinking through the same problem.
 
 ## Three layers
 
-I think about data readiness for AI in three layers. Each serves a different purpose, and getting them confused tends to cause problems.
+We find it helpful to think about data readiness for AI in three layers. Each serves a different purpose, and getting them confused tends to cause problems.
 
 **Canonical data** is the structured, pre-calculated, agreed-upon metrics. Revenue. Occupancy. Conversion rates. Whatever the core numbers are that your business argues about in meetings.
 
