@@ -17,7 +17,11 @@ export async function GET(context: APIContext) {
       description: post.data.description,
       pubDate: post.data.date,
       link: `/posts/${post.slug}/`,
+      author: 'david@davidlarpent.com (David Larpent)',
+      categories: post.data.tags || [],
     })),
-    customData: `<language>en-us</language>`,
+    customData: `<language>en-us</language>
+<managingEditor>david@davidlarpent.com (David Larpent)</managingEditor>
+<webMaster>david@davidlarpent.com (David Larpent)</webMaster>`,
   });
 }

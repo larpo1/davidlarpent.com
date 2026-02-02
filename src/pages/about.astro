@@ -10,9 +10,27 @@ const isDev = import.meta.env.DEV;
 const aboutPath = 'src/content/about.md';
 const aboutMarkdown = await fs.readFile(aboutPath, 'utf-8');
 const aboutHtml = marked.parse(aboutMarkdown);
+
+// JSON-LD Person Schema
+const personSchema = {
+  "@context": "https://schema.org",
+  "@type": "Person",
+  "name": "David Larpent",
+  "jobTitle": "Chief Product Officer",
+  "worksFor": {
+    "@type": "Organization",
+    "name": "Lavanda"
+  },
+  "url": "https://davidlarpent.com",
+  "sameAs": [
+    "https://www.linkedin.com/in/davidlarpent"
+  ],
+  "description": "Product leader writing about AI, philosophy, and cognitive science."
+};
 ---
 
 <Base title="About | David Larpent" description="About David Larpent">
+  <script slot="head" type="application/ld+json" set:html={JSON.stringify(personSchema)} />
   <article>
     <h1>About</h1>
     <div

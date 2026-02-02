@@ -38,9 +38,50 @@ const formattedDate = date.toLocaleDateString('en-US', {
   month: 'long',
   day: 'numeric'
 });
+
+// JSON-LD Article Schema
+const articleSchema = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": title,
+  "description": description,
+  "author": {
+    "@type": "Person",
+    "name": "David Larpent",
+    "url": "https://davidlarpent.com/about"
+  },
+  "publisher": {
+    "@type": "Person",
+    "name": "David Larpent",
+    "url": "https://davidlarpent.com"
+  },
+  "datePublished": date.toISOString(),
+  "dateModified": date.toISOString(),
+  "url": `https://davidlarpent.com/posts/${slug}`,
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": `https://davidlarpent.com/posts/${slug}`
+  },
+  "wordCount": wordCount,
+  "timeRequired": `PT${readingTime}M`,
+  "keywords": tags.join(", "),
+  "inLanguage": "en",
+  "articleSection": "Essays"
+};
 ---
 
-<Base title={`${title} | David Larpent`} description={description}>
+<Base
+  title={`${title} | David Larpent`}
+  description={description}
+  type="article"
+  keywords={tags}
+  articleMeta={{
+    publishedTime: date.toISOString(),
+    author: "David Larpent",
+    tags: tags
+  }}
+>
+  <script slot="head" type="application/ld+json" set:html={JSON.stringify(articleSchema)} />
   <div class="post-layout">
     <TableOfContents headings={headings} />
 

@@ -7,9 +7,25 @@ const allPosts = await getCollection('posts');
 const posts = allPosts
   .filter(post => !post.data.draft)
   .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+
+// JSON-LD WebSite Schema
+const websiteSchema = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "David Larpent",
+  "description": "Essays on philosophy, AI, cognitive science, and more.",
+  "url": "https://davidlarpent.com",
+  "author": {
+    "@type": "Person",
+    "name": "David Larpent",
+    "url": "https://davidlarpent.com/about"
+  },
+  "inLanguage": "en"
+};
 ---
 
 <Base title="David Larpent">
+  <script slot="head" type="application/ld+json" set:html={JSON.stringify(websiteSchema)} />
   <ul class="post-list">
     {posts.map(post => {
       const formattedDate = post.data.date.toLocaleDateString('en-US', {
