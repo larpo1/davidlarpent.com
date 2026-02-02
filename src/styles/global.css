@@ -776,12 +776,12 @@ a:hover {
 }
 
 .save-button {
-  background: var(--color-link);
+  background: #6ba4ff;
   color: white;
 }
 
 .save-button:hover {
-  background: var(--color-link-hover);
+  background: #5090ee;
   transform: scale(1.1);
 }
 
