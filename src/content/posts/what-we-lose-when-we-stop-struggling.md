@@ -100,8 +100,6 @@ For me, the line looks something like this:
 
 **Protect for my kids:** The experience of not knowing something and having to figure it out. The satisfaction of making something hard work. The understanding that difficulty is often the texture of meaning, not an obstacle to it.
 
-* * *
-
 [^1]: Shen, J.H. & Tamkin, A. (2026). "How AI Impacts Skill Formation." arXiv:2601.20245. The study found participants using AI assistance scored 50% on comprehension tests vs. 67% for the control group. [Full paper](https://arxiv.org/abs/2601.20245)
 
 [^2]: The FAA has documented this extensively. A 2013 safety alert noted that pilots who regularly use automated systems "have fewer opportunities to maintain and improve" manual flying skills, creating risks when automation fails or must be overridden. See FAA SAFO 13002.
