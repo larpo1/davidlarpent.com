@@ -114,6 +114,162 @@ Before marking ANY test task [x] complete, you MUST:
 
 ## Current Tasks
 
+### SEO & Discoverability (Priority)
+
+- [x] **Add tagging system with cross-linking**
+      - **Status:** Complete (commit 3ba2266)
+      - **What was built:**
+        - Schema updated with tags field
+        - 3 posts tagged (AI, philosophy, learning, cognitive-science, automation, tools, development)
+        - Dynamic tag pages at /tags/[tag]/ (7 pages generated)
+        - Related posts section based on shared tags
+        - Tags displayed on post headers and homepage
+        - Internal linking structure for SEO
+      - **Files:** src/content/config.ts, src/pages/tags/[tag].astro, src/layouts/Post.astro, src/pages/index.astro, src/styles/global.css
+      - **Commit:** 3ba2266
+
+- [x] **Add robots.txt for AI crawler discoverability**
+      - **Status:** Complete
+      - **What was done:**
+        - Created public/robots.txt with AI crawler allowlist
+        - Allows GPTBot, Claude-Web, CCBot, PerplexityBot, Applebot, etc.
+        - Build verified, deploys to production
+      - **Files:** public/robots.txt
+      - **Commit:** 7f7c5ba
+
+- [x] **Add JSON-LD structured data to posts**
+      - **Status:** Complete
+      - **What was done:**
+        - Article schema added to Post.astro with all required fields
+        - Includes: headline, description, author, publisher, dates, wordCount, timeRequired
+        - Keywords populated from post tags
+        - inLanguage: "en", articleSection: "Essays"
+      - **Files:** src/layouts/Post.astro, src/layouts/Base.astro
+      - **Next:** Test with Google Rich Results and Schema.org validator
+
+- [x] **Add JSON-LD structured data to homepage**
+      - **Status:** Complete
+      - **What was done:**
+        - WebSite schema added to index.astro
+        - Includes: name, description, url, author (Person), inLanguage
+      - **Files:** src/pages/index.astro
+      - **Next:** Add Person schema to about page
+
+- [x] **Add JSON-LD Person schema to about page**
+      - **Status:** Complete
+      - **What was done:**
+        - Added Person schema with name, jobTitle, worksFor, sameAs (LinkedIn)
+        - Includes description for LLM context
+      - **Files:** src/pages/about.astro
+      - **Commit:** 83465b5
+
+- [x] **Enhance Open Graph meta tags**
+      - **Status:** Complete
+      - **What was done:**
+        - Base.astro updated with image, type, keywords, articleMeta props
+        - og:image support (defaults to /og-default.jpg)
+        - og:site_name added
+        - article:published_time, article:author, article:tag for posts
+        - Twitter card upgraded to "summary_large_image"
+        - Twitter image added
+      - **Files:** src/layouts/Base.astro, src/layouts/Post.astro
+      - **Next:** Create actual og-default.jpg image
+
+- [x] **Improve RSS feed with author and full content**
+      - **Status:** Complete
+      - **What was done:**
+        - ✅ Author field added
+        - ✅ Categories from tags
+        - ✅ managingEditor and webMaster in customData
+        - ✅ Full post content rendered via `content:encoded` field
+        - Uses marked to render markdown to HTML
+      - **Files:** src/pages/rss.xml.ts
+      - **Commit:** See below
+
+- [ ] **Create default OpenGraph image**
+      - **What:** Create a 1200x630px image for social media previews
+      - **Options:**
+        1. Use Canva/Figma to create simple branded image (10 min)
+        2. Use https://og-playground.vercel.app/ to auto-generate
+        3. Commission a designer (if you want professional look)
+      - **Design suggestion:**
+        - Dark background (match site aesthetic)
+        - "David Larpent" in Newsreader font
+        - "Essays on AI, Philosophy, Product" subtitle
+        - Simple, minimal, professional
+      - **File:** public/og-default.jpg (1200x630px)
+      - **Commit:** `feat: Add default OpenGraph image for social sharing`
+
+- [x] **Add meta tags for author and keywords**
+      - **Status:** Complete
+      - **What was done:**
+        - Author meta tag added to all pages
+        - rel="author" link to /about added
+        - lang="en" on <html> tag
+        - Keywords meta tag on posts (from tags)
+      - **Files:** src/layouts/Base.astro
+      - **Commit included in:** Enhanced OG tags commit
+
+---
+
+### Development Experience
+
+- [ ] **Show draft posts in development mode**
+      - **What:** Make draft posts viewable at their URLs during local development
+      - **Why:** Better dev experience - preview drafts without changing draft status
+      - **Current behavior:**
+        - Draft posts are filtered out in getStaticPaths
+        - Can't visit /posts/draft-slug/ even in dev mode
+        - Must set draft: false to preview, then remember to change back
+      - **Desired behavior:**
+        - Dev mode (import.meta.env.DEV): Show ALL posts (drafts + published)
+        - Production: Only published posts (current behavior)
+      - **Implementation:**
+        ```typescript
+        // src/pages/posts/[...slug].astro
+        export async function getStaticPaths() {
+          const allPosts = await getCollection('posts');
+
+          // In dev: show all posts. In prod: only published.
+          const posts = import.meta.env.DEV
+            ? allPosts
+            : allPosts.filter(post => !post.data.draft);
+
+          return posts.map(post => {
+            // Related posts should only link to posts visible in current env
+            const visiblePosts = import.meta.env.DEV
+              ? allPosts
+              : allPosts.filter(p => !p.data.draft);
+
+            const relatedPosts = visiblePosts
+              .filter(p => p.slug !== post.slug)
+              .filter(p => p.data.tags.some(tag => post.data.tags.includes(tag)))
+              .map(p => ({ ... }))
+              .sort((a, b) => b.sharedTags.length - a.sharedTags.length)
+              .slice(0, 3);
+
+            return {
+              params: { slug: post.slug },
+              props: { post, relatedPosts },
+            };
+          });
+        }
+        ```
+      - **Edge cases:**
+        - Related posts in dev mode: OK to show draft→draft links
+        - Related posts in prod: Must only link to published posts
+        - Homepage/tags: Keep current behavior (only show published)
+      - **Test:**
+        1. Set a post to draft: true
+        2. Run npm run dev
+        3. Visit /posts/draft-slug/ - should work
+        4. Run npm run build
+        5. Visit /posts/draft-slug/ in preview - should 404
+      - **Files:** src/pages/posts/[...slug].astro
+      - **Commit:** `feat: Show draft posts in development mode`
+
+---
+
 ### Syndication Tests - MISSING (Created as Separate Tasks)
 
 **Context:** The syndication features (LinkedIn/Substack buttons) were implemented but tests were skipped.
