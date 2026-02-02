@@ -81,14 +81,55 @@ Read the full essay: https://davidlarpent.com/posts/${slug}
         });
         ```
       - **Styling:** Match existing button styles (`.save-button`, `.settings-button`)
-      - **Test:**
+      - **Manual test:**
         1. Visit post in dev mode
         2. Click LinkedIn button
         3. Should see "Copied for LinkedIn!" status
         4. Paste into text editor - verify format is correct (title + excerpt + link + hashtags)
         5. Check character count is reasonable (~600-800 chars)
-      - **Files:** `src/layouts/Post.astro`, `src/styles/global.css` (if new styles needed)
-      - Commit: `feat: Add Copy for LinkedIn button`
+      - **Automated test:** Create `tests/syndication.spec.ts`
+        ```typescript
+        import { test, expect } from '@playwright/test';
+
+        test.describe('LinkedIn Syndication', () => {
+          test('LinkedIn copy button exists in dev mode', async ({ page }) => {
+            await page.goto('/posts/ralph-loops/');
+
+            const linkedinButton = page.locator('.linkedin-copy-button');
+            await expect(linkedinButton).toBeVisible();
+            await expect(linkedinButton).toHaveAttribute('title', 'Copy for LinkedIn');
+          });
+
+          test('LinkedIn copy generates correct format', async ({ page, context }) => {
+            // Grant clipboard permissions
+            await context.grantPermissions(['clipboard-read', 'clipboard-write']);
+
+            await page.goto('/posts/ralph-loops/');
+
+            // Click LinkedIn copy button
+            const linkedinButton = page.locator('.linkedin-copy-button');
+            await linkedinButton.click();
+
+            // Verify status message
+            const status = page.locator('.save-status');
+            await expect(status).toHaveText('Copied for LinkedIn!');
+
+            // Read clipboard content
+            const clipboardText = await page.evaluate(() => navigator.clipboard.readText());
+
+            // Verify format
+            expect(clipboardText).toContain('Ralph loops');
+            expect(clipboardText).toContain('Read the full essay: https://davidlarpent.com/posts/ralph-loops');
+            expect(clipboardText).toMatch(/#\w+/); // Has at least one hashtag
+
+            // Verify it's an excerpt, not full content
+            expect(clipboardText.length).toBeLessThan(1500);
+            expect(clipboardText.length).toBeGreaterThan(300);
+          });
+        });
+        ```
+      - **Files:** `src/layouts/Post.astro`, `src/styles/global.css`, `tests/syndication.spec.ts` (new)
+      - Commit: `feat: Add Copy for LinkedIn button with tests`
 
 - [ ] **Add "Copy for Substack" button**
       - **What:** Add button to dev edit controls that copies full markdown to clipboard
@@ -185,18 +226,84 @@ Originally published at davidlarpent.com`;
           }
         };
         ```
-      - **Test:**
+      - **Manual test:**
         1. Visit post in dev mode
         2. Click Substack button
         3. Should see "Copied for Substack!" status
         4. Paste into text editor - verify it's full markdown with footer
         5. Check footnotes are intact (test with ralph-loops post)
         6. Paste into Substack editor - should render correctly
+      - **Automated test:** Add to `tests/syndication.spec.ts`
+        ```typescript
+        test.describe('Substack Syndication', () => {
+          test('Substack copy button exists in dev mode', async ({ page }) => {
+            await page.goto('/posts/ralph-loops/');
+
+            const substackButton = page.locator('.substack-copy-button');
+            await expect(substackButton).toBeVisible();
+            await expect(substackButton).toHaveAttribute('title', 'Copy for Substack');
+          });
+
+          test('Substack copy generates full markdown with footer', async ({ page, context }) => {
+            // Grant clipboard permissions
+            await context.grantPermissions(['clipboard-read', 'clipboard-write']);
+
+            await page.goto('/posts/ralph-loops/');
+
+            // Click Substack copy button
+            const substackButton = page.locator('.substack-copy-button');
+            await substackButton.click();
+
+            // Verify status message
+            const status = page.locator('.save-status');
+            await expect(status).toHaveText('Copied for Substack!');
+
+            // Read clipboard content
+            const clipboardText = await page.evaluate(() => navigator.clipboard.readText());
+
+            // Verify footer
+            expect(clipboardText).toContain('---');
+            expect(clipboardText).toContain('Originally published at davidlarpent.com');
+
+            // Verify it's markdown (has markdown syntax)
+            expect(clipboardText).toMatch(/^##\s+/m); // Has markdown headings
+
+            // Verify footnotes are intact (ralph-loops has footnotes)
+            expect(clipboardText).toContain('[^1]');
+            expect(clipboardText).toMatch(/\[\^1\]:/); // Footnote definition
+
+            // Verify it's full content, not excerpt
+            expect(clipboardText.length).toBeGreaterThan(2000);
+          });
+
+          test('get-post-markdown API returns markdown', async ({ request }) => {
+            const response = await request.get('/api/get-post-markdown?slug=ralph-loops');
+            expect(response.ok()).toBeTruthy();
+
+            const data = await response.json();
+            expect(data.success).toBe(true);
+            expect(data.markdown).toBeTruthy();
+            expect(data.frontmatter).toBeTruthy();
+            expect(data.markdown).toContain('[^1]'); // Has footnotes
+            expect(data.markdown).toMatch(/^##\s+/m); // Has markdown headings
+          });
+
+          test('get-post-markdown API requires slug', async ({ request }) => {
+            const response = await request.get('/api/get-post-markdown');
+            expect(response.status()).toBe(400);
+
+            const data = await response.json();
+            expect(data.success).toBe(false);
+            expect(data.message).toContain('Slug required');
+          });
+        });
+        ```
       - **Files:**
         - `src/layouts/Post.astro`
         - `src/pages/api/get-post-markdown.ts` (new)
         - `src/styles/global.css` (if new styles needed)
-      - Commit: `feat: Add Copy for Substack button`
+        - `tests/syndication.spec.ts` (update)
+      - Commit: `feat: Add Copy for Substack button with tests`
 
 - [ ] **Style syndication buttons**
       - **What:** Make LinkedIn and Substack buttons look good, consistent with other edit controls
@@ -240,9 +347,37 @@ Originally published at davidlarpent.com`;
           transform: scale(1.05);
         }
         ```
-      - **Files:** `src/styles/global.css`
-      - **Test:** Visual check - buttons should look clean and professional
-      - Commit: `style: Add styling for syndication buttons`
+      - **Manual test:** Visual check - buttons should look clean and professional
+      - **Automated test:** Add to `tests/syndication.spec.ts`
+        ```typescript
+        test.describe('Syndication Button Styling', () => {
+          test('buttons are visible and properly styled', async ({ page }) => {
+            await page.goto('/posts/ralph-loops/');
+
+            const linkedinButton = page.locator('.linkedin-copy-button');
+            const substackButton = page.locator('.substack-copy-button');
+
+            // Check visibility
+            await expect(linkedinButton).toBeVisible();
+            await expect(substackButton).toBeVisible();
+
+            // Check size (should match other edit control buttons)
+            const linkedinBox = await linkedinButton.boundingBox();
+            expect(linkedinBox?.width).toBeGreaterThanOrEqual(35); // ~2.5rem = 40px
+            expect(linkedinBox?.height).toBeGreaterThanOrEqual(35);
+
+            // Check they're in the edit-controls container
+            const editControls = page.locator('.edit-controls');
+            await expect(editControls).toContainText(''); // Container exists
+
+            // Verify buttons are siblings of save/settings buttons
+            const saveButton = page.locator('.save-button');
+            await expect(saveButton).toBeVisible();
+          });
+        });
+        ```
+      - **Files:** `src/styles/global.css`, `tests/syndication.spec.ts` (update)
+      - Commit: `style: Add styling for syndication buttons with tests`
 
 - [x] **Fix EditToolbar to work on About page**
       - **Problem:** Toolbar doesn't appear when selecting text on About page
