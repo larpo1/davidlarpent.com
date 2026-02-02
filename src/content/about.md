@@ -1,7 +1,7 @@
 I'm David Larpent, CPO at [Lavanda](https://getlavanda.com), a property technology company.
 
-I write these notes to help me organise my thoughts on anything I find interesting: product strategy, software engineering, AI, philosophy and cognitive science. 
-
 Sometimes I paint. Occasionally I make music, badly.
+
+These notes are mostly to help me. If they also help you, great! They include thoughts product strategy, software engineering, AI, philosophy and cognitive science. 
 
 Find me on [LinkedIn](https://www.linkedin.com/in/davidlarpent) or Substack.
