@@ -12,9 +12,9 @@ tags:
   - product
   - strategy
 ---
-Gartner puts AI-ready organisations at 43%; McKinsey’s State of AI survey found 88% using AI but two-thirds still stuck in pilot mode. In real estate specifically, JLL’s 2025 technology survey found more than 60% of firms remain unprepared strategically, organisationally and technically. “Get your data house in order” advice is annually repeated by the big consulting firms as step one solution to this. 
+Gartner puts AI-ready organisations at 43%; McKinsey’s State of AI survey found 88% using AI but two-thirds still stuck in pilot mode. In real estate specifically, JLL’s 2025 technology survey found more than 60% of firms remain unprepared strategically, organisationally and technically. The immediate advcie is often: “get your data house in order”. 
 
-This note is to explore what AI-ready data architecture looks like. Not the abstract principle, but the practical structure. A mental model that’s been useful to me, and might be useful to others thinking through the same problem.
+This note is to explore what that means, and what AI-ready data architecture looks like. Not the abstract principle, but the practical structure. Here's a mental model that’s been useful to me, and might be useful to others thinking through the same problem.
 
 ## Three layers
 
@@ -64,7 +64,7 @@ Structured data has decades of tooling, best practices, and organisational muscl
 
 Correlation data is at least recognised as important, even when it’s poorly maintained. People know they need market context.
 
-But semantic data tends to fall into a gap. It’s too unstructured for traditional analytics, so it gets either ignored or forced into taxonomies that strip out most of its value. The review that says “the kitchen was disgusting and the landlord took three weeks to respond” becomes a row in a table: `category: cleanliness, sentiment: negative`. The nuance is gone. The connection between cleanliness and responsiveness is gone. The specific language that might help you understand the problem is gone.
+But semantic data tends to fall into a gap. It’s too unstructured for traditional analytics, so it gets either ignored or forced into taxonomies that strip out some of its value. The review that says “the kitchen was disgusting and the landlord took three weeks to respond” becomes a row in a table: `category: cleanliness, sentiment: negative`. The nuance is gone. The connection between cleanliness and responsiveness is gone. The specific language that might help you understand the problem is gone.
 
 Embedding-based approaches change this. The full text can be preserved, vectorised, and made queryable without losing fidelity. A question like “what are residents saying about maintenance response times?” can surface relevant passages across thousands of reviews without anyone having manually tagged them.
 
