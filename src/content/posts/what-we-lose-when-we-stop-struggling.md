@@ -6,17 +6,15 @@ description: >-
   what we love.
 draft: false
 ---
-Anthropic just published a study showing that developers who use AI assistance score 17% lower on understanding the code they just wrote.[^1] They finished the task slightly faster. They apparently learned almost nothing.
+Anthropic just published a study showing that developers who use AI assistance score 17% lower on understanding the code they just wrote. They finished the task slightly faster. They apparently learned almost nothing.
 
-The researchers watched how people worked. Some handed everything to the AI and breezed through. Others asked the AI questions, then wrote the code themselves. The first group was quickest. The second group actually understood what they’d built.
+The researchers watched how people worked. Some handed everything to the AI and breezed through. Others asked the AI questions, then wrote the code themselves. The first group was quickest, but only the second group understood what they’d built.
 
 This is the product working exactly as designed. We built tools to help people go faster. They went faster. They just didn’t go anywhere.
 
 * * *
 
 ## The Speed Trap
-
-We’ve confused two different things: making decisions faster and making decisions better.
 
 Sometimes speed is the game. A trader has milliseconds. A pilot in an emergency has seconds. An ER doctor triaging patients needs answers now. In these contexts, give people all the AI support you can. Faster is better because the clock is the constraint.
 
@@ -26,29 +24,25 @@ Most decisions benefit from sitting with them. Turning them over. Feeling the fr
 
 These decisions don’t need speed. They need the slow work of judgment forming. And judgment doesn’t form when you skip to the answer.
 
-The Anthropic study makes this concrete. Developers who let AI do the thinking finished a bit faster. But when tested on what they’d learned minutes later, they bombed. The gap was biggest on debugging questions. The exact skill you need when something goes wrong. The exact moment when you can’t just ask the AI, because the AI is what got you here.
+The Anthropic study makes this concrete. Developers who let AI do the thinking finished a bit faster. But when tested on what they’d learned minutes later, they were hopeless. The gap was biggest on debugging questions. The exact skill you need when something goes wrong.
 
 * * *
 
 ## The Formation Problem
 
-Here’s the thing about neural pathways: they require reps.
-
-You don’t learn to write by reading. You learn by writing badly, repeatedly, until you write less badly. You don’t learn to diagnose problems by watching someone else diagnose them. You learn by being wrong, often, and slowly getting less wrong.
+Neural pathways are formed by reps and struggle. You don’t learn to write by reading. You learn by writing badly, repeatedly, until you write less badly. You don’t learn to diagnose problems by watching someone else diagnose them. You learn by being wrong, often, and slowly getting less wrong.
 
 This is annoying. We’d prefer to skip the part where we’re bad at things. AI offers that skip. And the skip feels great, right up until you need the skill you never built.
 
-The pilots who hand-fly the least are worst at hand-flying when the automation fails.[^2] The doctors most reliant on diagnostic algorithms are slowest to catch what the algorithm misses.[^3] The coders who outsource debugging to AI can't debug when the AI is confused. We've known this pattern for decades. Lisanne Bainbridge called it the "ironies of automation" back in 1983:[^4] the more advanced the system, the more crucial the human contribution when things go sideways, and the less capable the human is of making it.
+The pilots who hand-fly the least are worst at hand-flying when the automation fails. The doctors most reliant on diagnostic algorithms are slowest to catch what the algorithm misses. The coders who outsource debugging to AI can’t debug when the AI is confused. We’ve known this pattern for decades. Lisanne Bainbridge called it the “ironies of automation” back in 1983: the more advanced the system, the more crucial the human contribution when things go sideways, and the less capable the human is of making it.
 
 But there’s something else here that bothers me more than the competence question.
 
-Humans who never formed the skills aren’t just less useful. They’re less interesting.
+A person who has wrestled with hard problems often has interesting opinions about them. They’ve developed instincts, heuristics, preferences. They can surprise you with an angle you hadn’t considered. They’re _engaging to talk to_ about the thing they’ve struggled with.
 
-I don’t mean this as snobbery. I mean it literally. A person who has wrestled with hard problems has opinions about them. They’ve developed instincts, heuristics, preferences. They can surprise you with an angle you hadn’t considered. They’re _fun to talk to_ about the thing they’ve struggled with.
+A person who’s always had the answer handed to them ...well, isn't. They can tell you what the AI told them. That’s it.
 
-A person who’s always had the answer handed to them has nothing to say. They can tell you what the AI told them. That’s it.
-
-We’re not just risking a less capable workforce. We’re risking less capable people. Less interesting dinner companions. Less useful collaborators. Less able to hold a surprising opinion because they’ve never had to form one.
+We’re not just risking a less capable workforce. We’re risking less capable people. Less interesting dinner chat. Less useful collaborators. Less able to hold a surprising opinion because they’ve never had to form one.
 
 * * *
 
@@ -64,7 +58,7 @@ I paint because of what happens when I paint. The focus. The frustration when th
 
 That stuff doesn’t happen when you type a prompt. The output might look similar. The experience is nothing alike.
 
-Humans have made art since we had hands and walls. Cave paintings from 36,000 years ago.[^5] Not because our ancestors needed interior decorating. Because there’s something in us that wants to make things. Wants to struggle with materials. Wants to leave a mark that says _I was here, and I made this, and it was hard_.
+Humans have made art since we had hands and walls. Cave paintings from 36,000 years ago. Not because our ancestors needed interior decorating. Because there’s something in us that wants to make things. Wants to struggle with materials. Wants to leave a mark that says _I was here, and I made this, and it was hard_.
 
 The difficulty is the point.
 
