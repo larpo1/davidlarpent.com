@@ -10,9 +10,7 @@ There’s a technique doing the rounds called “Ralph Wiggum loops.” Named af
 
 The idea is that you spin up one Claude Code instance as your PM to work on tasks, todos, docs and tests and limit it to iteratively update only a CLAUDE.md file. You then spin up a second Claude Code instance (Ralph) which you run in a bash loop, picking tasks, executing, going again. 
 
-I’ve been playing with this. It’s fun. 
-
-* * *
+I’ve been playing with this. It’s amusing.
 
 ## The basic setup
 
@@ -28,8 +26,6 @@ It picks up where it left off because the codebase has changed. The tests that w
 
 Someone made a plugin for this. Because of course they did.
 
-* * *
-
 ## ”Pretengineering”
 
 You heard it here first. OK fine. “Vibe Coding”. Whatever. 
@@ -37,8 +33,6 @@ You heard it here first. OK fine. “Vibe Coding”. Whatever. 
 You’re asking an AI to do work. It does some work. Then it tries to leave. You don’t let it leave. It sighs and does more work. This continues until either success or you run out of money.
 
 This is how you train a puppy, or solve a Rubik’s cube by randomly turning bits ‘til the colours line up.
-
-* * *
 
 ## How to start
 
@@ -78,8 +72,6 @@ Chris MDP has a [whole system](https://github.com/chrismdp/ralph) with work queu
 
 At this point you’re building infrastructure to manage your AI that’s building infrastructure for you. It’s loops all the way down.
 
-* * *
-
 ## When This Works
 
 The sweet spot is narrower than the hype suggests.
@@ -89,8 +81,6 @@ The sweet spot is narrower than the hype suggests.
 “Make the tests pass” is a good Ralph task. “Make the architecture elegant” is how you get a codebase that looks like it was designed by a committee of sleep-deprived squirrels.
 
 **Doesn’t work:** Design judgment, subjective quality, tight deadlines, anything going near production.
-
-* * *
 
 ## The Two-Terminal Problem
 
@@ -108,17 +98,15 @@ The fix is a `PM.md` file that repeatedly insists it stay in its lane. Even then
 
 **It’s not pair programming.** Ralph doesn’t push back on your ideas or suggest better approaches. It just… does what you said, over and over, until something works.
 
-* * *
-
 ## So Why Bother?
 
-Because it’s fun.
+Because it’s an entertaining way to do things you don't care that much about.
 
 Because there’s something delightful about waking up to a feature that didn’t exist when you went to sleep.
 
 Because it forces you to think clearly about what you actually want, which turns out to be useful even when humans are writing the code.
 
-And because I suspect this is a preview of something. Two years ago this would have produced garbage. Now it produces… something.
+And because I suspect this is a preview of something.
 
 [^1]: The technique and plugin are documented at [awesomeclaude.ai/ralph-wiggum](https://awesomeclaude.ai/ralph-wiggum). The name references Ralph Wiggum from The Simpsons, a character whose defining trait is cheerful persistence despite consistent failure.
 
