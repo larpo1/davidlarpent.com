@@ -42,7 +42,7 @@ We’re not just risking a less capable workforce. We’re risking less capable 
 
 I paint. Oils, mostly. I also make music, badly, for my own amusement.  
 
-I don’t paint to have paintings. I paint because of what happens when I paint.  The engrossing frustration when the colour isn’t right. The weird satisfaction when something starts to work. The way the hyper focus kicks in and time disappears. The moment where the hand does something the conscious mind didn’t plan and it’s somehow feels exactly right. 
+I don’t paint to have paintings. I paint because of what happens when I paint.  The engrossing frustration when the colour isn’t right. The weird satisfaction when something starts to work. The way hyper focus kicks in and time disappears. The moment where the hand does something the conscious mind didn’t plan and it’s somehow feels right. 
 
 That stuff doesn’t happen when you type a prompt. The output might look similar. The experience is nothing alike.
 
@@ -56,9 +56,9 @@ What happens when we commoditise the output?
 
 When the thing you can make in 30 seconds with a prompt is indistinguishable from the thing I sweated over for 30 hours, something strange happens to the value of both. Not the market value. The felt value. The meaning.
 
-I’m not worried about AI putting artists out of work. I’m worried about AI putting artists out of the _experience_ of being artists. Making the struggle feel pointless. 
+I’m not worried about AI putting creative people out of work. I’m worried about AI putting young people (and old people) out of the _experience_ of being creative. Making the struggle feel pointless. 
 
-I’m worried we build a world where we can have anything we want, effortlessly, and none of it means anything.
+I’m worried my boys are entering a world where we can have anything we want, effortlessly, and none of it means anything.
 
 ## The Choice
 
