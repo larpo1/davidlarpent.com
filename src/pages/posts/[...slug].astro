@@ -3,16 +3,31 @@ import { getCollection } from 'astro:content';
 import Post from '../../layouts/Post.astro';
 
 export async function getStaticPaths() {
-  const posts = await getCollection('posts');
-  return posts
-    .filter(post => !post.data.draft)
-    .map(post => ({
+  const allPosts = await getCollection('posts');
+  const publishedPosts = allPosts.filter(post => !post.data.draft);
+
+  return publishedPosts.map(post => {
+    // Find related posts (posts with at least one shared tag)
+    const relatedPosts = publishedPosts
+      .filter(p => p.slug !== post.slug) // Exclude current post
+      .filter(p => p.data.tags.some(tag => post.data.tags.includes(tag))) // Has shared tag
+      .map(p => ({
+        slug: p.slug,
+        title: p.data.title,
+        description: p.data.description,
+        sharedTags: p.data.tags.filter(tag => post.data.tags.includes(tag))
+      }))
+      .sort((a, b) => b.sharedTags.length - a.sharedTags.length) // Sort by number of shared tags
+      .slice(0, 3); // Maximum 3 related posts
+
+    return {
       params: { slug: post.slug },
-      props: { post },
-    }));
+      props: { post, relatedPosts },
+    };
+  });
 }
 
-const { post } = Astro.props;
+const { post, relatedPosts } = Astro.props;
 const { Content, headings } = await post.render();
 ---
 
@@ -22,6 +37,8 @@ const { Content, headings } = await post.render();
   description={post.data.description}
   draft={post.data.draft}
   slug={post.slug}
+  tags={post.data.tags}
+  relatedPosts={relatedPosts}
   headings={headings}
 >
   <Content />

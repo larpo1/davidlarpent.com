@@ -3,6 +3,7 @@ title: The Unbearable Lightness of Prompting
 date: 2026-01-30T00:00:00.000Z
 description: 'On skill atrophy, the joy of difficulty, and relearning how to struggle.'
 draft: false
+tags: [AI, philosophy, learning, cognitive-science]
 ---
 I wrote this the old fashioned way. Partly for my kids, partly to force some new neural pathways into being.  
 

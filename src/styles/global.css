@@ -189,6 +189,101 @@ a:hover {
   margin: 0.25rem 0;
 }
 
+.post-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.tag-link {
+  font-size: 0.75rem;
+  color: var(--color-text-light);
+  text-decoration: none;
+  padding: 0.25rem 0.75rem;
+  background: var(--color-code-bg);
+  border-radius: 1rem;
+  border: 1px solid var(--color-border);
+  transition: background 0.2s, color 0.2s, border-color 0.2s;
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+.tag-link:hover {
+  background: var(--color-link);
+  color: white;
+  border-color: var(--color-link);
+}
+
+/* Related Posts */
+.related-posts {
+  margin-top: 4rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--color-border);
+}
+
+.related-posts h2 {
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
+  color: var(--color-text);
+}
+
+.related-posts-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 1.5rem;
+}
+
+.related-post-item {
+  margin: 0;
+}
+
+.related-post-link {
+  display: block;
+  padding: 1.25rem;
+  background: var(--color-code-bg);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  text-decoration: none;
+  color: inherit;
+  transition: border-color 0.2s, transform 0.2s;
+}
+
+.related-post-link:hover {
+  border-color: var(--color-link);
+  transform: translateY(-2px);
+}
+
+.related-post-link h3 {
+  font-size: 1.1rem;
+  margin: 0 0 0.5rem 0;
+  color: var(--color-link);
+}
+
+.related-post-description {
+  font-size: 0.85rem;
+  color: var(--color-text-light);
+  margin: 0 0 0.75rem 0;
+  line-height: 1.4;
+}
+
+.related-post-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.shared-tag {
+  font-size: 0.7rem;
+  color: var(--color-link);
+  background: transparent;
+  padding: 0.2rem 0.5rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--color-link);
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
 .post-description {
   color: var(--color-text-light);
   margin: 0.75rem 0 0;

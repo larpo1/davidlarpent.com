@@ -1,0 +1,134 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+
+export async function getStaticPaths() {
+  const allPosts = await getCollection('posts');
+  const publishedPosts = allPosts.filter(post => !post.data.draft);
+
+  // Get all unique tags
+  const allTags = [...new Set(publishedPosts.flatMap(post => post.data.tags))];
+
+  // Create a page for each tag
+  return allTags.map(tag => ({
+    params: { tag },
+    props: {
+      posts: publishedPosts
+        .filter(post => post.data.tags.includes(tag))
+        .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
+    }
+  }));
+}
+
+const { tag } = Astro.params;
+const { posts } = Astro.props;
+
+// Capitalize tag for display
+const displayTag = tag.split('-').map(word =>
+  word.charAt(0).toUpperCase() + word.slice(1)
+).join(' ');
+---
+
+<Base
+  title={`${displayTag} | David Larpent`}
+  description={`Essays about ${displayTag.toLowerCase()}`}
+>
+  <div class="tag-page">
+    <header class="tag-header">
+      <h1>#{displayTag}</h1>
+      <p class="tag-count">{posts.length} {posts.length === 1 ? 'essay' : 'essays'}</p>
+    </header>
+
+    <ul class="post-list">
+      {posts.map(post => {
+        const formattedDate = post.data.date.toLocaleDateString('en-US', {
+          year: 'numeric',
+          month: 'short',
+          day: 'numeric'
+        });
+
+        return (
+          <li class="post-list-item">
+            <h2 class="post-list-title">
+              <a href={`/posts/${post.slug}`}>{post.data.title}</a>
+            </h2>
+            <div class="post-meta">{formattedDate}</div>
+            {post.data.description && (
+              <p class="post-description">{post.data.description}</p>
+            )}
+            {post.data.tags.length > 0 && (
+              <div class="post-tags">
+                {post.data.tags.map(postTag => (
+                  <a href={`/tags/${postTag.toLowerCase()}`} class="tag-link">
+                    #{postTag}
+                  </a>
+                ))}
+              </div>
+            )}
+          </li>
+        );
+      })}
+    </ul>
+
+    <a href="/" class="back-link">← Back to all essays</a>
+  </div>
+</Base>
+
+<style>
+  .tag-page {
+    max-width: 60rem;
+    margin: 0 auto;
+  }
+
+  .tag-header {
+    margin-bottom: 3rem;
+    border-bottom: 1px solid var(--color-border);
+    padding-bottom: 1.5rem;
+  }
+
+  .tag-header h1 {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+    color: var(--color-link);
+  }
+
+  .tag-count {
+    font-size: 1rem;
+    color: var(--color-text-muted);
+    margin: 0;
+  }
+
+  .post-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+  }
+
+  .tag-link {
+    font-size: 0.85rem;
+    color: var(--color-text-muted);
+    text-decoration: none;
+    padding: 0.25rem 0.75rem;
+    background: var(--color-code-bg);
+    border-radius: 1rem;
+    transition: background 0.2s, color 0.2s;
+  }
+
+  .tag-link:hover {
+    background: var(--color-link);
+    color: white;
+  }
+
+  .back-link {
+    display: inline-block;
+    margin-top: 3rem;
+    color: var(--color-text-muted);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .back-link:hover {
+    color: var(--color-link);
+  }
+</style>
