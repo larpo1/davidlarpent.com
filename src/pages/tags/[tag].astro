@@ -4,10 +4,14 @@ import Base from '../../layouts/Base.astro';
 
 export async function getStaticPaths() {
   const allPosts = await getCollection('posts');
-  const publishedPosts = allPosts.filter(post => !post.data.draft);
+
+  // In dev: show all posts (including drafts). In prod: only published.
+  const visiblePosts = import.meta.env.DEV
+    ? allPosts
+    : allPosts.filter(post => !post.data.draft);
 
   // Get all unique tags (normalized to lowercase for consistent URLs)
-  const allTags = [...new Set(publishedPosts.flatMap(post =>
+  const allTags = [...new Set(visiblePosts.flatMap(post =>
     post.data.tags.map(tag => tag.toLowerCase())
   ))];
 
@@ -15,7 +19,7 @@ export async function getStaticPaths() {
   return allTags.map(tag => ({
     params: { tag },
     props: {
-      posts: publishedPosts
+      posts: visiblePosts
         .filter(post => post.data.tags.map(t => t.toLowerCase()).includes(tag))
         .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
     }
