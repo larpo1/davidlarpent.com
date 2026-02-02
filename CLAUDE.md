@@ -225,6 +225,31 @@ Before marking ANY test task [x] complete, you MUST:
 
 ---
 
+### Design Polish
+
+- [x] **Only underline links in post body content**
+      - **Status:** Complete
+      - **What was done:**
+        - Base links have no underline by default
+        - `.post-content a` links have underline for readability
+        - All other links (nav, titles, tags, TOC, etc.) remain without underline
+        - Smooth color transitions on hover (0.3s ease)
+      - **Files:** src/styles/global.css
+      - **Commit:** See below
+
+- [x] **Reduce prominence of tag styling**
+      - **Status:** Complete
+      - **What was done:**
+        - Tags now text-only (no background, no border)
+        - Font: Newsreader (matches body) with italic style
+        - Smaller font size (0.7rem)
+        - Subtle hover: color change to link color
+        - Also updated .shared-tag in related posts to match
+      - **Files:** src/styles/global.css
+      - **Commit:** See below
+
+---
+
 ### Syndication Tests - MISSING (Created as Separate Tasks)
 
 **Context:** The syndication features (LinkedIn/Substack buttons) were implemented but tests were skipped.

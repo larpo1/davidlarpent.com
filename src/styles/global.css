@@ -86,13 +86,16 @@ p {
 a {
   color: var(--color-link);
   text-decoration: none;
-  border-bottom: 1px solid transparent;
-  transition: border-color 0.2s, color 0.2s;
+  transition: color 0.3s ease;
 }
 
 a:hover {
   color: var(--color-link-hover);
-  border-bottom-color: var(--color-link-hover);
+}
+
+/* Post body content links - underline for readability */
+.post-content a {
+  text-decoration: underline;
 }
 
 /* Header / Site title */
@@ -112,7 +115,6 @@ a:hover {
 
 .site-title a {
   color: var(--color-text);
-  border: none;
 }
 
 .site-title a:hover {
@@ -129,12 +131,11 @@ a:hover {
 .nav-link {
   color: var(--color-text-light);
   font-size: 0.9rem;
-  border: none;
+  transition: color 0.3s ease;
 }
 
 .nav-link:hover {
   color: var(--color-text);
-  border-bottom: 1px solid var(--color-text);
 }
 
 /* Theme toggle */
@@ -176,7 +177,7 @@ a:hover {
 
 .post-list-title a {
   color: var(--color-text);
-  border: none;
+  transition: color 0.3s ease;
 }
 
 .post-list-title a:hover {
@@ -197,21 +198,19 @@ a:hover {
 }
 
 .tag-link {
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   color: var(--color-text-light);
   text-decoration: none;
-  padding: 0.25rem 0.75rem;
-  background: var(--color-code-bg);
-  border-radius: 1rem;
-  border: 1px solid var(--color-border);
-  transition: background 0.2s, color 0.2s, border-color 0.2s;
-  font-family: system-ui, -apple-system, sans-serif;
+  padding: 0;
+  background: transparent;
+  border: none;
+  transition: color 0.3s ease;
+  font-family: 'Newsreader', Georgia, serif;
+  font-style: italic;
 }
 
 .tag-link:hover {
-  background: var(--color-link);
-  color: white;
-  border-color: var(--color-link);
+  color: var(--color-link);
 }
 
 /* Related Posts */
@@ -247,7 +246,7 @@ a:hover {
   border-radius: 8px;
   text-decoration: none;
   color: inherit;
-  transition: border-color 0.2s, transform 0.2s;
+  transition: border-color 0.3s ease, transform 0.2s;
 }
 
 .related-post-link:hover {
@@ -278,10 +277,10 @@ a:hover {
   font-size: 0.7rem;
   color: var(--color-link);
   background: transparent;
-  padding: 0.2rem 0.5rem;
-  border-radius: 0.5rem;
-  border: 1px solid var(--color-link);
-  font-family: system-ui, -apple-system, sans-serif;
+  padding: 0;
+  border: none;
+  font-family: 'Newsreader', Georgia, serif;
+  font-style: italic;
 }
 
 .post-description {
@@ -367,10 +366,11 @@ a:hover {
   margin-top: 2rem;
   color: var(--color-text-light);
   font-size: 0.9rem;
+  transition: color 0.3s ease;
 }
 
 .back-link:hover {
-  color: var(--color-link);
+  color: var(--color-text);
 }
 
 /* Footnotes */
@@ -384,8 +384,9 @@ a:hover {
 
 .post-content sup a {
   color: var(--color-text-light);
-  border: none;
+  text-decoration: none;
   padding: 0 0.1em;
+  transition: color 0.3s ease;
 }
 
 .post-content sup a:hover {
@@ -414,10 +415,11 @@ a:hover {
 
 .post-content .footnotes a {
   color: var(--color-text-light);
+  transition: color 0.3s ease;
 }
 
 .post-content .footnotes a:hover {
-  color: var(--color-link);
+  color: var(--color-text);
 }
 
 /* About page */
@@ -501,16 +503,15 @@ a:hover {
 
 .toc-link {
   color: var(--color-text-light);
-  border: none;
+  text-decoration: none;
   display: block;
   padding: 0.25rem 0;
-  transition: color 0.2s;
+  transition: color 0.3s ease;
   line-height: 1.4;
 }
 
 .toc-link:hover {
   color: var(--color-text);
-  border: none;
 }
 
 .toc-link.active {
