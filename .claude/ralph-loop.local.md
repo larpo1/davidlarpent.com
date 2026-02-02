@@ -1,10 +1,9 @@
 ---
 active: true
 iteration: 1
-max_iterations: 30
-completion_promise: null
-started_at: "2026-01-30T19:41:00Z"
+max_iterations: 15
+completion_promise: "DONE"
+started_at: "2026-02-02T08:48:34Z"
 ---
 
-Read CLAUDE.md and work through the next task. When
- complete, output <promise>DONE</promise>
+Read CLAUDE.md and execute the tasks. Output <promise>DONE</promise> when all complete.

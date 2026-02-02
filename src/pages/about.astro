@@ -1,20 +1,98 @@
 ---
 import Base from '../layouts/Base.astro';
+import EditToolbar from '../components/EditToolbar.astro';
+import fs from 'fs/promises';
+import { marked } from 'marked';
+
+const isDev = import.meta.env.DEV;
+
+// Read About content from file
+const aboutPath = 'src/content/about.md';
+const aboutMarkdown = await fs.readFile(aboutPath, 'utf-8');
+const aboutHtml = marked.parse(aboutMarkdown);
 ---
 
 <Base title="About | David Larpent" description="About David Larpent">
   <article>
     <h1>About</h1>
-    <div class="about-content">
-      <p>
-        I'm David Larpent, Chief Product Officer at Lavanda, a property technology company.
-      </p>
-      <p>
-        I write about product strategy, AI, and the intersection of technology with how we actually live and work. Sometimes I paint. Occasionally I make music, badly.
-      </p>
-      <p>
-        Find me on <a href="https://www.linkedin.com/in/davidlarpent" target="_blank" rel="noopener noreferrer">LinkedIn</a> or don't. I'm not precious about it.
-      </p>
+    <div
+      class="about-content"
+      contenteditable={isDev}
+      data-field="about"
+    >
+      <Fragment set:html={aboutHtml} />
     </div>
   </article>
+
+  {isDev && (
+    <>
+      <EditToolbar />
+      <div class="edit-controls">
+        <span class="save-status"></span>
+        <button class="save-button" title="Save changes (Ctrl/Cmd+S)">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+            <polyline points="17 21 17 13 7 13 7 21"/>
+            <polyline points="7 3 7 8 15 8"/>
+          </svg>
+        </button>
+      </div>
+    </>
+  )}
 </Base>
+
+{isDev && (
+  <script>
+    const saveButton = document.querySelector('.save-button') as HTMLButtonElement;
+    const saveStatus = document.querySelector('.save-status') as HTMLElement;
+    const aboutContent = document.querySelector('[data-field="about"]') as HTMLElement;
+
+    function showStatus(message: string, isError = false) {
+      if (!saveStatus) return;
+      saveStatus.textContent = message;
+      saveStatus.classList.toggle('error', isError);
+      saveStatus.classList.toggle('success', !isError && message !== '');
+    }
+
+    async function saveAbout() {
+      const content = aboutContent?.innerHTML || '';
+
+      if (!content.trim()) {
+        showStatus('Error: Content required', true);
+        return;
+      }
+
+      showStatus('Saving...');
+
+      try {
+        const response = await fetch('/api/save-about', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ content })
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          showStatus('Saved!');
+          setTimeout(() => {
+            window.location.reload();
+          }, 500);
+        } else {
+          showStatus(`Error: ${result.message}`, true);
+        }
+      } catch (error) {
+        showStatus(`Error: ${error}`, true);
+      }
+    }
+
+    saveButton?.addEventListener('click', saveAbout);
+
+    document.addEventListener('keydown', (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+        e.preventDefault();
+        saveAbout();
+      }
+    });
+  </script>
+)}

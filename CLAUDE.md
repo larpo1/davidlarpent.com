@@ -25,7 +25,7 @@
 
 ## Current Tasks
 
-- [ ] **Make About page inline editable**
+- [x] **Make About page inline editable**
       - **What:** Make About page content editable in dev mode, just like essay content
       - **Current state:** About page content is hard-coded in `about.astro`
       - **Goal:** Store About content in a markdown file, make it editable in dev mode with toolbar + save
