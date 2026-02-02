@@ -12,7 +12,7 @@ Anthropic just published a study showing that developers who use AI assistance s
 
 The researchers watched how people worked. Some handed everything to the AI and breezed through. Others asked the AI questions, then wrote the code themselves. The first group was quickest, but only the second group understood what they’d built.
 
-The Speed Trap
+## The Speed Trap
 
 Sometimes speed is the game. A trader has milliseconds. A pilot in an emergency has seconds. An ER doctor triaging patients needs answers now. In these contexts, give people all the AI support you can. Faster is better because the clock is the constraint.
 
