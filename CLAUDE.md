@@ -25,7 +25,7 @@
 
 ## Current Tasks
 
-- [ ] **Add "Copy for LinkedIn" button**
+- [x] **Add "Copy for LinkedIn" button**
       - **What:** Add button to dev edit controls that copies LinkedIn-formatted excerpt to clipboard
       - **Location:** Add to `.edit-controls` in `src/layouts/Post.astro` (next to Save/Settings buttons)
       - **Format to generate:**
@@ -131,7 +131,7 @@ Read the full essay: https://davidlarpent.com/posts/${slug}
       - **Files:** `src/layouts/Post.astro`, `src/styles/global.css`, `tests/syndication.spec.ts` (new)
       - Commit: `feat: Add Copy for LinkedIn button with tests`
 
-- [ ] **Add "Copy for Substack" button**
+- [x] **Add "Copy for Substack" button**
       - **What:** Add button to dev edit controls that copies full markdown to clipboard
       - **Location:** Add to `.edit-controls` in `src/layouts/Post.astro` (next to LinkedIn button)
       - **Format to generate:**
@@ -305,7 +305,7 @@ Originally published at davidlarpent.com`;
         - `tests/syndication.spec.ts` (update)
       - Commit: `feat: Add Copy for Substack button with tests`
 
-- [ ] **Style syndication buttons**
+- [x] **Style syndication buttons**
       - **What:** Make LinkedIn and Substack buttons look good, consistent with other edit controls
       - **Design:**
         - Same size as Save/Settings buttons

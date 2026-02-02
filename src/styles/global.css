@@ -662,6 +662,40 @@ a:hover {
   color: var(--color-text);
 }
 
+/* Syndication Buttons */
+.linkedin-copy-button,
+.substack-copy-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s, transform 0.2s;
+  background: var(--color-code-bg);
+  color: var(--color-text-light);
+}
+
+.linkedin-copy-button svg,
+.substack-copy-button svg {
+  width: 14px;
+  height: 14px;
+}
+
+.linkedin-copy-button:hover {
+  background: #0077b5;
+  color: white;
+  transform: scale(1.1);
+}
+
+.substack-copy-button:hover {
+  background: #FF6719;
+  color: white;
+  transform: scale(1.1);
+}
+
 /* Save Status */
 .save-status {
   font-size: 0.85rem;
