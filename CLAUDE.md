@@ -40,7 +40,7 @@ After marking a task [x], verify:
 Use this format for all testing tasks:
 
 ```markdown
-- [ ] **Test: [Feature Name]**
+- [x] **Test: [Feature Name]**
       - **Blocked By:** [Implementation task name] (must be [x])
       - **Test File:** tests/[feature].spec.ts (new or update)
       - **Current Test Count:** [number] passing (run `npm test` to get current count)
@@ -119,7 +119,7 @@ Before marking ANY test task [x] complete, you MUST:
 **Context:** The syndication features (LinkedIn/Substack buttons) were implemented but tests were skipped.
 These test tasks must now be completed to achieve full test coverage.
 
-- [ ] **Test: LinkedIn copy button**
+- [x] **Test: LinkedIn copy button**
       - **Blocked By:** "Add Copy for LinkedIn button" (already [x])
       - **Test File:** tests/syndication.spec.ts (new)
       - **Current Test Count:** 88 passing
@@ -180,7 +180,7 @@ These test tasks must now be completed to achieve full test coverage.
       - **Files:** tests/syndication.spec.ts (new)
       - **Commit:** `test: Add LinkedIn copy button tests`
 
-- [ ] **Test: Substack copy button and API**
+- [x] **Test: Substack copy button and API**
       - **Blocked By:** "Test: LinkedIn copy button" (must complete first to maintain test count)
       - **Test File:** tests/syndication.spec.ts (update)
       - **Current Test Count:** 90 passing (after LinkedIn tests)
@@ -262,7 +262,7 @@ These test tasks must now be completed to achieve full test coverage.
       - **Files:** tests/syndication.spec.ts (update)
       - **Commit:** `test: Add Substack copy button and API tests`
 
-- [ ] **Test: Syndication button styling**
+- [x] **Test: Syndication button styling**
       - **Blocked By:** "Test: Substack copy button and API" (must complete first)
       - **Test File:** tests/syndication.spec.ts (update)
       - **Current Test Count:** 94 passing (after Substack tests)
@@ -1882,7 +1882,7 @@ Ralph will complete both implementation AND testing because:
       - Files: src/layouts/Post.astro, src/styles/global.css
       - Commit: `feat: Add Copy for LinkedIn button`
 
-- [ ] **Test: LinkedIn copy button** (Separate Task)
+- [x] **Test: LinkedIn copy button** (Separate Task)
       - Blocked By: "Add Copy for LinkedIn button"
       - Current Test Count: 88 passing
       - Expected Test Count: 90 passing (+2)
