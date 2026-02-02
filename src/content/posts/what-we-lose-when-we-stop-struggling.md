@@ -20,11 +20,11 @@ Most decisions benefit from sitting with them. Turning them over. Feeling the fr
 
 These decisions don’t need speed. They need the slow work of judgment forming. And judgment doesn’t form when you skip to the answer.
 
-The Anthropic study makes a sharp point. This study in Nature drives it home: "[Human-generative AI collaboration enhances task performance but undermines human’s intrinsic motivation](https://www.nature.com/articles/s41598-025-98385-2)". Uff.
+The Anthropic study makes a sharp point. This study in Nature drives it home: “[Human-generative AI collaboration enhances task performance but undermines human’s intrinsic motivation](https://www.nature.com/articles/s41598-025-98385-2)”. Uff.
 
 ## The Formation Problem
 
-Neural pathways are formed by reps and struggle. You don’t learn to write by reading. You learn by writing badly, repeatedly, until you write less badly. You don’t learn to diagnose problems by watching someone else diagnose them. You learn by being wrong, often, and slowly getting less wrong.
+Neural pathways are formed by reps and struggle. You don’t learn to write and articulate thought by reading. You learn by writing badly, repeatedly, until you write less badly. You don’t learn to diagnose problems by watching someone else diagnose them. You learn by being wrong, often, and slowly getting less wrong.
 
 This is annoying. We’d prefer to skip the part where we’re bad at things. AI offers that skip. And the skip feels great, right up until you need the skill you never built.
 
