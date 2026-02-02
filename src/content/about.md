@@ -1,6 +1,8 @@
-I'm David Larpent, I lead Product and Engineering at Lavanda, a property technology company.
+I'm David Larpent. 
 
-I write about things that interest me, to help me organise my thoughts. Generally that is product strategy, AI, philosophy and cognitive science. 
+I am CPO at [Lavanda](https://getlavanda.com), a property technology company.
+
+I write these notes to help me organise my thoughts on anything I find interesting: product strategy, software engineering, AI, philosophy and cognitive science. 
 
 Sometimes I paint. Occasionally I make music, badly.
 
