@@ -1,7 +1,7 @@
 ---
-title: "Decision Systems, Not Dashboards"
+title: 'Decision Systems, Beat Dashboards'
 date: 2026-02-02T00:00:00.000Z
-description: "Why the next generation of business intelligence starts with a question, not a report"
+description: 'Building AI tools that answer ''what should I do?'', not just ''what happened?'''
 draft: true
 tags:
   - AI
@@ -10,103 +10,106 @@ tags:
   - product
   - strategy
 ---
+In a [previous piece](/posts/when-decisions-stop-scaling), I described the synthesis bottleneck: organisations have plenty of data but struggle to turn it into decisions at scale. The constraint isn’t visibility. It’s the cognitive work of combining multiple sources into actionable recommendations.
 
-In a [previous piece on data readiness](/posts/ai-data-architecture), I outlined three layers that matter for AI: canonical data (pre-calculated metrics), semantic data (unstructured, embedded), and correlation data (the mappings that connect internal performance to external context). That's the foundation. This piece is about what you can build on top of it.
+This piece is about a different kind of tool. Not a better dashboard. Something that starts from a different premise entirely.
 
-The short version: not better dashboards. Something different.
+## Question-first, not data-first
 
-## The dashboard problem
+A dashboard starts with data and asks: “What do you want to see?”
 
-Dashboards answer the question "what happened?" They're good at that. A well-designed dashboard gives you visibility into metrics that matter, updated regularly, with filters and drill-downs to explore.
+A decision system starts with a question and asks: “What decision are you trying to make?”
 
-But here's what dashboards don't do: they don't tell you what to do about it.
+This sounds like a semantic distinction. It isn’t.
 
-A dashboard might show you that occupancy at one of your properties is down 6% year-on-year. Useful to know. But the decision you actually need to make is whether to drop price, increase marketing spend, investigate service issues, or accept the shortfall and focus resources elsewhere. The dashboard doesn't help with that. It just shows you the number.
+When you ask a dashboard “what’s our occupancy?”, you get a number. You then have to figure out what that number means and what to do about it.
 
-The gap between "seeing the data" and "making the decision" is usually filled by a person. An analyst pulls additional context. A manager triangulates across reports. Someone builds a spreadsheet that combines sources the dashboard doesn't connect. Eventually, a judgment call gets made.
+When you ask a decision system “where should I be more aggressive on pricing?”, you get a recommendation with evidence. The system has already done the synthesis work: combined booking pace with demand signals, checked competitor movements, considered your review trajectory, and identified where you have headroom.
 
-This works, up to a point. But it doesn't scale.
+The output isn’t a number. It’s a judgment-ready brief.
 
-## When decisions stop scaling
+## The anatomy of a decision-first query
 
-Every organisation has a bottleneck somewhere in how decisions get made. Often it's a person. The analyst who knows how to pull the data. The manager who holds enough context to interpret it. The exec who's seen this pattern before.
+Every decision-first question follows a pattern. It starts with an action and a scope:
 
-These people are valuable precisely because they bridge the gap between raw data and actionable insight. But they're also the constraint. When every decision that requires nuance has to route through the same few people, things slow down. Decisions get delayed. Or they get made without sufficient evidence because getting the evidence takes too long.
+*   “Where should I invest in facility improvements?”
+*   “Which assets are we at risk of underperforming this year?”
+*   “What would need to be true to hit our occupancy target?”
+*   “Where is service quality hurting commercial performance?”
 
-This is the "decisions stop scaling" problem. It's not a data problem. Most organisations have plenty of data. It's a synthesis problem. The work of combining multiple sources, weighing competing signals, and arriving at a recommendation is still largely manual.
+These aren’t report requests. They’re the questions that currently require a senior person to assemble context from multiple sources and weigh trade-offs.
 
-## What changes with decision systems
+A decision system decomposes each question into evidence requirements. Take “where should I invest in facility improvements?”
 
-A decision system starts from a different premise. Instead of "here's your data, figure out what to do," it starts with "what decision are you trying to make?"
+The system breaks this into sub-queries:
 
-This sounds subtle, but it changes everything.
+*   Which properties have the biggest gap between your review scores and competitors?
+*   Where is pricing headroom being capped by perception issues?
+*   What themes appear in negative feedback?
+*   Which improvements have historically driven rent increases in similar properties?
 
-When you ask a dashboard "what's our occupancy?", you get a number. When you ask a decision system "where should I be more aggressive on pricing?", you get a recommendation with reasoning.
+Each sub-query pulls from a different part of your data architecture. Structured metrics. Unstructured feedback. Market correlation data. The system then synthesises across all of it.
 
-The system decomposes the question into sub-queries. It pulls your booking pace versus last year. It checks demand signals from external sources. It looks at competitor pricing movements. It considers your review trajectory. Then it synthesises across all of that and suggests where you have headroom to push rates and where you should hold or discount.
+The output might be: “Building X has cleanliness scores 1.2 points below market, correlating with a 6% occupancy gap worth approximately £180k annually. Competitor properties that addressed common area cleanliness saw average review improvements of 0.8 points within two cycles.”
 
-This only works if the underlying data architecture supports it. You need canonical metrics that the system can trust. You need semantic data it can reason over. You need correlation mappings that connect your properties to market context. Without that foundation, you get confident-sounding nonsense.
+That’s not a dashboard. It’s decision support.
 
-But with the foundation in place, you can build systems that answer decision-first questions. Not "show me the data." But "help me decide."
+## What makes this possible
 
-## Decision-first questions
+Two things have changed that make decision systems viable now.
 
-Here's the pattern. A decision-first question starts with an action and a scope:
+**First, large language models are good at synthesis.** Given multiple pieces of information, they can combine them, reason across them, and produce a coherent recommendation. This is what they’re trained to do. The synthesis work that used to require a skilled analyst can now be partially automated.
 
-- "Where should I invest in facility improvements?"
-- "Which assets are we at risk of underperforming this year?"
-- "What would we need to believe to hit our occupancy target?"
+**Second, embedding models make unstructured data queryable.** Reviews, feedback, support tickets, free-text survey responses. This data used to sit in databases doing nothing because it didn’t fit into structured reports. Now you can embed it, search it semantically, and include it in synthesis alongside your structured metrics.
 
-These aren't report requests. They're judgment calls that traditionally required a senior person to assemble context from multiple sources and weigh trade-offs.
+But these capabilities only work if the underlying data architecture supports them. Point a language model at messy, inconsistent data and you’ll get confident-sounding nonsense.
 
-A decision system decomposes each question into evidence requirements:
+This is why [data readiness](/posts/ai-data-architecture) matters. You need canonical metrics that are pre-calculated and trustworthy. You need semantic data that’s embedded and searchable. You need correlation mappings that connect your internal data to external context.
 
-**"Where should I invest in facility improvements?"**
-- Which properties have the biggest gap between your review scores and competitors? (semantic + correlation)
-- Where is pricing headroom being capped by perception issues? (canonical + semantic)
-- What themes appear in negative feedback? (semantic)
-- Which improvements have historically driven rent increases? (canonical)
-
-The system pulls from each layer, correlates, and returns something like: "Building X has cleanliness scores 1.2 points below market, correlating with a 6% occupancy gap worth approximately £180k annually. Similar properties that addressed common area cleanliness saw 0.8 point review improvements within two cycles."
-
-That's not a dashboard. It's a decision support output.
-
-## What this replaces, and what it doesn't
-
-Decision systems replace the manual synthesis work that currently bottlenecks on a few key people. The analyst who spends two days pulling data for a quarterly review. The spreadsheet that triangulates three reports. The meeting where everyone argues about what the numbers mean.
-
-They don't replace judgment. The system recommends; humans decide. The system surfaces evidence; humans weigh trade-offs that aren't in the data. The system can tell you that Building X has a cleanliness problem worth £180k. It can't tell you whether fixing it fits your capital allocation priorities this year, or whether you're planning to sell that asset anyway.
-
-This is an important distinction. Decision systems are not autonomous decision-makers. They're augmentation for human judgment. They compress the time between "I need to make a decision" and "I have the evidence to make it well."
-
-## The confidence problem
-
-One risk with decision systems is false confidence. A well-constructed sentence with numbers in it can feel authoritative even when the underlying data is shaky.
-
-Good decision systems address this directly. They show their sources. They flag data freshness. They express uncertainty when it exists. "Based on 2024 review data and current booking pace, with moderate confidence..." is more honest than "You should do X."
-
-This is a design problem, not just a technical one. The interface needs to make evidence quality visible, not hide it behind polish.
+The AI is the reasoning layer. It needs a foundation to reason over.
 
 ## Building blocks
 
-If you're thinking about building something like this, the architecture matters.
+If you’re thinking about building something like this, here’s how I’d structure it.
 
-You need a layer that handles natural language decomposition. The user's question has to be parsed into sub-queries that map to your data structure.
+**Natural language decomposition.** The user’s question has to be parsed into sub-queries that map to your data structure. This is where an LLM interprets intent and breaks it into evidence requirements.
 
-You need reliable retrieval from structured sources. Canonical metrics should return fast and consistent. You don't want the system writing complex SQL on the fly for core KPIs.
+**Reliable structured retrieval.** Canonical metrics should return fast and consistent. You don’t want the system writing complex SQL on the fly for core KPIs. Pre-calculate them. Version them. Treat them as the source of truth.
 
-You need semantic search over unstructured data. Review text, feedback, support tickets. This is where embeddings and vector search come in.
+**Semantic search over unstructured data.** Embeddings, vector databases, similarity search. When the question requires understanding “what people are saying about X”, the system needs to surface relevant passages from thousands of documents without manual tagging.
 
-You need correlation mappings that the system can traverse. Which properties serve which markets? What external signals are relevant to which assets?
+**Correlation mappings.** Which properties serve which markets? What external signals are relevant to which assets? The system needs to traverse these relationships to add context.
 
-And you need a synthesis layer that combines all of this into a coherent response. This is where large language models add value. Not in replacing the data layer, but in reasoning across it.
+**Synthesis layer.** This is where the LLM combines everything and produces the output. The key is giving it structured inputs from the previous layers, not asking it to figure everything out from raw data.
+
+## The confidence problem
+
+One risk with decision systems is false confidence. A well-constructed sentence with numbers in it can feel authoritative even when the underlying evidence is thin.
+
+Good decision systems make evidence quality visible. They show sources. They flag data freshness. They express uncertainty when it exists.
+
+“Based on 2024 review data and current booking pace, with moderate confidence…” is more honest than a clean recommendation with no caveats.
+
+This is a design choice. The interface can either hide uncertainty behind polish or surface it clearly. The second approach builds more trust over time.
+
+## What this replaces, and what it doesn’t
+
+Decision systems replace the manual synthesis work that currently bottlenecks on key people. The analyst who spends two days pulling data for a quarterly review. The spreadsheet that triangulates three reports. The meeting where everyone argues about what the numbers mean.
+
+They don’t replace judgment. The system recommends; humans decide. The system surfaces evidence; humans weigh trade-offs that aren’t in the data. The system can tell you that Building X has a cleanliness problem worth £180k. It can’t tell you whether fixing it fits your capital allocation strategy this year, or whether you’re planning to sell that asset anyway.
+
+Decision systems are augmentation for human judgment. They compress the time between “I need to make a decision” and “I have what I need to make it well.” The decision itself still requires a person.
 
 ## The shift
 
-Dashboards were the right answer for an era when the hard problem was visibility. You couldn't make good decisions if you couldn't see what was happening. Dashboards solved that.
+Dashboards were the right answer for an era when the hard problem was visibility. If you couldn’t see what was happening, you couldn’t make good decisions. Dashboards solved that.
 
-The hard problem now is synthesis. We have more data than ever, from more sources, updating more frequently. The constraint isn't visibility. It's the cognitive work of combining it all into decisions.
+The hard problem now is different. We have more data than ever, from more sources, updating more frequently. The constraint isn’t visibility. It’s synthesis.
 
-Decision systems are the next layer. Not better dashboards. A different tool for a different problem.
+Decision systems are the tool for this constraint. They don’t show you data and ask you to interpret it. They interpret it and show you what they found. They start with your question, not your tables.
 
-The organisations that figure this out will make better decisions, faster, with less reliance on heroic individuals who hold all the context in their heads. The ones that don't will keep building dashboards and wondering why decisions still feel so slow.
+The organisations that build this capability will make better decisions, faster, with less dependence on heroic individuals. That advantage compounds.
+
+* * *
+
+_This is part of a series on AI and decision-making. See also: [AI Data Readiness](/posts/ai-data-architecture) and [When Decisions Stop Scaling](/posts/when-decisions-stop-scaling)._
