@@ -78,21 +78,15 @@ If you’re raising kids, you’re deciding what struggles to protect. Your chil
 
 That the point of writing is to have written?
 
-## What Do We Want To Be Good At?
-
-Here’s the question I keep coming back to:
-
-If we outsource everything we can outsource, what’s left?
-
-What do we keep because the keeping is the point?
+## A personal manifesto
 
 I don’t think there’s one right answer. Different people, different teams, different cultures will draw the line in different places. But I think we need to draw it consciously, rather than letting the logic of efficiency draw it for us.
 
 For me, the line looks something like this:
 
-**Give to AI:** Research, summarisation, first drafts I’m going to heavily rewrite, scheduling, formatting, the mechanical parts of coding, anything where I already know what I think and just need it executed.
+**Offer unto AI:** Research, summarisation, first drafts I’m going to heavily rewrite, scheduling, formatting, the mechanical parts of coding, anything where I already know what I think and just need it executed.
 
-**Keep for myself:** The hard thinking about what to build. The creative work I do for joy. The conversations that matter. The writing where I’m trying to figure out what I believe. The reps that build the skills I want to have.
+**Keep for myself:** The hard thinking about what to build. The creative work I do for joy. The writing where I’m trying to figure out what I believe. The reps that build the skills I want to have.
 
 **Protect for my team:** The struggles that make them grow. The decisions that build their judgment. The friction that turns juniors into seniors.
 
