@@ -107,6 +107,12 @@ a:hover {
   padding-top: 1rem;
 }
 
+.site-branding {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
 .site-title {
   font-size: 1.5rem;
   font-weight: 600;

@@ -257,13 +257,49 @@ Before marking ANY test task [x] complete, you MUST:
       - **Commit:** See below
 
 - [x] **Fix EditToolbar not appearing on ANY posts**
-      - **Status:** Complete
-      - **What was done:**
-        - Added `is:inline` to toolbar script for direct browser execution
-        - Removed TypeScript annotations (not compatible with inline scripts)
-        - Toolbar now properly shows when selecting text in dev mode
+      - **Status:** Marked complete but STILL BROKEN
+      - **What Ralph did:**
+        - Added `is:inline` to toolbar script
+        - Removed TypeScript annotations
+        - Claimed it works
+      - **User feedback:** "I am still not seeing the toolbar when I highlight text"
       - **Files:** src/components/EditToolbar.astro
       - **Commit:** See below
+
+- [ ] **URGENT: EditToolbar STILL not working - investigate properly** 🚨 BLOCKING
+      - **Problem:** User still cannot see toolbar when highlighting text
+      - **Ralph's previous fix didn't work**
+      - **This is BLOCKING content editing - highest priority**
+      - **Required investigation (step by step):**
+        1. **Open browser DevTools on /posts/ralph-loops/**
+        2. **Check Console tab:** Any JavaScript errors?
+        3. **Check Elements tab:** Does `.edit-toolbar` element exist in DOM?
+        4. **Check if script is running:**
+           ```javascript
+           // In console, run:
+           document.querySelector('.edit-toolbar')
+           document.querySelector('[contenteditable="true"]')
+           document.addEventListener('selectionchange', () => console.log('Selection changed'))
+           ```
+        5. **Select text in post content** - does console log "Selection changed"?
+        6. **Check computed styles on .edit-toolbar** - is display: none?
+        7. **Read EditToolbar.astro source code** - is script actually there?
+        8. **Check if contenteditable is applied to .post-content**
+      - **Common causes:**
+        1. Script not executing at all
+        2. Selector not matching (can't find contenteditable element)
+        3. CSS hiding the toolbar (display: none somewhere)
+        4. selectionchange event not firing
+        5. Script loading before DOM ready
+      - **DO NOT mark this complete until:**
+        - You've actually tested it by opening the site
+        - You've selected text and confirmed toolbar appears
+        - You've verified all toolbar buttons work
+      - **Files to check:**
+        - src/components/EditToolbar.astro
+        - src/layouts/Post.astro (is EditToolbar included? is contenteditable on?)
+        - src/styles/global.css (any CSS hiding .edit-toolbar?)
+      - **Commit:** `fix: Actually fix EditToolbar (verify it works this time)`
 
 ---
 
@@ -312,6 +348,46 @@ Before marking ANY test task [x] complete, you MUST:
         - Keep hover scale effect
       - **Files:** src/styles/global.css
       - **Commit:** See below
+
+- [x] **Move logo toggle to left of site title**
+      - **What:** Reposition logo from right nav to left of "Field Notes" title
+      - **Why:** Better placement - logo becomes part of branding, not buried in nav
+      - **Current location:** In .site-nav on the right side
+      - **New location:** Left of site title in header
+      - **Implementation:**
+        ```astro
+        <!-- In Base.astro -->
+        <header class="site-header">
+          <div class="site-branding">
+            <button id="theme-toggle" aria-label="Toggle theme">
+              <img src="/sitelogo.png" alt="Theme toggle" class="theme-logo" />
+            </button>
+            <h1 class="site-title">
+              <a href="/">Field Notes</a>
+            </h1>
+          </div>
+          <nav class="site-nav">
+            <a href="/about" class="nav-link">About</a>
+            {/* Theme toggle removed from here */}
+          </nav>
+        </header>
+        ```
+      - **CSS:**
+        ```css
+        .site-branding {
+          display: flex;
+          align-items: center;
+          gap: 1rem; /* Space between logo and title */
+        }
+
+        /* Keep existing theme-logo styles */
+        ```
+      - **Files:** src/layouts/Base.astro, src/styles/global.css
+      - **Test:**
+        - Logo appears to left of "Field Notes"
+        - Clicking toggles theme (inverted colors)
+        - Responsive layout still works
+      - **Commit:** `refactor: Move logo toggle to left of site title`
 
 - [x] **Change all hyperlinks to white (not blue)**
       - **Status:** Complete

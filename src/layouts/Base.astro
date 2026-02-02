@@ -108,14 +108,16 @@ const imageURL = new URL(image, Astro.site);
   <body>
     <div class="container">
       <header class="site-header">
-        <h1 class="site-title">
-          <a href="/">Field Notes</a>
-        </h1>
-        <nav class="site-nav">
-          <a href="/about" class="nav-link">About</a>
+        <div class="site-branding">
           <button id="theme-toggle" aria-label="Toggle theme">
             <img src="/sitelogo.png" alt="" class="theme-logo" />
           </button>
+          <h1 class="site-title">
+            <a href="/">Field Notes</a>
+          </h1>
+        </div>
+        <nav class="site-nav">
+          <a href="/about" class="nav-link">About</a>
         </nav>
       </header>
       <main>
