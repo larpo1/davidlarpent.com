@@ -82,7 +82,7 @@ That the point of writing is to have written?
 
 I don’t think there’s one right answer. Different people, different teams, different cultures will draw the line in different places. But I think we need to draw it consciously, rather than letting the logic of efficiency draw it for us.
 
-For me, the line looks something like this:
+For me it is something like this:
 
 **Offer unto AI:** Research, summarisation, first drafts I’m going to heavily rewrite, scheduling, formatting, the mechanical parts of coding, anything where I already know what I think and just need it executed.
 
