@@ -1,5 +1,5 @@
 ---
-title: The Mise en Place of AI
+title: AI Data Readiness for 'Decision First' Analysis
 date: 2026-02-02T00:00:00.000Z
 description: >-
   On data architecture, the semantic layer, and the prep work that improves AI
