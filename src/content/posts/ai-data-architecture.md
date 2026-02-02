@@ -1,5 +1,5 @@
 ---
-title: AI Data Readiness for 'Decision First' Analysis
+title: Data Readiness for 'Decision First' Analysis
 date: 2026-02-02T00:00:00.000Z
 description: >-
   On data architecture, the semantic layer, and the prep work that de-risks the
