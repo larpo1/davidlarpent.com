@@ -32,6 +32,9 @@
         <div class="char-count">
           <span class="char-current">0</span>/<span class="char-limit">3000</span>
         </div>
+        <div class="hashtag-pills">
+          <input class="hashtag-input" placeholder="Add hashtag..." />
+        </div>
       </div>
 
       <div class="syndication-tab-panel" data-panel="substack" style="display: none;">
@@ -75,6 +78,8 @@
     var linkPreviewImage = modal.querySelector('.link-preview-image');
     var linkPreviewTitle = modal.querySelector('.link-preview-title');
     var linkPreviewDescription = modal.querySelector('.link-preview-description');
+    var hashtagPillsContainer = modal.querySelector('.hashtag-pills');
+    var hashtagInput = modal.querySelector('.hashtag-input');
     var activeTab = 'linkedin';
 
     function openModal() {
@@ -133,6 +138,66 @@
       }, 2000);
     }
 
+    // Hashtag pill management
+    function createPill(tag) {
+      var pill = document.createElement('span');
+      pill.className = 'hashtag-pill';
+      pill.dataset.tag = tag;
+
+      var text = document.createTextNode('#' + tag);
+      pill.appendChild(text);
+
+      var removeBtn = document.createElement('button');
+      removeBtn.className = 'hashtag-remove';
+      removeBtn.textContent = '\u00D7';
+      removeBtn.title = 'Remove';
+      removeBtn.addEventListener('click', function() {
+        pill.remove();
+      });
+      pill.appendChild(removeBtn);
+
+      return pill;
+    }
+
+    function addPill(tag) {
+      if (!hashtagPillsContainer || !tag) return;
+      // Normalize: lowercase, strip spaces, remove leading #
+      tag = tag.toLowerCase().replace(/\s+/g, '').replace(/^#+/, '');
+      if (!tag) return;
+      // Don't add duplicates
+      var existing = hashtagPillsContainer.querySelectorAll('.hashtag-pill');
+      for (var i = 0; i < existing.length; i++) {
+        if (existing[i].dataset.tag === tag) return;
+      }
+      var pill = createPill(tag);
+      hashtagPillsContainer.insertBefore(pill, hashtagInput);
+    }
+
+    function clearPills() {
+      if (!hashtagPillsContainer) return;
+      var pills = hashtagPillsContainer.querySelectorAll('.hashtag-pill');
+      pills.forEach(function(p) { p.remove(); });
+    }
+
+    function getHashtags() {
+      if (!hashtagPillsContainer) return [];
+      var pills = hashtagPillsContainer.querySelectorAll('.hashtag-pill');
+      var tags = [];
+      pills.forEach(function(p) { tags.push('#' + p.dataset.tag); });
+      return tags;
+    }
+
+    // Hashtag input: add pill on Enter
+    if (hashtagInput) {
+      hashtagInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          addPill(hashtagInput.value);
+          hashtagInput.value = '';
+        }
+      });
+    }
+
     // Tab click handlers
     tabButtons.forEach(function(btn) {
       btn.addEventListener('click', function() {
@@ -150,7 +215,15 @@
       copyButton.addEventListener('click', function() {
         var textarea = activeTab === 'linkedin' ? linkedinTextarea : substackTextarea;
         if (textarea && textarea.value) {
-          navigator.clipboard.writeText(textarea.value).then(function() {
+          var textToCopy = textarea.value;
+          // Append hashtags for LinkedIn
+          if (activeTab === 'linkedin') {
+            var hashtags = getHashtags();
+            if (hashtags.length > 0) {
+              textToCopy += '\n\n' + hashtags.join(' ');
+            }
+          }
+          navigator.clipboard.writeText(textToCopy).then(function() {
             showStatus('Copied!');
           }).catch(function() {
             showStatus('Failed to copy');
@@ -182,6 +255,14 @@
       }
       if (substackTextarea && data.substackText) {
         substackTextarea.value = data.substackText;
+      }
+
+      // Populate hashtag pills from tags
+      clearPills();
+      if (data.tags && data.tags.length > 0) {
+        data.tags.forEach(function(tag) {
+          addPill(tag);
+        });
       }
 
       // Populate link preview card
