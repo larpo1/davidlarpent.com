@@ -52,6 +52,7 @@
     </div>
 
     <div class="syndication-actions">
+      <button class="syndication-regenerate">Regenerate</button>
       <button class="syndication-copy-button">Copy</button>
     </div>
 
@@ -80,7 +81,10 @@
     var linkPreviewDescription = modal.querySelector('.link-preview-description');
     var hashtagPillsContainer = modal.querySelector('.hashtag-pills');
     var hashtagInput = modal.querySelector('.hashtag-input');
+    var regenerateButton = modal.querySelector('.syndication-regenerate');
     var activeTab = 'linkedin';
+    var currentSlug = '';
+    var isGenerating = false;
 
     function openModal() {
       modal.setAttribute('data-open', 'true');
@@ -136,6 +140,56 @@
           statusEl.textContent = '';
         }
       }, 2000);
+    }
+
+    // AI draft generation
+    function generateDraft(slug, platform, fallbackText) {
+      if (isGenerating) return;
+      isGenerating = true;
+
+      var textarea = platform === 'linkedin' ? linkedinTextarea : substackTextarea;
+      if (!textarea) return;
+
+      // Show loading state
+      textarea.value = 'Generating draft...';
+      textarea.classList.add('loading');
+      if (regenerateButton) regenerateButton.disabled = true;
+      if (statusEl) statusEl.textContent = '';
+
+      fetch('/api/generate-syndication-draft', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ slug: slug, platform: platform })
+      })
+      .then(function(response) { return response.json(); })
+      .then(function(data) {
+        textarea.classList.remove('loading');
+        isGenerating = false;
+        if (regenerateButton) regenerateButton.disabled = false;
+
+        if (data.success) {
+          textarea.value = data.draft;
+          // Update hashtag pills if LinkedIn and AI returned hashtags
+          if (platform === 'linkedin' && data.hashtags && data.hashtags.length > 0) {
+            clearPills();
+            data.hashtags.forEach(function(tag) { addPill(tag); });
+          }
+        } else {
+          // Fall back to template text
+          textarea.value = fallbackText || '';
+          showStatus('AI generation failed, using template');
+        }
+        updateCharCount();
+      })
+      .catch(function() {
+        textarea.classList.remove('loading');
+        isGenerating = false;
+        if (regenerateButton) regenerateButton.disabled = false;
+        // Fall back to template text
+        textarea.value = fallbackText || '';
+        showStatus('AI generation failed, using template');
+        updateCharCount();
+      });
     }
 
     // Hashtag pill management
@@ -201,7 +255,13 @@
     // Tab click handlers
     tabButtons.forEach(function(btn) {
       btn.addEventListener('click', function() {
-        switchTab(btn.dataset.tab);
+        var tab = btn.dataset.tab;
+        switchTab(tab);
+        // If switching tabs and the other tab's textarea is empty, trigger generation
+        var textarea = tab === 'linkedin' ? linkedinTextarea : substackTextarea;
+        if (textarea && !textarea.value && currentSlug && !isGenerating) {
+          generateDraft(currentSlug, tab, '');
+        }
       });
     });
 
@@ -232,6 +292,16 @@
       });
     }
 
+    // Regenerate button
+    if (regenerateButton) {
+      regenerateButton.addEventListener('click', function() {
+        if (!currentSlug || isGenerating) return;
+        var textarea = activeTab === 'linkedin' ? linkedinTextarea : substackTextarea;
+        var fallbackText = textarea ? textarea.value : '';
+        generateDraft(currentSlug, activeTab, fallbackText);
+      });
+    }
+
     // Close handlers
     if (closeButton) {
       closeButton.addEventListener('click', closeModal);
@@ -249,12 +319,18 @@
     window.openSyndicationModal = function(data) {
       if (!data) return;
 
-      // Populate textareas
-      if (linkedinTextarea && data.linkedinText) {
-        linkedinTextarea.value = data.linkedinText;
+      currentSlug = data.slug || '';
+
+      // Store fallback texts
+      var linkedinFallback = data.linkedinText || '';
+      var substackFallback = data.substackText || '';
+
+      // Set fallback texts initially (will be replaced by AI if available)
+      if (linkedinTextarea) {
+        linkedinTextarea.value = linkedinFallback;
       }
-      if (substackTextarea && data.substackText) {
-        substackTextarea.value = data.substackText;
+      if (substackTextarea) {
+        substackTextarea.value = substackFallback;
       }
 
       // Populate hashtag pills from tags
@@ -291,6 +367,12 @@
       requestAnimationFrame(function() {
         updateTabUnderline();
       });
+
+      // Trigger AI draft generation for the active platform
+      if (currentSlug) {
+        var fallback = platform === 'linkedin' ? linkedinFallback : substackFallback;
+        generateDraft(currentSlug, platform, fallback);
+      }
     };
 
     // Initialize underline on load

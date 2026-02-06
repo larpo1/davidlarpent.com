@@ -1264,6 +1264,35 @@ a:hover {
   background: var(--color-link-hover);
 }
 
+/* Regenerate Button */
+.syndication-regenerate {
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+  border-radius: 4px;
+  cursor: pointer;
+  border: 1px solid var(--color-border);
+  background: var(--color-code-bg);
+  color: var(--color-text-light);
+  font-family: 'Newsreader', Georgia, serif;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.syndication-regenerate:hover {
+  background: var(--color-border);
+  color: var(--color-text);
+}
+
+.syndication-regenerate:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Loading State */
+.syndication-textarea.loading {
+  opacity: 0.5;
+  cursor: wait;
+}
+
 /* Syndication Status */
 .syndication-status {
   font-size: 0.85rem;

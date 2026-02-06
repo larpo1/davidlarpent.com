@@ -40,8 +40,10 @@ test.describe('Syndication Modal', () => {
     const modal = page.locator('#syndication-modal');
     await expect(modal).toHaveAttribute('data-open', 'true');
 
-    // LinkedIn textarea should have content
+    // Wait for AI generation to complete (falls back to template)
     const textarea = modal.locator('.syndication-textarea[data-platform="linkedin"]');
+    await expect(textarea).not.toHaveClass(/loading/, { timeout: 10000 });
+
     const value = await textarea.inputValue();
 
     // Should contain the post title
@@ -83,11 +85,13 @@ test.describe('Syndication Modal', () => {
     const modal = page.locator('#syndication-modal');
     await expect(modal).toHaveAttribute('data-open', 'true');
 
-    // Substack textarea should have markdown content
+    // Wait for AI generation to complete (loading class appears then disappears)
     const textarea = modal.locator('.syndication-textarea[data-platform="substack"]');
+    await expect(textarea).not.toHaveClass(/loading/, { timeout: 10000 });
+
     const value = await textarea.inputValue();
 
-    // Should contain canonical footer
+    // Should contain canonical footer (from fallback template)
     expect(value).toContain('Originally published at davidlarpent.com');
     // Should be markdown (has markdown syntax)
     expect(value).toMatch(/^##\s+/m);
@@ -164,6 +168,10 @@ test.describe('Syndication Modal', () => {
     const modal = page.locator('#syndication-modal');
     await expect(modal).toHaveAttribute('data-open', 'true');
 
+    // Wait for AI generation to complete
+    const textarea = modal.locator('.syndication-textarea[data-platform="linkedin"]');
+    await expect(textarea).not.toHaveClass(/loading/, { timeout: 10000 });
+
     // Char count should be visible
     const charCount = modal.locator('.char-count');
     await expect(charCount).toBeVisible();
@@ -172,7 +180,6 @@ test.describe('Syndication Modal', () => {
     await expect(charCount).not.toHaveClass(/over-limit/);
 
     // Type enough text to exceed 3000 chars
-    const textarea = modal.locator('.syndication-textarea[data-platform="linkedin"]');
     await textarea.fill('x'.repeat(3001));
 
     // Char count should now show over-limit
