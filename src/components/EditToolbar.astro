@@ -1,5 +1,6 @@
 ---
 // Floating WYSIWYG toolbar component using execCommand
+// Link creation uses an inline input instead of prompt() to preserve selection
 ---
 
 <div id="edit-toolbar" class="edit-toolbar" style="display: none;">
@@ -12,15 +13,27 @@
   <button data-command="formatBlock" data-value="pre" title="Code Block">&lt;&gt;</button>
 </div>
 
+<div id="link-input-popover" class="link-input-popover" style="display: none;">
+  <input type="text" id="link-url-input" placeholder="Enter URL and press Enter" />
+</div>
+
 <script is:inline>
   document.addEventListener('DOMContentLoaded', () => {
     const toolbar = document.getElementById('edit-toolbar');
+    const linkPopover = document.getElementById('link-input-popover');
+    const linkInput = document.getElementById('link-url-input');
     const contentEditable = document.querySelector('[contenteditable][data-field="content"]') || document.querySelector('[contenteditable][data-field="about"]');
 
-    if (!toolbar || !contentEditable) return;
+    if (!toolbar || !contentEditable || !linkPopover || !linkInput) return;
+
+    // Saved selection range for link creation
+    var savedLinkRange = null;
 
     // Show toolbar on text selection
     document.addEventListener('selectionchange', () => {
+      // Don't hide toolbar while link input is visible
+      if (linkPopover.style.display !== 'none') return;
+
       const selection = window.getSelection();
       if (!selection || selection.isCollapsed || !contentEditable.contains(selection.anchorNode)) {
         toolbar.style.display = 'none';
@@ -42,6 +55,75 @@
       updateToolbarState(toolbar);
     });
 
+    // Prevent toolbar from stealing focus/selection from contenteditable
+    toolbar.addEventListener('mousedown', (e) => {
+      e.preventDefault();
+    });
+
+    // Show inline link input, saving the current selection
+    function showLinkInput() {
+      const sel = window.getSelection();
+      if (!sel || sel.rangeCount === 0) return;
+      savedLinkRange = sel.getRangeAt(0).cloneRange();
+
+      // Position popover near the toolbar
+      var toolbarRect = toolbar.getBoundingClientRect();
+      linkPopover.style.top = `${toolbarRect.bottom + window.scrollY + 4}px`;
+      linkPopover.style.left = `${toolbarRect.left + window.scrollX}px`;
+      linkPopover.style.display = 'block';
+      linkInput.value = '';
+      linkInput.focus();
+    }
+
+    // Apply the saved link and close popover
+    function applyLink(url) {
+      linkPopover.style.display = 'none';
+      if (!url || !savedLinkRange) {
+        contentEditable.focus();
+        return;
+      }
+      contentEditable.focus();
+      var sel = window.getSelection();
+      sel.removeAllRanges();
+      sel.addRange(savedLinkRange);
+      document.execCommand('createLink', false, url);
+      savedLinkRange = null;
+      updateToolbarState(toolbar);
+    }
+
+    // Cancel link input
+    function cancelLinkInput() {
+      linkPopover.style.display = 'none';
+      if (savedLinkRange) {
+        contentEditable.focus();
+        var sel = window.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(savedLinkRange);
+        savedLinkRange = null;
+      }
+    }
+
+    // Link input keyboard handling
+    linkInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        applyLink(linkInput.value.trim());
+      } else if (e.key === 'Escape') {
+        e.preventDefault();
+        cancelLinkInput();
+      }
+    });
+
+    // Close link input on blur (e.g. clicking elsewhere)
+    linkInput.addEventListener('blur', () => {
+      // Small delay to allow Enter keydown to fire first
+      setTimeout(() => {
+        if (linkPopover.style.display !== 'none') {
+          cancelLinkInput();
+        }
+      }, 150);
+    });
+
     // Handle toolbar button clicks
     toolbar.addEventListener('click', (e) => {
       const button = e.target.closest('button');
@@ -51,8 +133,7 @@
       const value = button.getAttribute('data-value');
 
       if (command === 'createLink') {
-        const url = prompt('Enter URL:');
-        if (url) document.execCommand(command, false, url);
+        showLinkInput();
       } else if (value) {
         document.execCommand(command, false, value);
       } else {
@@ -81,8 +162,7 @@
           break;
         case 'k':
           e.preventDefault();
-          const url = prompt('Enter URL:');
-          if (url) document.execCommand('createLink', false, url);
+          showLinkInput();
           break;
       }
 
@@ -145,5 +225,30 @@
   .edit-toolbar button.is-active {
     background: #6ba4ff;
     color: white;
+  }
+
+  .link-input-popover {
+    position: absolute;
+    z-index: 1001;
+    background: var(--color-background);
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    padding: 0.3rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  }
+
+  .link-input-popover input {
+    background: var(--color-code-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 3px;
+    color: var(--color-text);
+    font-size: 0.75rem;
+    padding: 0.3rem 0.4rem;
+    width: 220px;
+    outline: none;
+  }
+
+  .link-input-popover input:focus {
+    border-color: #6ba4ff;
   }
 </style>
