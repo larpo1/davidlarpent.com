@@ -18,7 +18,7 @@ The researchers watched how people worked. Some handed everything to the AI and 
 
 ## The Speed Trap
 
-Sometimes speed is the game. A trader has milliseconds. A pilot in an emergency has seconds. An ER doctor triaging patients needs answers now. In these contexts, give people all the AI support you can. Faster is better because the clock is the constraint.
+Sometimes speed is the game. A trader has milliseconds. A pilot in an emergency has seconds. An A&E doctor triaging patients needs answers now. In these contexts, give people all the AI support you can. Faster is better because the clock is the constraint.
 
 But most decisions aren’t like that.
 
