@@ -308,4 +308,159 @@ test.describe('Syndication Modal', () => {
     await closeButton.click();
     await expect(modal).toHaveAttribute('data-open', 'false');
   });
+
+  // Phase 2: AI Integration Tests
+
+  // Test 13: Modal shows loading state when generating draft
+  test('Modal shows loading state when generating draft', async ({ page }) => {
+    // Intercept API call and delay response
+    await page.route('**/api/generate-syndication-draft', async (route) => {
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ success: true, draft: 'Delayed draft', hashtags: [] })
+      });
+    });
+
+    await page.goto('/posts/ralph-loops/');
+    await dismissDevToolbar(page);
+
+    const linkedinButton = page.locator('.linkedin-copy-button');
+    await linkedinButton.click();
+
+    const modal = page.locator('#syndication-modal');
+    await expect(modal).toHaveAttribute('data-open', 'true');
+
+    // Textarea should show loading state
+    const textarea = modal.locator('.syndication-textarea[data-platform="linkedin"]');
+    await expect(textarea).toHaveClass(/loading/);
+    await expect(textarea).toHaveValue('Generating draft...');
+
+    // Regenerate button should be disabled during loading
+    const regenerateButton = modal.locator('.syndication-regenerate');
+    await expect(regenerateButton).toBeDisabled();
+
+    // Wait for loading to complete
+    await expect(textarea).not.toHaveClass(/loading/, { timeout: 10000 });
+    await expect(textarea).toHaveValue('Delayed draft');
+  });
+
+  // Test 14: Modal falls back to template on API failure
+  test('Modal falls back to template on API failure', async ({ page }) => {
+    // Mock API to return 500 error
+    await page.route('**/api/generate-syndication-draft', async (route) => {
+      await route.fulfill({
+        status: 500,
+        contentType: 'application/json',
+        body: JSON.stringify({ success: false, message: 'Server error' })
+      });
+    });
+
+    await page.goto('/posts/ralph-loops/');
+    await dismissDevToolbar(page);
+
+    const linkedinButton = page.locator('.linkedin-copy-button');
+    await linkedinButton.click();
+
+    const modal = page.locator('#syndication-modal');
+    await expect(modal).toHaveAttribute('data-open', 'true');
+
+    // Wait for loading to complete
+    const textarea = modal.locator('.syndication-textarea[data-platform="linkedin"]');
+    await expect(textarea).not.toHaveClass(/loading/, { timeout: 10000 });
+
+    // Should fall back to template text (contains the post title and essay link)
+    const value = await textarea.inputValue();
+    expect(value).toContain('Ralph');
+    expect(value).toContain('https://davidlarpent.com/posts/ralph-loops');
+
+    // Status should show error message
+    const status = modal.locator('.syndication-status');
+    await expect(status).toHaveText('AI generation failed, using template');
+  });
+
+  // Test 15: Regenerate button triggers new API call
+  test('Regenerate button triggers new API call', async ({ page }) => {
+    let requestCount = 0;
+
+    // Track API calls
+    await page.route('**/api/generate-syndication-draft', async (route) => {
+      requestCount++;
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          success: true,
+          draft: 'Draft version ' + requestCount,
+          hashtags: ['test']
+        })
+      });
+    });
+
+    await page.goto('/posts/ralph-loops/');
+    await dismissDevToolbar(page);
+
+    const linkedinButton = page.locator('.linkedin-copy-button');
+    await linkedinButton.click();
+
+    const modal = page.locator('#syndication-modal');
+    await expect(modal).toHaveAttribute('data-open', 'true');
+
+    // Wait for first generation to complete
+    const textarea = modal.locator('.syndication-textarea[data-platform="linkedin"]');
+    await expect(textarea).not.toHaveClass(/loading/, { timeout: 10000 });
+    await expect(textarea).toHaveValue('Draft version 1');
+
+    // Click regenerate
+    const regenerateButton = modal.locator('.syndication-regenerate');
+    await regenerateButton.click();
+
+    // Wait for second generation
+    await expect(textarea).not.toHaveClass(/loading/, { timeout: 10000 });
+    await expect(textarea).toHaveValue('Draft version 2');
+
+    // Verify two API calls were made
+    expect(requestCount).toBe(2);
+  });
+
+  // Test 16: AI-generated draft is editable in textarea
+  test('AI-generated draft is editable in textarea', async ({ page }) => {
+    // Mock API to return known text
+    await page.route('**/api/generate-syndication-draft', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          success: true,
+          draft: 'AI generated content here',
+          hashtags: ['ai', 'test']
+        })
+      });
+    });
+
+    await page.goto('/posts/ralph-loops/');
+    await dismissDevToolbar(page);
+
+    const linkedinButton = page.locator('.linkedin-copy-button');
+    await linkedinButton.click();
+
+    const modal = page.locator('#syndication-modal');
+    await expect(modal).toHaveAttribute('data-open', 'true');
+
+    // Wait for generation to complete
+    const textarea = modal.locator('.syndication-textarea[data-platform="linkedin"]');
+    await expect(textarea).not.toHaveClass(/loading/, { timeout: 10000 });
+    await expect(textarea).toHaveValue('AI generated content here');
+
+    // Type additional text
+    await textarea.focus();
+    await textarea.press('End');
+    await textarea.type(' with my edits');
+
+    // Verify the edit was applied
+    const value = await textarea.inputValue();
+    expect(value).toContain('AI generated content here');
+    expect(value).toContain('with my edits');
+  });
 });
