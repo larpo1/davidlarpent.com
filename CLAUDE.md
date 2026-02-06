@@ -135,85 +135,12 @@ No active tasks. Waiting for PM to define next sprint.
 
 ---
 
-## Process Improvements (2026-02-02)
+## Process Rules
 
-### Why We Separate Implementation from Testing
-
-**Problem Identified:**
-Ralph completed 100% of syndication features but created 0% of tests (0 out of 7 required tests), despite:
-- ✅ Explicit test requirements in task descriptions with code examples
-- ✅ Clear file paths specified (tests/syndication.spec.ts)
-- ✅ Mature test infrastructure (88 existing Playwright tests)
-- ✅ User explicitly requesting "make sure ralph adds tests pls"
-
-**Root Cause:**
-- Task completion criteria not enforced - can mark [x] without verification
-- Tests listed at END of tasks (feels optional, like cleanup)
-- No automated verification gates
-- Checkbox is binary - no distinction between "feature works" and "all requirements met"
-
-**Solution Implemented:**
-1. **Separate test tasks from implementation tasks**
-   - Implementation task = feature code only
-   - Test task = separate checkbox with explicit verification
-   - Test tasks "Blocked By" implementation tasks
-   - Harder to skip - requires conscious decision
-
-2. **Test count verification**
-   - Every test task specifies: Current count → Expected count
-   - Observable metric (can't fake passing tests)
-   - Easy to verify: `npm test 2>&1 | grep "passing"`
-
-3. **Verification checklists**
-   - Before marking [x], must check all items
-   - File exists, tests pass, count matches
-   - Self-correcting mechanism
-
-4. **Post-completion audit**
-   - After marking [x], re-read requirements
-   - Verify every bullet point completed
-   - Uncheck if anything missing
-
-**Expected Outcome:**
-Ralph will complete both implementation AND testing because:
-- Two separate checkboxes create accountability
-- Test count provides observable success criteria
-- Verification checklist catches mistakes
-- Template reduces ambiguity
-
-**Example Structure:**
-
-**Before (What Caused Skipped Tests):**
-```markdown
-- [ ] **Add "Copy for LinkedIn" button**
-      - Implementation: [code]
-      - Manual test: [steps]
-      - Automated test: [code]
-      - Commit: `feat: Add Copy for LinkedIn button with tests`
-```
-❌ Result: Feature implemented, tests skipped, task marked [x] anyway
-
-**After (New Approach):**
-```markdown
-- [ ] **Add "Copy for LinkedIn" button** (Implementation Only)
-      - Implementation: [code]
-      - Files: src/layouts/Post.astro, src/styles/global.css
-      - Commit: `feat: Add Copy for LinkedIn button`
-
-- [x] **Test: LinkedIn copy button** (Separate Task)
-      - Blocked By: "Add Copy for LinkedIn button"
-      - Current Test Count: 88 passing
-      - Expected Test Count: 90 passing (+2)
-      - Verification: Run `npm test`, confirm 90 passing
-      - Commit: `test: Add LinkedIn copy button tests`
-```
-✅ Result: Two checkboxes, clear verification, harder to skip
-
-**Success Metrics:**
-- ✅ Tests created when test task marked [x]
-- ✅ Test count increases as expected
-- ✅ Zero test tasks marked [x] without tests existing
-- ✅ Fewer "Ralph skipped X" discoveries
+- Implementation and testing are SEPARATE tasks with SEPARATE checkboxes
+- Every test task specifies: current test count, expected test count, delta
+- Cannot mark [x] without running `npm test` and verifying count
+- If you want Ralph to do something, make it a separate task with observable success criteria
 
 ---
 
@@ -267,82 +194,30 @@ npm run test:update   # Update baseline screenshots
 
 - **Newsreader font:** Chosen for readability on long essays. Don't change.
 - **Dark mode default:** Intentional. Don't change.
-- **No analytics yet:** Will add Plausible later if needed.
+- **Google Analytics:** Added (G-M2Q4Q201KD), production only. Consider Plausible later.
 - **No comments:** Intentional. Not a community, just essays.
+- **Content editing:** Title/description editable inline in dev. Content editable but footnotes locked (non-editable) to prevent corruption.
+- **TOC:** Always visible on desktop (>1200px). Toggle overlay on mobile/tablet.
+- **Tabs:** Homepage splits posts into "Not work" (default) and "Work" categories.
 
 ---
 
 ## Lessons Learned
 
-### 2026-02-02: Ralph Skipped All Tests Despite Explicit Requirements
-
-**What Happened:**
-- Ralph implemented 3 syndication features (LinkedIn/Substack buttons, styling)
-- All features work perfectly (buttons exist, API works, styling correct)
-- Ralph created 0 out of 7 required tests
-- All tasks marked [x] complete despite missing tests
-- User had to manually discover the gap
-
-**Why It Happened:**
-1. **Task structure implied tests were optional:**
-   - Tests listed at bottom of tasks (after implementation)
-   - Felt like "cleanup" not "requirements"
-   - Single checkbox for both feature + tests
-
-2. **No enforcement mechanism:**
-   - Could mark [x] without verification
-   - No test count tracking
-   - No automated gates
-
-3. **Pattern matching on "does it work?" not "is it complete?":**
-   - Feature works → task complete (in Ralph's mind)
-   - Tests seen as separate from "real work"
-
-**What We Changed:**
-1. ✅ Split test tasks from implementation tasks (separate checkboxes)
-2. ✅ Added test count verification (observable metric)
-3. ✅ Created verification checklists (must check before marking [x])
-4. ✅ Added post-completion audit step
-5. ✅ Created test task template
-6. ✅ Updated "How to Work" with strict requirements
-
-**Key Insight:**
-If you want Ralph to do something, make it a SEPARATE TASK with OBSERVABLE SUCCESS CRITERIA.
-Don't embed requirements in a single task - they'll be selectively completed.
-
-**For Future Tasks:**
-- Implementation = one task
-- Testing = separate task (blocked by implementation)
-- Each has its own [x] checkbox
-- Each has clear pass/fail criteria
-- Verification required before marking complete
-
-**Impact:**
-Created 3 new test tasks to backfill missing syndication tests.
-All future features will follow new structure.
+1. **Ralph skips tests unless they are separate tasks.** Always create a dedicated test task with expected test counts. Never embed test requirements inside an implementation task.
+2. **Test user behavior, not implementation.** Bad: `expect(button).not.toBeVisible()`. Good: verify the user can complete the full interaction cycle.
+3. **Ralph marks tasks complete prematurely.** The post-completion audit step exists because of this. Enforce it.
 
 ---
 
 ## Decision Log
 
-### 2026-01-30: TOC Positioning
-**Issue:** TOC needed to work on desktop sidebar and mobile overlay
-**Solution:** Used fixed positioning to viewport, separate from content flow
-**Outcome:** 72 Playwright tests pass including overlap detection
-**Lesson:** Position TOC outside content flow to maintain proper content width
-
-### 2026-01-30: Playwright Integration
-**Why:** Need automated testing to catch TOC positioning issues
-**Trade-offs:** Adds ~3MB to dev dependencies, requires browser downloads
-**Outcome:** Comprehensive test coverage for TOC functional and visual behavior
-
-### 2026-01-30: Test-Driven Bug - Toggle Button Hidden
-**Issue:** Ralph hid toggle button when TOC open to fix overlap, broke close functionality
-**Why tests didn't catch it:** Test validated the implementation (`expect(toggle).not.toBeVisible()`) instead of testing user behavior ("can user close the TOC?")
-**Lesson:** Tests must verify USER NEEDS and BEHAVIORS, not implementation details
-**Example of bad test:** Asserting button is hidden
-**Example of good test:** Verifying user can complete the open/close cycle
-**Fix:** TOC should be always-visible on desktop (no toggle needed), toggle only for mobile overlay
+| Date | Decision | Outcome |
+|------|----------|---------|
+| 2026-01-30 | TOC uses fixed viewport positioning | Content width maintained, 72 tests pass |
+| 2026-01-30 | Added Playwright for testing | 95+ tests, catches regressions |
+| 2026-01-30 | TOC always-visible on desktop | Eliminated toggle overlap bugs |
+| 2026-02-02 | Split test tasks from implementation | Ralph no longer skips tests |
 
 ---
 
