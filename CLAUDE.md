@@ -182,7 +182,7 @@ Before marking ANY test task [x] complete, you MUST:
       - **Test:** `npm run build` passes. Navigating to `/drafts` returns 404.
       - **Commit:** `refactor: Remove /drafts page`
 
-- [ ] **Update Architecture Decisions in CLAUDE.md**
+- [x] **Update Architecture Decisions in CLAUDE.md**
       - **What:** Update the Architecture Decisions and Decision Log sections to reflect the new draft management approach
       - **File(s):** `CLAUDE.md`
       - **Implementation:**
@@ -293,7 +293,8 @@ npm run test:update   # Update baseline screenshots
 - **Dark mode default:** Intentional. Don't change.
 - **Google Analytics:** Added (G-M2Q4Q201KD), production only. Consider Plausible later.
 - **No comments:** Intentional. Not a community, just essays.
-- **Content editing:** Title/description editable inline in dev. Content editable but footnotes locked (non-editable) to prevent corruption.
+- **Content editing:** Title/description editable inline in dev. Content editable but footnotes locked (non-editable) to prevent corruption. Draft/published status toggled via pill on post detail view.
+- **Draft management:** Pill toggle on post detail view (dev only). Publishing sets date to today and git pushes. No separate /drafts page.
 - **TOC:** Always visible on desktop (>1200px). Toggle overlay on mobile/tablet.
 - **Tabs:** Homepage splits posts into "Work" (default) and "Not work" categories.
 
@@ -315,6 +316,7 @@ npm run test:update   # Update baseline screenshots
 | 2026-01-30 | Added Playwright for testing | 95+ tests, catches regressions |
 | 2026-01-30 | TOC always-visible on desktop | Eliminated toggle overlap bugs |
 | 2026-02-02 | Split test tasks from implementation | Ralph no longer skips tests |
+| 2026-02-06 | Draft pill toggle replaces /drafts page | Publishing from post detail view with auto-push |
 
 ---
 
