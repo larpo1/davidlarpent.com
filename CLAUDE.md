@@ -218,7 +218,7 @@ Before marking ANY test task [x] complete, you MUST:
       - **Test:** `npm run build` passes. `ls scripts/syndicate*` returns nothing.
       - **Commit:** `refactor: Remove empty syndication script stubs`
 
-- [ ] **Test: Phase 1 syndication modal**
+- [x] **Test: Phase 1 syndication modal**
       - **Blocked By:** All Phase 1 implementation tasks above (must be [x])
       - **Test File:** tests/syndication.spec.ts (update existing)
       - **Current Test Count:** Run `npm test` to get current count before starting
@@ -423,6 +423,7 @@ npm run test:update   # Update baseline screenshots
 - **Draft management:** Pill toggle on post detail view (dev only). Publishing sets date to today and git pushes. No separate /drafts page.
 - **TOC:** Always visible on desktop (>1200px). Toggle overlay on mobile/tablet.
 - **Tabs:** Homepage splits posts into "Work" (default) and "Not work" categories.
+- **Syndication AI:** Uses @anthropic-ai/sdk to generate platform-specific drafts (dev-mode only). Requires ANTHROPIC_API_KEY environment variable.
 
 ---
 
@@ -443,6 +444,7 @@ npm run test:update   # Update baseline screenshots
 | 2026-01-30 | TOC always-visible on desktop | Eliminated toggle overlap bugs |
 | 2026-02-02 | Split test tasks from implementation | Ralph no longer skips tests |
 | 2026-02-06 | Draft pill toggle replaces /drafts page | Publishing from post detail view with auto-push |
+| 2026-02-06 | Anthropic SDK for syndication AI | Dev-only draft generation, graceful fallback to template |
 
 ---
 

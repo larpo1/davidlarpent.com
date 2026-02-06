@@ -9,12 +9,13 @@
     "astro": "astro",
     "new": "tsx scripts/new-post.ts",
     "publish": "tsx scripts/publish.ts",
-"test": "playwright test",
+    "test": "playwright test",
     "test:headed": "playwright test --headed",
     "test:ui": "playwright test --ui",
     "test:update": "playwright test --update-snapshots"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.73.0",
     "@astrojs/rss": "^4.0.15",
     "@astrojs/sitemap": "^3.7.0",
     "@astrojs/vercel": "^9.0.4",
