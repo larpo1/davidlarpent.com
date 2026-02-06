@@ -34,17 +34,17 @@ These decisions don’t need speed. They need the slow work of judgment forming.
 
 Neural pathways are formed by reps and struggle. You don’t learn to write and articulate thought by reading. You learn by writing badly, repeatedly, until you write less badly. You don’t learn to diagnose problems by watching someone else diagnose them. You learn by being wrong, often, and slowly getting less wrong.
 
-We don't intuitively always feel good about this struggle - it feels like hard work. We’d prefer to skip the part where we’re bad at things. AI offers that skip. And the skip feels great, right up until you need the skill you never built.
+We don’t intuitively always feel good about this struggle - it feels like hard work. We’d prefer to skip the part where we’re bad at things. AI offers that skip. And the skip feels great, right up until you need the skill you never built.
 
-The pilots who hand-fly the least are worst at hand-flying when the automation fails. The doctors most reliant on diagnostic algorithms are slowest to catch what the algorithm misses. The coders who outsource debugging to AI can’t debug when the AI is confused. We’ve known this pattern for decades. Lisanne Bainbridge called it the “ironies of automation” back in 1983: the more advanced the system, the more crucial the human contribution when things go sideways, and the less capable the human is of making it.
+The pilots who hand-fly the least are the worst at hand-flying when the automation fails. The doctors most reliant on diagnostic algorithms are slowest to catch what the algorithm misses. The engineers who outsource debugging to AI can’t debug when the AI is confused. We’ve known this pattern for decades. Lisanne Bainbridge called it the “ironies of automation” back in 1983: the more advanced the system, the more crucial the human contribution when things go sideways, and the less capable the human is of making it.
 
 But there’s something else here that bothers me more than the competence question.
 
-A person who has wrestled with hard problems often has interesting opinions about them. They’ve developed instincts, heuristics, preferences. They can surprise you with an angle you hadn’t considered. They’re _engaging to talk to_ about the thing they’ve struggled with.
+A person who has wrestled with hard problems is likely to have interesting opinions about them. They’ve developed instincts, heuristics, preferences. They can surprise you with an angle you hadn’t considered. They’re _engaging to talk to_ about the thing they’ve struggled with.
 
 A person who’s always had the answer handed to them …well, isn’t. They can tell you what the AI told them. That’s it.
 
-We’re not just risking a less capable workforce. We’re risking less capable people. Less interesting dinner chat. Less useful collaborators. Less able to hold a surprising opinion because they’ve never had to form one.
+We’re not just risking a less capable workforce. We’re risking less capable and interesting people. Less useful collaborators. Less able to hold a surprising opinion because they’ve never had to form one.
 
 ## The Joy Problem
 
@@ -64,9 +64,9 @@ What happens when we commoditise the output?
 
 When the thing you can make in 30 seconds with a prompt is indistinguishable from the thing I sweated over for 30 hours, something strange happens to the value of both. Not the market value. The felt value. The meaning.
 
-I’m not worried about AI putting creative people out of work. I’m worried about AI putting young people (and old people) out of the _experience_ of being creative. Making the struggle feel pointless. 
+I’m not worried about AI putting creative people out of work. I’m worried about AI putting creative people out of the _experience_ of being creative. Making the struggle feel pointless. 
 
-I’m worried my boys are entering a world where we can have anything we want, effortlessly, and none of it means anything.
+I’m worried our children are entering a world where they can have anything we want, effortlessly, and none of it means anything.
 
 ## The Choice
 
