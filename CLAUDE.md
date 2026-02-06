@@ -116,7 +116,7 @@ Before marking ANY test task [x] complete, you MUST:
 
 ### Phase 1: Syndication Modal UX (no AI)
 
-- [ ] **Create SyndicationModal component**
+- [x] **Create SyndicationModal component**
       - **What:** Build a full-screen takeover modal with LinkedIn and Substack tabs, textareas, character count, and copy functionality
       - **Why:** Replaces the current one-click clipboard copy with an editable preview workflow -- the author can see and refine what gets syndicated before copying
       - **File(s):** `src/components/SyndicationModal.astro`, `src/styles/global.css`
@@ -148,7 +148,7 @@ Before marking ANY test task [x] complete, you MUST:
       - **Test:** `npm run build` passes. Component renders without errors.
       - **Commit:** `feat: Create SyndicationModal component`
 
-- [ ] **Add link preview card to syndication modal**
+- [x] **Add link preview card to syndication modal**
       - **What:** Show an OG-style link preview card inside the syndication modal so the author can see how their link will appear when shared
       - **Why:** LinkedIn and Substack both render link previews -- seeing it in the modal gives the author a complete picture of what their syndicated post will look like
       - **File(s):** `src/components/SyndicationModal.astro`, `src/styles/global.css`
@@ -169,7 +169,7 @@ Before marking ANY test task [x] complete, you MUST:
       - **Test:** `npm run build` passes. Preview card is visible when modal opens.
       - **Commit:** `feat: Add link preview card to syndication modal`
 
-- [ ] **Add editable hashtag pills to LinkedIn tab**
+- [x] **Add editable hashtag pills to LinkedIn tab**
       - **What:** Show the post's tags as removable hashtag pills below the LinkedIn textarea, with an input to add custom hashtags, included in copied text
       - **Why:** LinkedIn posts perform better with relevant hashtags. Editable pills replace the hardcoded `#AI #ProductThinking`
       - **File(s):** `src/components/SyndicationModal.astro`, `src/styles/global.css`
@@ -189,7 +189,7 @@ Before marking ANY test task [x] complete, you MUST:
       - **Test:** `npm run build` passes. Pills render from post tags.
       - **Commit:** `feat: Add editable hashtag pills to LinkedIn tab`
 
-- [ ] **Wire syndication buttons to open modal**
+- [x] **Wire syndication buttons to open modal**
       - **What:** Replace the current direct-to-clipboard syndication buttons in Post.astro with buttons that open the SyndicationModal, pre-populated with content
       - **Why:** Connects the existing UI (buttons in edit-controls) to the new modal, maintaining feature parity while adding the editing step
       - **File(s):** `src/layouts/Post.astro`
@@ -206,7 +206,7 @@ Before marking ANY test task [x] complete, you MUST:
       - **Test:** `npm run build` passes. Clicking LinkedIn/Substack buttons opens the modal.
       - **Commit:** `feat: Wire syndication buttons to open modal`
 
-- [ ] **Clean up old syndication stubs**
+- [x] **Clean up old syndication stubs**
       - **What:** Delete the empty syndication script stubs and their npm script entries
       - **Why:** These were placeholder files for a direct-API approach we're not pursuing. The modal replaces them.
       - **File(s):** `scripts/syndicate-linkedin.ts` (delete), `scripts/syndicate-substack.ts` (delete), `package.json`
