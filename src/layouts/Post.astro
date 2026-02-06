@@ -3,6 +3,7 @@ import Base from './Base.astro';
 import TableOfContents from '../components/TableOfContents.astro';
 import EditSettingsModal from '../components/EditSettingsModal.astro';
 import EditToolbar from '../components/EditToolbar.astro';
+import SyndicationModal from '../components/SyndicationModal.astro';
 
 interface Props {
   title: string;
@@ -85,7 +86,7 @@ const articleSchema = {
   <div class="post-layout">
     <TableOfContents headings={headings} tags={tags} />
 
-    <article class="post-article" data-post-slug={slug}>
+    <article class="post-article" data-post-slug={slug} data-post-description={description} data-post-tags={JSON.stringify(tags)} data-post-category={tags.length > 0 ? 'work' : 'work'}>
       <header class="post-header">
         <h1 class="post-title" contenteditable={isDev} data-field="title">{title}</h1>
         <p class="post-description" contenteditable={isDev} data-field="description">{description}</p>
@@ -162,6 +163,7 @@ const articleSchema = {
           </button>
         </div>
         <EditSettingsModal date={date} draft={draft} slug={slug} />
+        <SyndicationModal />
       </>
     )}
   </div>
@@ -286,13 +288,15 @@ const articleSchema = {
       }
     });
 
-    // LinkedIn copy button
+    // LinkedIn button - opens syndication modal
     const linkedinButton = document.querySelector('.linkedin-copy-button');
-    linkedinButton?.addEventListener('click', async () => {
+    linkedinButton?.addEventListener('click', () => {
       const titleEl = document.querySelector('[data-field="title"]') as HTMLElement;
       const contentEl = document.querySelector('[data-field="content"]') as HTMLElement;
+      const descriptionEl = document.querySelector('[data-field="description"]') as HTMLElement;
 
-      const title = titleEl?.textContent?.trim() || '';
+      const postTitle = titleEl?.textContent?.trim() || '';
+      const postDescription = descriptionEl?.textContent?.trim() || '';
 
       // Get first few paragraphs from content
       const paragraphs = Array.from(contentEl?.querySelectorAll('p') || [])
@@ -302,47 +306,57 @@ const articleSchema = {
 
       const excerpt = paragraphs.join('\n\n');
 
-      // Build LinkedIn post
-      const linkedinPost = `${title}
+      // Build naive LinkedIn excerpt
+      const linkedinText = `${postTitle}\n\n${excerpt}\n\nRead the full essay: https://davidlarpent.com/posts/${slug}`;
 
-${excerpt}
+      // Get tags from article data attribute
+      const postTags = JSON.parse(article?.dataset.postTags || '[]');
 
-Read the full essay: https://davidlarpent.com/posts/${slug}
-
-#AI #ProductThinking`;
-
-      // Copy to clipboard
-      await navigator.clipboard.writeText(linkedinPost);
-
-      // Show feedback
-      showStatus('Copied for LinkedIn!');
-      setTimeout(() => showStatus(''), 2000);
+      (window as any).openSyndicationModal({
+        slug,
+        title: postTitle,
+        description: postDescription,
+        tags: postTags,
+        category: article?.dataset.postCategory || 'work',
+        platform: 'linkedin',
+        linkedinText,
+        substackText: ''
+      });
     });
 
-    // Substack copy button
+    // Substack button - opens syndication modal
     const substackButton = document.querySelector('.substack-copy-button');
     substackButton?.addEventListener('click', async () => {
+      const titleEl = document.querySelector('[data-field="title"]') as HTMLElement;
+      const descriptionEl = document.querySelector('[data-field="description"]') as HTMLElement;
+
+      const postTitle = titleEl?.textContent?.trim() || '';
+      const postDescription = descriptionEl?.textContent?.trim() || '';
+
       // Fetch the raw markdown from the file via API
       const response = await fetch(`/api/get-post-markdown?slug=${slug}`);
       const data = await response.json();
 
-      if (!data.success) {
+      let substackText = '';
+      if (data.success) {
+        substackText = `${data.markdown}\n\n---\nOriginally published at davidlarpent.com`;
+      } else {
         showStatus('Error: Could not fetch markdown', true);
-        return;
       }
 
-      // Add canonical footer
-      const substackContent = `${data.markdown}
+      // Get tags from article data attribute
+      const postTags = JSON.parse(article?.dataset.postTags || '[]');
 
----
-Originally published at davidlarpent.com`;
-
-      // Copy to clipboard
-      await navigator.clipboard.writeText(substackContent);
-
-      // Show feedback
-      showStatus('Copied for Substack!');
-      setTimeout(() => showStatus(''), 2000);
+      (window as any).openSyndicationModal({
+        slug,
+        title: postTitle,
+        description: postDescription,
+        tags: postTags,
+        category: article?.dataset.postCategory || 'work',
+        platform: 'substack',
+        linkedinText: '',
+        substackText
+      });
     });
 
     // Settings button click is handled by EditSettingsModal component
