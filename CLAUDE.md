@@ -138,7 +138,7 @@ Before marking ANY test task [x] complete, you MUST:
       - **Test:** `npm run build` passes. In dev, pill renders on both draft and published posts. Clicking toggles the status.
       - **Commit:** `feat: Add draft/published pill toggle to post detail view`
 
-- [ ] **Add git-push API endpoint**
+- [x] **Add git-push API endpoint**
       - **What:** Create a new API endpoint `POST /api/git-push` that runs `git push` (dev only)
       - **Why:** The pill toggle needs to push after saving so that publishing/unpublishing deploys immediately
       - **File(s):** `src/pages/api/git-push.ts`
