@@ -255,7 +255,7 @@ Before marking ANY test task [x] complete, you MUST:
 
 > **Note:** Phase 2 tasks are blocked by Phase 1 completion. Do not start these until all Phase 1 tasks (including the test task) are marked [x].
 
-- [ ] **Install Anthropic SDK and document setup**
+- [x] **Install Anthropic SDK and document setup**
       - **What:** Add `@anthropic-ai/sdk` as a dependency and document the ANTHROPIC_API_KEY requirement
       - **Why:** The AI draft generation feature needs the official Anthropic SDK to call Claude
       - **File(s):** `package.json`, `CLAUDE.md`
@@ -266,7 +266,7 @@ Before marking ANY test task [x] complete, you MUST:
       - **Test:** `npm run build` passes. `node -e "require('@anthropic-ai/sdk')"` does not error.
       - **Commit:** `feat: Install Anthropic SDK for syndication AI`
 
-- [ ] **Create syndication draft API endpoint**
+- [x] **Create syndication draft API endpoint**
       - **What:** Build a dev-only API endpoint that calls Claude to generate a platform-specific syndication draft in the author's voice
       - **Why:** Replaces the naive excerpt with an intelligent, voice-aware draft tailored to each platform's conventions and constraints
       - **File(s):** `src/pages/api/generate-syndication-draft.ts`
@@ -286,7 +286,7 @@ Before marking ANY test task [x] complete, you MUST:
       - **Test:** `npm run build` passes. Endpoint returns 403 in production. Returns 400 without slug.
       - **Commit:** `feat: Create syndication draft API endpoint`
 
-- [ ] **Wire modal to AI endpoint**
+- [x] **Wire modal to AI endpoint**
       - **What:** When the syndication modal opens, call the AI endpoint to generate a draft, with loading state, error fallback, and regenerate button
       - **Why:** Connects the UI to the AI backend -- the author sees an AI-generated draft instead of a naive excerpt
       - **File(s):** `src/components/SyndicationModal.astro`, `src/styles/global.css`
@@ -304,7 +304,7 @@ Before marking ANY test task [x] complete, you MUST:
       - **Test:** `npm run build` passes. Modal shows loading state. Falls back to template on failure.
       - **Commit:** `feat: Wire syndication modal to AI draft endpoint`
 
-- [ ] **Test: Phase 2 AI integration**
+- [x] **Test: Phase 2 AI integration**
       - **Blocked By:** All Phase 2 implementation tasks above (must be [x])
       - **Test File:** tests/syndication.spec.ts (update)
       - **Current Test Count:** Run `npm test` to get current count before starting
@@ -346,7 +346,7 @@ Before marking ANY test task [x] complete, you MUST:
 - SEO: JSON-LD, Open Graph, robots.txt, sitemap, RSS feed, meta tags
 - Inline editing system (title, description, content, slide-out settings panel)
 - WYSIWYG toolbar (bold, italic, link, headings)
-- Syndication buttons (LinkedIn copy, Substack copy with API)
+- Syndication workflow (full-screen modal, LinkedIn/Substack tabs, AI drafts, hashtag pills, link preview)
 - Table of Contents (desktop sidebar, mobile overlay, scroll tracking)
 - Tag system with cross-linking and tag pages
 - Draft system (pill toggle on post detail, dev-only, auto-push on publish)
@@ -423,7 +423,7 @@ npm run test:update   # Update baseline screenshots
 - **Draft management:** Pill toggle on post detail view (dev only). Publishing sets date to today and git pushes. No separate /drafts page.
 - **TOC:** Always visible on desktop (>1200px). Toggle overlay on mobile/tablet.
 - **Tabs:** Homepage splits posts into "Work" (default) and "Not work" categories.
-- **Syndication AI:** Uses @anthropic-ai/sdk to generate platform-specific drafts (dev-mode only). Requires ANTHROPIC_API_KEY environment variable.
+- **Syndication:** Full-screen modal with LinkedIn and Substack tabs. Dev-mode only. Editable preview with hashtag pills and link preview card. AI-generated drafts via Anthropic SDK (dev-only endpoint). Falls back to naive template if AI unavailable.
 
 ---
 
@@ -445,6 +445,8 @@ npm run test:update   # Update baseline screenshots
 | 2026-02-02 | Split test tasks from implementation | Ralph no longer skips tests |
 | 2026-02-06 | Draft pill toggle replaces /drafts page | Publishing from post detail view with auto-push |
 | 2026-02-06 | Anthropic SDK for syndication AI | Dev-only draft generation, graceful fallback to template |
+| 2026-02-06 | Syndication modal replaces direct clipboard copy | Editable preview, link card, hashtag pills, AI drafts |
+| 2026-02-06 | Two-phase syndication rollout | Phase 1 modal UX, Phase 2 AI generation |
 
 ---
 
