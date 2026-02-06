@@ -16,7 +16,7 @@ Anthropic just published a study showing that developers who use AI assistance s
 
 The researchers watched how people worked. Some handed everything to the AI and breezed through. Others asked the AI questions, then wrote the code themselves. The first group was quickest, but only the second group understood what they’d built.
 
-The Anthropic experiment makes a sharp point. It is not the first to do so. A study in Nature last year concluded: “[Human-generative AI collaboration enhances task performance but undermines human’s intrinsic motivation](https://www.nature.com/articles/s41598-025-98385-2)”.
+The Anthropic study makes a sharp point. It is not the first study to conclude this. A study in Nature last year concluded: “[Human-generative AI collaboration enhances task performance but undermines human’s intrinsic motivation](https://www.nature.com/articles/s41598-025-98385-2)”.
 
 This is not a small thing. 
 
@@ -34,7 +34,7 @@ These decisions don’t need speed. They need the slow work of judgment forming.
 
 Neural pathways are formed by reps and struggle. You don’t learn to write and articulate thought by reading. You learn by writing badly, repeatedly, until you write less badly. You don’t learn to diagnose problems by watching someone else diagnose them. You learn by being wrong, often, and slowly getting less wrong.
 
-This is annoying. We’d prefer to skip the part where we’re bad at things. AI offers that skip. And the skip feels great, right up until you need the skill you never built.
+We don't intuitively always feel good about this struggle - it feels like hard work. We’d prefer to skip the part where we’re bad at things. AI offers that skip. And the skip feels great, right up until you need the skill you never built.
 
 The pilots who hand-fly the least are worst at hand-flying when the automation fails. The doctors most reliant on diagnostic algorithms are slowest to catch what the algorithm misses. The coders who outsource debugging to AI can’t debug when the AI is confused. We’ve known this pattern for decades. Lisanne Bainbridge called it the “ironies of automation” back in 1983: the more advanced the system, the more crucial the human contribution when things go sideways, and the less capable the human is of making it.
 
