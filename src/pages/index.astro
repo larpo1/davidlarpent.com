@@ -36,17 +36,17 @@ const websiteSchema = {
   <div class="tab-navigation">
     <button
       class="tab-button"
-      data-tab="not-work"
+      data-tab="work"
       aria-pressed="true"
     >
-      Not work
+      Work
     </button>
     <button
       class="tab-button"
-      data-tab="work"
+      data-tab="not-work"
       aria-pressed="false"
     >
-      Work
+      Not work
     </button>
     <div class="tab-underline" aria-hidden="true"></div>
   </div>
@@ -173,13 +173,13 @@ const websiteSchema = {
 
   // Initialize immediately (no DOMContentLoaded delay)
   var urlParams = new URLSearchParams(window.location.search);
-  var initialTab = urlParams.get('tab') || 'not-work';
+  var initialTab = urlParams.get('tab') || 'work';
   setActiveTab(initialTab, true);
 
   // Handle browser back/forward
   window.addEventListener('popstate', function() {
     var params = new URLSearchParams(window.location.search);
-    var tab = params.get('tab') || 'not-work';
+    var tab = params.get('tab') || 'work';
     setActiveTab(tab, false);
   });
 </script>

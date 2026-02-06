@@ -114,7 +114,46 @@ Before marking ANY test task [x] complete, you MUST:
 
 ## Current Tasks
 
-No active tasks. Waiting for PM to define next sprint.
+- [x] **Swap homepage tab order: Work first, Not work second**
+      - **What:** Make "Work" the default/first tab and "Not work" the second tab
+      - **Why:** User wants Work content to load by default when visiting the homepage
+      - **File(s):** `src/pages/index.astro`, `tests/homepage-tabs.spec.ts`
+      - **Implementation (4 changes in index.astro):**
+        1. **Swap HTML button order (lines 36-51):** Move the "Work" button first with `aria-pressed="true"`, "Not work" second with `aria-pressed="false"`
+           ```astro
+           <div class="tab-navigation">
+             <button class="tab-button" data-tab="work" aria-pressed="true">
+               Work
+             </button>
+             <button class="tab-button" data-tab="not-work" aria-pressed="false">
+               Not work
+             </button>
+             <div class="tab-underline" aria-hidden="true"></div>
+           </div>
+           ```
+        2. **Change default on initial load (line 176):** `'not-work'` to `'work'`
+           ```javascript
+           var initialTab = urlParams.get('tab') || 'work';
+           ```
+        3. **Change default on popstate (line 182):** `'not-work'` to `'work'`
+           ```javascript
+           var tab = params.get('tab') || 'work';
+           ```
+        4. **No other changes needed.** The category fallback on line 141 is already `'work'`.
+      - **Test updates (3 changes in homepage-tabs.spec.ts):**
+        1. **Rename and flip "defaults to Not work tab" test (line 16):**
+           - Rename to `defaults to "Work" tab`
+           - Assert `workTab` has `aria-pressed="true"`
+           - Assert work posts visible (e.g. "When Decisions Stop Scaling")
+           - Assert not-work posts hidden (e.g. "Ralph Loops")
+        2. **Fix "underline moves between tabs" test (line 64):**
+           - Update comment: initial position is under "Work" (not "Not work")
+           - Click "Not work" tab instead of "Work" tab to test movement
+        3. **Fix "browser back button" test (line 98):**
+           - Default is now "Work", so click "Not work" tab first
+           - Go back, expect "Work" tab to be active (aria-pressed="true")
+      - **Test:** Run `npm test` -- all 8 homepage tab tests must pass
+      - **Commit:** `feat: Make Work the default homepage tab`
 
 ---
 
@@ -198,7 +237,7 @@ npm run test:update   # Update baseline screenshots
 - **No comments:** Intentional. Not a community, just essays.
 - **Content editing:** Title/description editable inline in dev. Content editable but footnotes locked (non-editable) to prevent corruption.
 - **TOC:** Always visible on desktop (>1200px). Toggle overlay on mobile/tablet.
-- **Tabs:** Homepage splits posts into "Not work" (default) and "Work" categories.
+- **Tabs:** Homepage splits posts into "Work" (default) and "Not work" categories.
 
 ---
 

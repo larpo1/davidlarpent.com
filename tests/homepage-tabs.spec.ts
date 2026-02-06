@@ -13,18 +13,17 @@ test.describe('Homepage Tabs', () => {
     await expect(underline).toBeVisible();
   });
 
-  test('defaults to "Not work" tab', async ({ page }) => {
+  test('defaults to "Work" tab', async ({ page }) => {
     await page.goto('/');
 
-    const notWorkTab = page.locator('[data-tab="not-work"]');
-    await expect(notWorkTab).toHaveAttribute('aria-pressed', 'true');
+    const workTab = page.locator('[data-tab="work"]');
+    await expect(workTab).toHaveAttribute('aria-pressed', 'true');
 
-    // Should show not-work posts (ralph-loops, struggling)
-    await expect(page.locator('text=Ralph Loops')).toBeVisible();
-    await expect(page.locator('text=Unbearable Lightness')).toBeVisible();
+    // Should show work posts
+    await expect(page.locator('text=When Decisions Stop Scaling')).toBeVisible();
 
-    // Should not show work posts initially
-    await expect(page.locator('text=When Decisions Stop Scaling')).toBeHidden();
+    // Should not show not-work posts initially
+    await expect(page.locator('text=Ralph Loops')).toBeHidden();
   });
 
   test('clicking "Work" tab filters posts and updates URL', async ({ page }) => {
@@ -65,13 +64,13 @@ test.describe('Homepage Tabs', () => {
     await page.goto('/');
 
     const underline = page.locator('.tab-underline');
-    const workTab = page.locator('[data-tab="work"]');
+    const notWorkTab = page.locator('[data-tab="not-work"]');
 
-    // Get initial position (under Not work)
+    // Get initial position (under Work)
     const initialPos = await underline.boundingBox();
 
-    // Click Work tab
-    await workTab.click();
+    // Click Not work tab
+    await notWorkTab.click();
     await page.waitForTimeout(500);
 
     // Underline should have moved
@@ -98,17 +97,17 @@ test.describe('Homepage Tabs', () => {
   test('browser back button navigates between tabs', async ({ page }) => {
     await page.goto('/');
 
-    // Click Work tab
-    await page.locator('[data-tab="work"]').click();
+    // Click Not work tab (default is now Work)
+    await page.locator('[data-tab="not-work"]').click();
     await page.waitForTimeout(300);
-    expect(page.url()).toContain('?tab=work');
+    expect(page.url()).toContain('?tab=not-work');
 
     // Go back
     await page.goBack();
     await page.waitForTimeout(300);
 
-    // Should be back to Not work tab
-    const notWorkTab = page.locator('[data-tab="not-work"]');
-    await expect(notWorkTab).toHaveAttribute('aria-pressed', 'true');
+    // Should be back to Work tab
+    const workTab = page.locator('[data-tab="work"]');
+    await expect(workTab).toHaveAttribute('aria-pressed', 'true');
   });
 });
