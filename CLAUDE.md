@@ -114,6 +114,401 @@ Before marking ANY test task [x] complete, you MUST:
 
 ## Current Tasks
 
+### Homepage Tabs Feature (Priority)
+
+- [x] **Update post schema - add category field**
+      - **What:** Add optional `category` field to post schema for categorization
+      - **Why:** Makes categorization explicit and searchable
+      - **File:** `src/content/config.ts`
+      - **Implementation:**
+        ```typescript
+        const posts = defineCollection({
+          type: 'content',
+          schema: z.object({
+            title: z.string(),
+            date: z.date(),
+            description: z.string(),
+            draft: z.boolean().default(false),
+            tags: z.array(z.string()).default([]),
+            category: z.enum(['work', 'not-work']).optional(), // ADD THIS
+          }),
+        });
+        ```
+      - **Commit:** `feat: Add category field to post schema`
+
+- [x] **Update post frontmatter - categorize all posts**
+      - **What:** Add `category` field to frontmatter of all 5 posts
+      - **Categories:**
+        - **Work (3 posts):** when-decisions-stop-scaling, ai-data-architecture, decision-systems
+        - **Not work (2 posts):** ralph-loops, what-we-lose-when-we-stop-struggling
+      - **Files to update:**
+        - `src/content/posts/ralph-loops.md` → add `category: not-work`
+        - `src/content/posts/what-we-lose-when-we-stop-struggling.md` → add `category: not-work`
+        - `src/content/posts/when-decisions-stop-scaling.md` → add `category: work`
+        - `src/content/posts/ai-data-architecture.md` → add `category: work`
+        - `src/content/posts/decision-systems.md` → add `category: work`
+      - **Example:**
+        ```yaml
+        ---
+        title: On Ralph Loops
+        date: 2026-01-30T00:00:00.000Z
+        description: Or how to run Claude Code like a sweatshop
+        draft: false
+        tags: [AI, automation, tools, development]
+        category: not-work  # ADD THIS LINE
+        ---
+        ```
+      - **Commit:** `feat: Add category field to all posts`
+
+- [x] **Add tab navigation HTML to homepage**
+      - **What:** Add tab buttons and update post list items with data-category attribute
+      - **File:** `src/pages/index.astro`
+      - **Tab navigation markup** (add after `<Base>` opening tag, before post list):
+        ```astro
+        <div class="tab-navigation">
+          <button
+            class="tab-button"
+            data-tab="not-work"
+            aria-pressed="true"
+          >
+            Not work
+          </button>
+          <button
+            class="tab-button"
+            data-tab="work"
+            aria-pressed="false"
+          >
+            Work
+          </button>
+          <div class="tab-underline" aria-hidden="true"></div>
+        </div>
+        ```
+      - **Update post list items** to include `data-category` attribute:
+        ```astro
+        <li
+          class="post-list-item"
+          data-category={post.data.category || 'work'}
+          data-draft={post.data.draft ? 'true' : 'false'}
+        >
+          <!-- existing post markup -->
+        </li>
+        ```
+      - **Commit:** `feat: Add tab navigation HTML to homepage`
+
+- [x] **Add tab switching JavaScript to homepage**
+      - **What:** Add JavaScript to handle tab clicks, filter posts, update URL
+      - **File:** `src/pages/index.astro`
+      - **Location:** Add inside existing `<script>` tag (after draft toggle logic)
+      - **Features:**
+        - Tab click handlers
+        - Filter posts by category
+        - Move animated underline with spring easing
+        - Staggered fade-in animation (50ms delay per post)
+        - URL updates: `/?tab=work` or `/?tab=not-work`
+        - Deep linking support (read URL param on load)
+        - Browser back/forward navigation
+        - Default to "not-work" tab
+      - **Implementation:**
+        ```javascript
+        // Tab Navigation
+        const tabButtons = document.querySelectorAll('.tab-button');
+        const tabUnderline = document.querySelector('.tab-underline');
+        const postItems = document.querySelectorAll('.post-list-item');
+
+        function setActiveTab(targetTab) {
+          // Update button states
+          tabButtons.forEach(button => {
+            const isActive = button.dataset.tab === targetTab;
+            button.setAttribute('aria-pressed', isActive.toString());
+          });
+
+          // Move underline
+          const activeButton = document.querySelector(`[data-tab="${targetTab}"]`);
+          if (activeButton && tabUnderline) {
+            const buttonRect = activeButton.getBoundingClientRect();
+            const containerRect = activeButton.parentElement.getBoundingClientRect();
+            const offsetLeft = buttonRect.left - containerRect.left;
+
+            tabUnderline.style.transform = `translateX(${offsetLeft}px)`;
+            tabUnderline.style.width = `${buttonRect.width}px`;
+          }
+
+          // Filter posts
+          postItems.forEach((post, index) => {
+            const category = post.dataset.category || 'work';
+
+            if (category === targetTab) {
+              post.style.display = '';
+              post.style.animationDelay = `${index * 50}ms`;
+            } else {
+              post.style.display = 'none';
+              post.style.animationDelay = '0ms';
+            }
+          });
+
+          // Update URL
+          const url = new URL(window.location);
+          url.searchParams.set('tab', targetTab);
+          history.pushState({}, '', url);
+        }
+
+        // Tab click handlers
+        tabButtons.forEach(button => {
+          button.addEventListener('click', () => {
+            setActiveTab(button.dataset.tab);
+          });
+        });
+
+        // Initialize from URL or default to "not-work"
+        function initializeTabs() {
+          const urlParams = new URLSearchParams(window.location.search);
+          const initialTab = urlParams.get('tab') || 'not-work';
+          setActiveTab(initialTab);
+        }
+
+        // Run on page load
+        document.addEventListener('DOMContentLoaded', initializeTabs);
+
+        // Handle browser back/forward
+        window.addEventListener('popstate', () => {
+          const urlParams = new URLSearchParams(window.location.search);
+          const tab = urlParams.get('tab') || 'not-work';
+          setActiveTab(tab);
+        });
+        ```
+      - **Commit:** `feat: Add tab switching JavaScript with animations`
+
+- [x] **Add tab styles and animations**
+      - **What:** Add CSS for tab navigation and animations
+      - **File:** `src/styles/global.css`
+      - **Location:** Add after `.drafts-toggle` styles
+      - **Styles to add:**
+        ```css
+        /* Tab Navigation */
+        .tab-navigation {
+          display: flex;
+          justify-content: center;
+          gap: 3rem;
+          margin-bottom: 3rem;
+          position: relative;
+          padding-bottom: 0.75rem;
+        }
+
+        .tab-button {
+          background: none;
+          border: none;
+          font-family: 'Newsreader', Georgia, serif;
+          font-size: 1.2rem;
+          color: var(--color-text-light);
+          cursor: pointer;
+          padding: 0.5rem 0;
+          transition: color 0.3s ease;
+          position: relative;
+        }
+
+        .tab-button[aria-pressed="true"] {
+          color: var(--color-text);
+        }
+
+        .tab-button:hover {
+          color: var(--color-text);
+        }
+
+        .tab-underline {
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          height: 2px;
+          background: var(--color-text);
+          transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
+                      width 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+          /* Spring easing for playful overshoot effect */
+        }
+
+        /* Post fade-in animation when switching tabs */
+        .post-list-item {
+          animation: fadeInUp 0.3s ease forwards;
+        }
+
+        @keyframes fadeInUp {
+          from {
+            opacity: 0;
+            transform: translateY(10px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+          .tab-navigation {
+            gap: 2rem;
+          }
+
+          .tab-button {
+            font-size: 1rem;
+          }
+        }
+        ```
+      - **Features:**
+        - Text-only tabs (no borders/backgrounds)
+        - Animated underline with spring physics (cubic-bezier for slight overshoot)
+        - Inactive tabs faded (opacity via color-text-light)
+        - Post fade-in with stagger effect
+        - Responsive sizing for mobile
+      - **Commit:** `feat: Add tab styles with animated underline`
+
+- [x] **Test: Homepage tabs functionality**
+      - **Blocked By:** All above implementation tasks must be [x] complete
+      - **Test File:** tests/homepage-tabs.spec.ts (new)
+      - **Current Test Count:** [Run `npm test` to get current count]
+      - **Expected Test Count:** Current + 8 tests
+
+      - **Tests to Add:**
+        1. Tab navigation exists and both tabs are visible
+        2. Default tab is "Not work" with correct posts showing
+        3. Clicking "Work" tab filters to work posts and updates URL
+        4. Clicking "Not work" tab filters to not-work posts
+        5. Underline slides smoothly between tabs (position check)
+        6. Deep linking: `/?tab=work` loads with Work tab active
+        7. Deep linking: `/?tab=not-work` loads with Not work tab active
+        8. Browser back button navigates between tab states
+
+      - **Test Code:**
+        ```typescript
+        import { test, expect } from '@playwright/test';
+
+        test.describe('Homepage Tabs', () => {
+          test('tabs exist and are visible', async ({ page }) => {
+            await page.goto('/');
+
+            const notWorkTab = page.locator('[data-tab="not-work"]');
+            const workTab = page.locator('[data-tab="work"]');
+            const underline = page.locator('.tab-underline');
+
+            await expect(notWorkTab).toBeVisible();
+            await expect(workTab).toBeVisible();
+            await expect(underline).toBeVisible();
+          });
+
+          test('defaults to "Not work" tab', async ({ page }) => {
+            await page.goto('/');
+
+            const notWorkTab = page.locator('[data-tab="not-work"]');
+            await expect(notWorkTab).toHaveAttribute('aria-pressed', 'true');
+
+            // Should show not-work posts (ralph-loops, struggling)
+            await expect(page.locator('text=Ralph loops')).toBeVisible();
+            await expect(page.locator('text=Unbearable Lightness')).toBeVisible();
+
+            // Should not show work posts initially
+            await expect(page.locator('text=When decisions stop scaling')).toBeHidden();
+          });
+
+          test('clicking "Work" tab filters posts and updates URL', async ({ page }) => {
+            await page.goto('/');
+
+            const workTab = page.locator('[data-tab="work"]');
+            await workTab.click();
+
+            // Wait for animation
+            await page.waitForTimeout(500);
+
+            // Check URL updated
+            expect(page.url()).toContain('?tab=work');
+
+            // Check aria-pressed state
+            await expect(workTab).toHaveAttribute('aria-pressed', 'true');
+
+            // Should show work posts
+            await expect(page.locator('text=When decisions stop scaling')).toBeVisible();
+
+            // Should not show not-work posts
+            await expect(page.locator('text=Ralph loops')).toBeHidden();
+          });
+
+          test('clicking "Not work" tab filters posts', async ({ page }) => {
+            await page.goto('/?tab=work');
+
+            const notWorkTab = page.locator('[data-tab="not-work"]');
+            await notWorkTab.click();
+
+            await page.waitForTimeout(500);
+
+            expect(page.url()).toContain('?tab=not-work');
+            await expect(page.locator('text=Ralph loops')).toBeVisible();
+          });
+
+          test('underline moves between tabs', async ({ page }) => {
+            await page.goto('/');
+
+            const underline = page.locator('.tab-underline');
+            const notWorkTab = page.locator('[data-tab="not-work"]');
+            const workTab = page.locator('[data-tab="work"]');
+
+            // Get initial position (under Not work)
+            const initialPos = await underline.boundingBox();
+
+            // Click Work tab
+            await workTab.click();
+            await page.waitForTimeout(500);
+
+            // Underline should have moved
+            const newPos = await underline.boundingBox();
+            expect(newPos?.x).not.toBe(initialPos?.x);
+          });
+
+          test('deep linking: ?tab=work loads Work tab', async ({ page }) => {
+            await page.goto('/?tab=work');
+
+            const workTab = page.locator('[data-tab="work"]');
+            await expect(workTab).toHaveAttribute('aria-pressed', 'true');
+            await expect(page.locator('text=When decisions stop scaling')).toBeVisible();
+          });
+
+          test('deep linking: ?tab=not-work loads Not work tab', async ({ page }) => {
+            await page.goto('/?tab=not-work');
+
+            const notWorkTab = page.locator('[data-tab="not-work"]');
+            await expect(notWorkTab).toHaveAttribute('aria-pressed', 'true');
+            await expect(page.locator('text=Ralph loops')).toBeVisible();
+          });
+
+          test('browser back button navigates between tabs', async ({ page }) => {
+            await page.goto('/');
+
+            // Click Work tab
+            await page.locator('[data-tab="work"]').click();
+            await page.waitForTimeout(300);
+            expect(page.url()).toContain('?tab=work');
+
+            // Go back
+            await page.goBack();
+            await page.waitForTimeout(300);
+
+            // Should be back to Not work tab
+            const notWorkTab = page.locator('[data-tab="not-work"]');
+            await expect(notWorkTab).toHaveAttribute('aria-pressed', 'true');
+          });
+        });
+        ```
+
+      - **Verification Checklist:**
+        - [ ] File tests/homepage-tabs.spec.ts created
+        - [ ] Run `npm test` - all tests pass
+        - [ ] Test count increased by 8
+        - [ ] Manual testing: tabs work smoothly, animations look good
+        - [ ] Dark/light mode: tabs visible in both themes
+        - [ ] Mobile: tabs still work, responsive styling correct
+        - [ ] Draft toggle: still works with tabs (no conflicts)
+
+      - **Files:** tests/homepage-tabs.spec.ts (new)
+      - **Commit:** `test: Add homepage tabs functionality tests`
+
+---
+
 ### SEO & Discoverability (Priority)
 
 - [x] **Add tagging system with cross-linking**
@@ -186,7 +581,7 @@ Before marking ANY test task [x] complete, you MUST:
       - **Files:** src/pages/rss.xml.ts
       - **Commit:** See below
 
-- [ ] **Create default OpenGraph image**
+- [x] **Create default OpenGraph image**
       - **What:** Create a 1200x630px image for social media previews
       - **Options:**
         1. Use Canva/Figma to create simple branded image (10 min)
