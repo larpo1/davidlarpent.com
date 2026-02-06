@@ -114,46 +114,104 @@ Before marking ANY test task [x] complete, you MUST:
 
 ## Current Tasks
 
-- [x] **Swap homepage tab order: Work first, Not work second**
-      - **What:** Make "Work" the default/first tab and "Not work" the second tab
-      - **Why:** User wants Work content to load by default when visiting the homepage
-      - **File(s):** `src/pages/index.astro`, `tests/homepage-tabs.spec.ts`
-      - **Implementation (4 changes in index.astro):**
-        1. **Swap HTML button order (lines 36-51):** Move the "Work" button first with `aria-pressed="true"`, "Not work" second with `aria-pressed="false"`
-           ```astro
-           <div class="tab-navigation">
-             <button class="tab-button" data-tab="work" aria-pressed="true">
-               Work
-             </button>
-             <button class="tab-button" data-tab="not-work" aria-pressed="false">
-               Not work
-             </button>
-             <div class="tab-underline" aria-hidden="true"></div>
-           </div>
-           ```
-        2. **Change default on initial load (line 176):** `'not-work'` to `'work'`
-           ```javascript
-           var initialTab = urlParams.get('tab') || 'work';
-           ```
-        3. **Change default on popstate (line 182):** `'not-work'` to `'work'`
-           ```javascript
-           var tab = params.get('tab') || 'work';
-           ```
-        4. **No other changes needed.** The category fallback on line 141 is already `'work'`.
-      - **Test updates (3 changes in homepage-tabs.spec.ts):**
-        1. **Rename and flip "defaults to Not work tab" test (line 16):**
-           - Rename to `defaults to "Work" tab`
-           - Assert `workTab` has `aria-pressed="true"`
-           - Assert work posts visible (e.g. "When Decisions Stop Scaling")
-           - Assert not-work posts hidden (e.g. "Ralph Loops")
-        2. **Fix "underline moves between tabs" test (line 64):**
-           - Update comment: initial position is under "Work" (not "Not work")
-           - Click "Not work" tab instead of "Work" tab to test movement
-        3. **Fix "browser back button" test (line 98):**
-           - Default is now "Work", so click "Not work" tab first
-           - Go back, expect "Work" tab to be active (aria-pressed="true")
-      - **Test:** Run `npm test` -- all 8 homepage tab tests must pass
-      - **Commit:** `feat: Make Work the default homepage tab`
+- [x] **Add draft/published pill toggle to post detail view**
+      - **What:** Replace the static "Draft" badge in Post.astro with a clickable pill toggle (dev only) that shows "Draft" or "Published" and toggles between states. In production, the existing static badge remains for drafts (no toggle).
+      - **Why:** Let the author toggle publishing status directly from the post without opening a modal or using the CLI
+      - **File(s):** `src/layouts/Post.astro`, `src/styles/global.css`
+      - **Implementation:**
+        1. In Post.astro, replace the static draft badge with a dev/prod conditional:
+           - **In dev mode:** Render a `<button class="draft-pill" data-status={draft ? 'draft' : 'published'} data-slug={slug}>` that shows "Draft" or "Published" text. Always visible on every post in dev (so you can toggle published posts back to draft).
+           - **In production:** Keep the existing `{draft && <span class="draft-badge">Draft</span>}` (unchanged behavior)
+        2. In `global.css`, add `.draft-pill` styles:
+           - Pill shape (border-radius: 2rem, padding: 0.2em 0.75em)
+           - When `data-status="draft"`: amber/yellow background (#f59e0b), dark text
+           - When `data-status="published"`: green background (#22c55e), white text
+           - Cursor pointer, font-size 0.7rem, uppercase, font-weight 600
+           - Transition on background-color
+        3. In the `<script>` block in Post.astro (the dev-only editing script), add a click handler on `.draft-pill`:
+           - Read current `data-status` from the button
+           - If toggling draft->published: set `draft: false` and `date` to today's date (ISO format YYYY-MM-DD)
+           - If toggling published->draft: set `draft: true`, do NOT change date
+           - Call `POST /api/save-post` with `{ slug, frontmatter: { draft, date } }` (only include date when publishing)
+           - After success, also call `POST /api/git-push` (new endpoint, see next task)
+           - Show save status feedback, reload page after 500ms
+      - **Test:** `npm run build` passes. In dev, pill renders on both draft and published posts. Clicking toggles the status.
+      - **Commit:** `feat: Add draft/published pill toggle to post detail view`
+
+- [ ] **Add git-push API endpoint**
+      - **What:** Create a new API endpoint `POST /api/git-push` that runs `git push` (dev only)
+      - **Why:** The pill toggle needs to push after saving so that publishing/unpublishing deploys immediately
+      - **File(s):** `src/pages/api/git-push.ts`
+      - **Implementation:**
+        1. Create `src/pages/api/git-push.ts` following the same pattern as `save-post.ts`:
+           - `export const prerender = false;`
+           - Dev-only guard: return 403 if not `import.meta.env.DEV`
+           - Run `git push` via `child_process.exec` (promisified)
+           - Return `{ success: true }` or `{ success: false, message: error }` as JSON
+        2. Keep it simple -- no parameters needed, just pushes current branch
+      - **Test:** `npm run build` passes. Endpoint exists at `/api/git-push`.
+      - **Commit:** `feat: Add git-push API endpoint`
+
+- [ ] **Convert settings modal to slide-out panel**
+      - **What:** Replace the centered modal in EditSettingsModal.astro with a right-side slide-out panel
+      - **Why:** Slide-out panels feel lighter than modals for editing metadata on a content page
+      - **File(s):** `src/components/EditSettingsModal.astro`, `src/styles/global.css`
+      - **Implementation:**
+        1. Replace `.settings-modal` CSS: instead of centered modal, make it a fixed panel on the right side:
+           - `position: fixed; top: 0; right: 0; bottom: 0; width: 320px; max-width: 90vw;`
+           - Slide in from right: `transform: translateX(100%)` when closed, `transform: translateX(0)` when open
+           - Add `transition: transform 0.2s ease-in-out`
+           - Keep the backdrop (full-screen overlay behind the panel)
+        2. Update `.settings-modal-content` to fill the panel height:
+           - `height: 100%; overflow-y: auto; border-radius: 0; border-left: 1px solid var(--color-border);`
+        3. Update the open/close logic in the `<script>`:
+           - Toggle `data-open` attribute instead of `display: none/flex`
+           - CSS transition handles show/hide via translateX
+           - Backdrop fades in/out with `opacity` and `pointer-events`
+        4. Remove the "Draft" checkbox from the form (now handled by the inline pill toggle)
+      - **Test:** `npm run build` passes. In dev, clicking the gear icon slides panel in from right. Clicking backdrop or Cancel slides it out.
+      - **Commit:** `refactor: Convert settings modal to slide-out panel`
+
+- [ ] **Delete the /drafts page**
+      - **What:** Remove `src/pages/drafts.astro` entirely
+      - **Why:** Draft management now lives on each post's detail view via the pill toggle
+      - **File(s):** `src/pages/drafts.astro` (delete)
+      - **Implementation:**
+        1. Delete the file `src/pages/drafts.astro`
+        2. Verify no other files link to `/drafts`
+      - **Test:** `npm run build` passes. Navigating to `/drafts` returns 404.
+      - **Commit:** `refactor: Remove /drafts page`
+
+- [ ] **Update Architecture Decisions in CLAUDE.md**
+      - **What:** Update the Architecture Decisions and Decision Log sections to reflect the new draft management approach
+      - **File(s):** `CLAUDE.md`
+      - **Implementation:**
+        1. Update the "Content editing" bullet to mention the draft pill toggle
+        2. Add: "**Draft management:** Pill toggle on post detail view (dev only). Publishing sets date to today and git pushes. No separate /drafts page."
+        3. In Decision Log, add: `| 2026-02-06 | Draft pill toggle replaces /drafts page | Publishing from post detail view with auto-push |`
+      - **Commit:** `docs: Update architecture decisions for draft management`
+
+- [ ] **Test: Draft pill toggle and slide-out panel**
+      - **Blocked By:** All implementation tasks above (must be [x])
+      - **Test File:** tests/draft-management.spec.ts (new)
+      - **Current Test Count:** Run `npm test` to get current count
+      - **Expected Test Count:** +6 tests
+
+      - **Tests to Add:**
+        1. Draft post shows amber "Draft" pill in dev mode
+        2. Published post shows green "Published" pill in dev mode
+        3. Draft pill is not visible in production rendering (static badge only)
+        4. Settings gear opens slide-out panel from right
+        5. Slide-out panel closes on backdrop click
+        6. Slide-out panel does NOT contain a draft checkbox
+
+      - **Verification Checklist:**
+        - [ ] File tests/draft-management.spec.ts created
+        - [ ] Run `npm test` - all tests pass
+        - [ ] All 6 test scenarios implemented
+
+      - **Files:** tests/draft-management.spec.ts
+      - **Commit:** `test: Add draft management and slide-out panel tests`
 
 ---
 

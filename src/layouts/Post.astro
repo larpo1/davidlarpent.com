@@ -92,7 +92,13 @@ const articleSchema = {
         <div class="post-meta">
           <time datetime={date.toISOString()}>{formattedDate}</time>
           <span> · {readingTime} min read</span>
-          {draft && <span class="draft-badge">Draft</span>}
+          {isDev ? (
+            <button class="draft-pill" data-status={draft ? 'draft' : 'published'} data-slug={slug}>
+              {draft ? 'Draft' : 'Published'}
+            </button>
+          ) : (
+            draft && <span class="draft-badge">Draft</span>
+          )}
         </div>
       </header>
       <div class="post-content" contenteditable={isDev} data-field="content">
@@ -339,5 +345,52 @@ Originally published at davidlarpent.com`;
     });
 
     // Settings button click is handled by EditSettingsModal component
+
+    // Draft pill toggle
+    const draftPill = document.querySelector('.draft-pill') as HTMLButtonElement;
+    draftPill?.addEventListener('click', async () => {
+      const currentStatus = draftPill.dataset.status;
+      const pillSlug = draftPill.dataset.slug;
+      if (!pillSlug) return;
+
+      const isDraft = currentStatus === 'draft';
+      // Toggling: if currently draft, publish (draft: false); if published, unpublish (draft: true)
+      const newDraft = !isDraft;
+
+      const frontmatterUpdate: Record<string, any> = { draft: newDraft };
+      // When publishing, set date to today
+      if (!newDraft) {
+        frontmatterUpdate.date = new Date().toISOString().split('T')[0];
+      }
+
+      showStatus('Saving...');
+
+      try {
+        const response = await fetch('/api/save-post', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ slug: pillSlug, frontmatter: frontmatterUpdate })
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          // Push to deploy
+          try {
+            await fetch('/api/git-push', { method: 'POST' });
+          } catch (pushError) {
+            console.log('Git push skipped:', pushError);
+          }
+          showStatus('Saved!');
+          setTimeout(() => {
+            window.location.reload();
+          }, 500);
+        } else {
+          showStatus(`Error: ${result.message}`, true);
+        }
+      } catch (error) {
+        showStatus(`Error: ${error}`, true);
+      }
+    });
   </script>
 )}

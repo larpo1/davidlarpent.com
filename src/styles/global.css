@@ -807,6 +807,30 @@ a:hover {
   margin-left: 0.5rem;
 }
 
+/* Draft/Published Pill Toggle (dev only) */
+.draft-pill {
+  border: none;
+  font-family: 'Newsreader', Georgia, serif;
+  font-size: 0.7rem;
+  padding: 0.2em 0.75em;
+  border-radius: 2rem;
+  text-transform: uppercase;
+  font-weight: 600;
+  cursor: pointer;
+  margin-left: 0.5rem;
+  transition: background-color 0.2s ease;
+}
+
+.draft-pill[data-status="draft"] {
+  background: #f59e0b;
+  color: #1a1a1a;
+}
+
+.draft-pill[data-status="published"] {
+  background: #22c55e;
+  color: white;
+}
+
 /* Edit Controls */
 .edit-controls {
   position: fixed;
