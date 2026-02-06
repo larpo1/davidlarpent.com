@@ -8,6 +8,7 @@ tags:
   - philosophy
   - learning
   - cognitive-science
+category: not-work
 ---
 I wrote this the old fashioned way. Partly for my kids, partly to force some new neural pathways into being.  
 

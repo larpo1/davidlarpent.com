@@ -8,6 +8,7 @@ tags:
   - decisions
   - organisations
   - strategy
+category: work
 ---
 Every organisation hits a ceiling on how many good decisions it can make in a given period. Not because people aren’t smart. Not because data doesn’t exist. But because the work of turning data into decisions doesn’t scale the way other things do.
 
