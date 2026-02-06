@@ -42,16 +42,6 @@ const dateValue = date.toISOString().split('T')[0];
         />
       </div>
 
-      <div class="form-group checkbox-group">
-        <input
-          type="checkbox"
-          id="post-draft"
-          name="draft"
-          checked={draft}
-        />
-        <label for="post-draft">Draft (hidden from homepage)</label>
-      </div>
-
       <div class="form-actions">
         <button type="button" class="cancel-button">Cancel</button>
         <button type="submit" class="submit-button">Save Settings</button>
@@ -64,19 +54,17 @@ const dateValue = date.toISOString().split('T')[0];
 
 <style>
   .settings-modal {
-    display: none;
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
     z-index: 200;
+    pointer-events: none;
   }
 
   .settings-modal[data-open="true"] {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    pointer-events: auto;
   }
 
   .settings-modal-backdrop {
@@ -86,16 +74,33 @@ const dateValue = date.toISOString().split('T')[0];
     right: 0;
     bottom: 0;
     background: rgba(0, 0, 0, 0.7);
+    opacity: 0;
+    transition: opacity 0.2s ease-in-out;
+  }
+
+  .settings-modal[data-open="true"] .settings-modal-backdrop {
+    opacity: 1;
   }
 
   .settings-modal-content {
-    position: relative;
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 320px;
+    max-width: 90vw;
+    height: 100%;
+    overflow-y: auto;
     background: var(--color-background);
-    border: 1px solid var(--color-border);
-    border-radius: 8px;
+    border-left: 1px solid var(--color-border);
+    border-radius: 0;
     padding: 2rem;
-    max-width: 400px;
-    width: 90%;
+    transform: translateX(100%);
+    transition: transform 0.2s ease-in-out;
+  }
+
+  .settings-modal[data-open="true"] .settings-modal-content {
+    transform: translateX(0);
   }
 
   .settings-modal-content h2 {
@@ -131,23 +136,6 @@ const dateValue = date.toISOString().split('T')[0];
     font-size: 0.75rem;
     color: var(--color-text-light);
     opacity: 0.7;
-  }
-
-  .checkbox-group {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
-
-  .checkbox-group label {
-    margin: 0;
-    cursor: pointer;
-  }
-
-  .checkbox-group input[type="checkbox"] {
-    width: 1.25rem;
-    height: 1.25rem;
-    cursor: pointer;
   }
 
   .form-actions {
@@ -250,7 +238,6 @@ const dateValue = date.toISOString().split('T')[0];
     const originalSlug = formData.get('originalSlug') as string;
     const newSlug = formData.get('slug') as string;
     const date = formData.get('date') as string;
-    const draft = formData.get('draft') === 'on';
 
     // Validate slug format
     if (!/^[a-z0-9-]+$/.test(newSlug)) {
@@ -267,7 +254,7 @@ const dateValue = date.toISOString().split('T')[0];
         body: JSON.stringify({
           slug: originalSlug,
           newSlug: newSlug !== originalSlug ? newSlug : undefined,
-          frontmatter: { date, draft }
+          frontmatter: { date }
         })
       });
 

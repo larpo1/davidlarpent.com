@@ -152,7 +152,7 @@ Before marking ANY test task [x] complete, you MUST:
       - **Test:** `npm run build` passes. Endpoint exists at `/api/git-push`.
       - **Commit:** `feat: Add git-push API endpoint`
 
-- [ ] **Convert settings modal to slide-out panel**
+- [x] **Convert settings modal to slide-out panel**
       - **What:** Replace the centered modal in EditSettingsModal.astro with a right-side slide-out panel
       - **Why:** Slide-out panels feel lighter than modals for editing metadata on a content page
       - **File(s):** `src/components/EditSettingsModal.astro`, `src/styles/global.css`
