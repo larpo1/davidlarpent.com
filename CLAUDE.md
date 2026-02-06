@@ -191,7 +191,7 @@ Before marking ANY test task [x] complete, you MUST:
         3. In Decision Log, add: `| 2026-02-06 | Draft pill toggle replaces /drafts page | Publishing from post detail view with auto-push |`
       - **Commit:** `docs: Update architecture decisions for draft management`
 
-- [ ] **Test: Draft pill toggle and slide-out panel**
+- [x] **Test: Draft pill toggle and slide-out panel**
       - **Blocked By:** All implementation tasks above (must be [x])
       - **Test File:** tests/draft-management.spec.ts (new)
       - **Current Test Count:** Run `npm test` to get current count
