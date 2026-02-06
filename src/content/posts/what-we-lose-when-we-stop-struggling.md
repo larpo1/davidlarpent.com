@@ -16,7 +16,7 @@ Anthropic just published a study showing that developers who use AI assistance s
 
 The researchers watched how people worked. Some handed everything to the AI and breezed through. Others asked the AI questions, then wrote the code themselves. The first group was quickest, but only the second group understood what they’d built.
 
-The Anthropic study makes a sharp point. It is not the first study to conclude this. A study in Nature last year concluded: “[Human-generative AI collaboration enhances task performance but undermines human’s intrinsic motivation](https://www.nature.com/articles/s41598-025-98385-2)”.
+The Anthropic experiment makes a sharp point. It is not the first to do so. A study in Nature last year concluded: “[Human-generative AI collaboration enhances task performance but undermines human’s intrinsic motivation](https://www.nature.com/articles/s41598-025-98385-2)”.
 
 This is not a small thing. 
 
