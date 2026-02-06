@@ -10,7 +10,7 @@ tags:
   - cognitive-science
 category: not-work
 ---
-I wrote this the old fashioned way. Partly so I can explain this to my kids, partly to force some new neural pathways into being.  
+I wrote this the old fashioned way. Partly to conjure some new neural pathways into being. Partly so I can get my lines right with my kids.  
 
 Anthropic just published a study showing that developers who use AI assistance score 17% lower on understanding the code they just wrote. They finished the task slightly faster. They apparently learned almost nothing.
 
@@ -27,8 +27,6 @@ But most decisions aren’t like that.
 Most decisions benefit from sitting with them. Turning them over. Feeling the friction of competing considerations. A product manager deciding what to build next. A leader choosing who to promote. A parent figuring out how to handle a difficult conversation with a teenager.
 
 These decisions don’t need speed. They need the slow work of judgment forming. And judgment doesn’t form when you skip to the answer.
-
-  
 
 ## The Formation Problem
 
