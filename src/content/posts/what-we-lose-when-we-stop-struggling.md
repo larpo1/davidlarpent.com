@@ -10,7 +10,7 @@ tags:
   - cognitive-science
 category: not-work
 ---
-I wrote this the old fashioned way. Partly for my kids, partly to force some new neural pathways into being.  
+I wrote this the old fashioned way. Partly so I can explain this to my kids, partly to force some new neural pathways into being.  
 
 Anthropic just published a study showing that developers who use AI assistance score 17% lower on understanding the code they just wrote. They finished the task slightly faster. They apparently learned almost nothing.
 
