@@ -2,44 +2,55 @@ import { test, expect } from '@playwright/test';
 import * as fs from 'fs';
 import * as path from 'path';
 
-test.describe('Draft Pill Toggle', () => {
-  test('draft post shows amber "Draft" pill in dev mode', async ({ page }) => {
+// Helper: remove Astro dev toolbar which can intercept clicks on mobile
+async function dismissDevToolbar(page: any) {
+  await page.waitForLoadState('networkidle');
+  await page.evaluate(() => {
+    const toolbar = document.querySelector('astro-dev-toolbar');
+    if (toolbar) toolbar.remove();
+  });
+}
+
+test.describe('Publish Toggle', () => {
+  test('draft post shows publish toggle unchecked in dev mode', async ({ page }) => {
     // decision-systems is a draft post
     await page.goto('/posts/decision-systems/');
 
-    const pill = page.locator('.draft-pill');
-    await expect(pill).toBeVisible();
-    await expect(pill).toHaveAttribute('data-status', 'draft');
-    await expect(pill).toHaveText('Draft');
+    const toggle = page.locator('.publish-toggle');
+    await expect(toggle).toBeVisible();
 
-    // Verify amber background color (#f59e0b)
-    const bgColor = await pill.evaluate(el => getComputedStyle(el).backgroundColor);
-    // #f59e0b = rgb(245, 158, 11)
-    expect(bgColor).toBe('rgb(245, 158, 11)');
+    // Checkbox should be unchecked for drafts
+    const checkbox = toggle.locator('input[type="checkbox"]');
+    await expect(checkbox).not.toBeChecked();
+
+    // Label text should say "Publish"
+    const text = toggle.locator('.publish-toggle-text');
+    await expect(text).toHaveText('Publish');
   });
 
-  test('published post shows green "Published" pill in dev mode', async ({ page }) => {
+  test('published post shows publish toggle checked in dev mode', async ({ page }) => {
     // ralph-loops is a published post
     await page.goto('/posts/ralph-loops/');
 
-    const pill = page.locator('.draft-pill');
-    await expect(pill).toBeVisible();
-    await expect(pill).toHaveAttribute('data-status', 'published');
-    await expect(pill).toHaveText('Published');
+    const toggle = page.locator('.publish-toggle');
+    await expect(toggle).toBeVisible();
 
-    // Verify green background color (#22c55e)
-    const bgColor = await pill.evaluate(el => getComputedStyle(el).backgroundColor);
-    // #22c55e = rgb(34, 197, 94)
-    expect(bgColor).toBe('rgb(34, 197, 94)');
+    // Checkbox should be checked for published posts
+    const checkbox = toggle.locator('input[type="checkbox"]');
+    await expect(checkbox).toBeChecked();
+
+    // Label text should say "Published"
+    const text = toggle.locator('.publish-toggle-text');
+    await expect(text).toHaveText('Published');
   });
 
-  test('draft pill is not visible in production rendering (static badge only)', async () => {
+  test('publish toggle is not visible in production rendering', async () => {
     // Check the production build output HTML for a published post
     const buildPath = path.join(process.cwd(), 'dist', 'client', 'posts', 'ralph-loops', 'index.html');
     const html = fs.readFileSync(buildPath, 'utf-8');
 
-    // Production build should NOT contain draft-pill (dev-only component)
-    expect(html).not.toContain('draft-pill');
+    // Production build should NOT contain publish-toggle (dev-only component)
+    expect(html).not.toContain('publish-toggle');
 
     // Production build of a published post should NOT contain draft-badge either
     expect(html).not.toContain('draft-badge');
@@ -49,6 +60,7 @@ test.describe('Draft Pill Toggle', () => {
 test.describe('Slide-out Panel', () => {
   test('settings gear opens slide-out panel from right', async ({ page }) => {
     await page.goto('/posts/ralph-loops/');
+    await dismissDevToolbar(page);
 
     // Panel should start closed
     const panel = page.locator('#settings-modal');
@@ -76,6 +88,7 @@ test.describe('Slide-out Panel', () => {
 
   test('slide-out panel closes on backdrop click', async ({ page }) => {
     await page.goto('/posts/ralph-loops/');
+    await dismissDevToolbar(page);
 
     // Open the panel
     const settingsButton = page.locator('.settings-button');
@@ -94,6 +107,7 @@ test.describe('Slide-out Panel', () => {
 
   test('slide-out panel does NOT contain a draft checkbox', async ({ page }) => {
     await page.goto('/posts/ralph-loops/');
+    await dismissDevToolbar(page);
 
     // Open the panel
     const settingsButton = page.locator('.settings-button');
