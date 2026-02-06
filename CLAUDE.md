@@ -172,7 +172,7 @@ Before marking ANY test task [x] complete, you MUST:
       - **Test:** `npm run build` passes. In dev, clicking the gear icon slides panel in from right. Clicking backdrop or Cancel slides it out.
       - **Commit:** `refactor: Convert settings modal to slide-out panel`
 
-- [ ] **Delete the /drafts page**
+- [x] **Delete the /drafts page**
       - **What:** Remove `src/pages/drafts.astro` entirely
       - **Why:** Draft management now lives on each post's detail view via the pill toggle
       - **File(s):** `src/pages/drafts.astro` (delete)
