@@ -39,6 +39,15 @@
       </div>
     </div>
 
+    <div class="link-preview-card">
+      <img class="link-preview-image" src="/og-default.jpg" alt="Link preview" />
+      <div class="link-preview-text">
+        <div class="link-preview-title"></div>
+        <div class="link-preview-description"></div>
+        <div class="link-preview-url">davidlarpent.com</div>
+      </div>
+    </div>
+
     <div class="syndication-actions">
       <button class="syndication-copy-button">Copy</button>
     </div>
@@ -63,6 +72,9 @@
     var substackTextarea = modal.querySelector('.syndication-textarea[data-platform="substack"]');
     var charCurrentEl = modal.querySelector('.char-current');
     var charCountContainer = modal.querySelector('.char-count');
+    var linkPreviewImage = modal.querySelector('.link-preview-image');
+    var linkPreviewTitle = modal.querySelector('.link-preview-title');
+    var linkPreviewDescription = modal.querySelector('.link-preview-description');
     var activeTab = 'linkedin';
 
     function openModal() {
@@ -170,6 +182,18 @@
       }
       if (substackTextarea && data.substackText) {
         substackTextarea.value = data.substackText;
+      }
+
+      // Populate link preview card
+      if (linkPreviewImage) {
+        linkPreviewImage.src = data.ogImage || '/og-default.jpg';
+      }
+      if (linkPreviewTitle) {
+        linkPreviewTitle.textContent = data.title || '';
+      }
+      if (linkPreviewDescription) {
+        var desc = data.description || '';
+        linkPreviewDescription.textContent = desc.length > 120 ? desc.substring(0, 120) + '...' : desc;
       }
 
       // Switch to requested platform tab
