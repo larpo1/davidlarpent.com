@@ -106,65 +106,81 @@ const websiteSchema = {
   const tabUnderline = document.querySelector('.tab-underline');
   const postItems = document.querySelectorAll('.post-list-item');
 
-  function setActiveTab(targetTab) {
+  // Hide all posts immediately to prevent flash
+  postItems.forEach(function(post) { post.style.display = 'none'; });
+
+  function setActiveTab(targetTab, isInitial) {
     // Update button states
-    tabButtons.forEach(button => {
-      const isActive = button.dataset.tab === targetTab;
+    tabButtons.forEach(function(button) {
+      var isActive = button.dataset.tab === targetTab;
       button.setAttribute('aria-pressed', isActive.toString());
     });
 
-    // Move underline
-    const activeButton = document.querySelector(`[data-tab="${targetTab}"]`);
+    // Move underline (skip transition on initial load)
+    var activeButton = document.querySelector('[data-tab="' + targetTab + '"]');
     if (activeButton && tabUnderline) {
-      const buttonRect = activeButton.getBoundingClientRect();
-      const containerRect = activeButton.parentElement.getBoundingClientRect();
-      const offsetLeft = buttonRect.left - containerRect.left;
+      var buttonRect = activeButton.getBoundingClientRect();
+      var containerRect = activeButton.parentElement.getBoundingClientRect();
+      var offsetLeft = buttonRect.left - containerRect.left;
 
-      tabUnderline.style.transform = `translateX(${offsetLeft}px)`;
-      tabUnderline.style.width = `${buttonRect.width}px`;
+      if (isInitial) {
+        tabUnderline.style.transition = 'none';
+      }
+      tabUnderline.style.transform = 'translateX(' + offsetLeft + 'px)';
+      tabUnderline.style.width = buttonRect.width + 'px';
+      if (isInitial) {
+        // Force reflow then restore transition
+        tabUnderline.offsetWidth;
+        tabUnderline.style.transition = '';
+      }
     }
 
-    // Filter posts
-    postItems.forEach((post, index) => {
-      const category = post.dataset.category || 'work';
+    // Filter posts with cascading fade-in
+    var visibleIndex = 0;
+    postItems.forEach(function(post) {
+      var category = post.dataset.category || 'work';
 
       if (category === targetTab) {
         post.style.display = '';
-        post.style.animationDelay = `${index * 50}ms`;
+        // Reset animation by removing class, forcing reflow, re-adding
+        post.classList.remove('fade-in');
+        post.offsetWidth; // force reflow
+        post.style.animationDelay = (visibleIndex * 60) + 'ms';
+        post.classList.add('fade-in');
+        visibleIndex++;
       } else {
         post.style.display = 'none';
-        post.style.animationDelay = '0ms';
+        post.classList.remove('fade-in');
       }
     });
 
     // Update URL
-    const url = new URL(window.location);
+    var url = new URL(window.location);
     url.searchParams.set('tab', targetTab);
-    history.pushState({}, '', url);
+    if (isInitial) {
+      history.replaceState({}, '', url);
+    } else {
+      history.pushState({}, '', url);
+    }
   }
 
   // Tab click handlers
-  tabButtons.forEach(button => {
-    button.addEventListener('click', () => {
-      setActiveTab(button.dataset.tab);
+  tabButtons.forEach(function(button) {
+    button.addEventListener('click', function() {
+      setActiveTab(button.dataset.tab, false);
     });
   });
 
-  // Initialize from URL or default to "not-work"
-  function initializeTabs() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const initialTab = urlParams.get('tab') || 'not-work';
-    setActiveTab(initialTab);
-  }
-
-  // Run on page load
-  document.addEventListener('DOMContentLoaded', initializeTabs);
+  // Initialize immediately (no DOMContentLoaded delay)
+  var urlParams = new URLSearchParams(window.location.search);
+  var initialTab = urlParams.get('tab') || 'not-work';
+  setActiveTab(initialTab, true);
 
   // Handle browser back/forward
-  window.addEventListener('popstate', () => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const tab = urlParams.get('tab') || 'not-work';
-    setActiveTab(tab);
+  window.addEventListener('popstate', function() {
+    var params = new URLSearchParams(window.location.search);
+    var tab = params.get('tab') || 'not-work';
+    setActiveTab(tab, false);
   });
 </script>
 

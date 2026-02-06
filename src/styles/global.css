@@ -173,7 +173,7 @@ a:hover {
 /* Tab Navigation */
 .tab-navigation {
   display: flex;
-  justify-content: center;
+  justify-content: flex-start;
   gap: 3rem;
   margin-bottom: 3rem;
   position: relative;
@@ -230,13 +230,17 @@ a:hover {
 
 .post-list-item {
   margin-bottom: 3rem;
-  animation: fadeInUp 0.3s ease forwards;
+  opacity: 0;
+}
+
+.post-list-item.fade-in {
+  animation: fadeInUp 0.35s ease forwards;
 }
 
 @keyframes fadeInUp {
   from {
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateY(8px);
   }
   to {
     opacity: 1;
