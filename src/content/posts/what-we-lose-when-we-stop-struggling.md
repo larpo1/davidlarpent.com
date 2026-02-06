@@ -16,6 +16,8 @@ Anthropic just published a study showing that developers who use AI assistance s
 
 The researchers watched how people worked. Some handed everything to the AI and breezed through. Others asked the AI questions, then wrote the code themselves. The first group was quickest, but only the second group understood what they’d built.
 
+The Anthropic study makes a sharp point. This study in Nature drives it home: “[Human-generative AI collaboration enhances task performance but undermines human’s intrinsic motivation](https://www.nature.com/articles/s41598-025-98385-2)”.
+
 ## The Speed Trap
 
 Sometimes speed is the game. A trader has milliseconds. A pilot in an emergency has seconds. An A&E doctor triaging patients needs answers now. In these contexts, give people all the AI support you can. Faster is better because the clock is the constraint.
@@ -26,7 +28,7 @@ Most decisions benefit from sitting with them. Turning them over. Feeling the fr
 
 These decisions don’t need speed. They need the slow work of judgment forming. And judgment doesn’t form when you skip to the answer.
 
-The Anthropic study makes a sharp point. This study in Nature drives it home: “[Human-generative AI collaboration enhances task performance but undermines human’s intrinsic motivation](https://www.nature.com/articles/s41598-025-98385-2)”.
+  
 
 ## The Formation Problem
 
