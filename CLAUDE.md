@@ -326,7 +326,7 @@ Before marking ANY test task [x] complete, you MUST:
 
 ### Housekeeping
 
-- [ ] **Update Architecture Decisions and Decision Log**
+- [x] **Update Architecture Decisions and Decision Log**
       - **What:** Document the syndication modal architecture and AI integration decisions
       - **Why:** Future sessions need to understand why syndication works this way
       - **File(s):** `CLAUDE.md`
