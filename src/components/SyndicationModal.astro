@@ -1,0 +1,196 @@
+---
+// SyndicationModal - Full-screen modal for editing and copying syndication content
+// Dev-mode only component. Opened via window.openSyndicationModal(data)
+---
+
+<div id="syndication-modal" class="syndication-modal" data-open="false">
+  <div class="syndication-modal-backdrop"></div>
+  <div class="syndication-modal-content">
+    <div class="syndication-modal-header">
+      <h2>Syndicate</h2>
+      <button class="syndication-close-button" title="Close">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+
+    <div class="syndication-tab-navigation">
+      <button class="syndication-tab-button" data-tab="linkedin" aria-pressed="true">
+        LinkedIn
+      </button>
+      <button class="syndication-tab-button" data-tab="substack" aria-pressed="false">
+        Substack
+      </button>
+      <div class="syndication-tab-underline" aria-hidden="true"></div>
+    </div>
+
+    <div class="syndication-tab-panels">
+      <div class="syndication-tab-panel" data-panel="linkedin">
+        <textarea class="syndication-textarea" data-platform="linkedin" placeholder="LinkedIn post content..."></textarea>
+        <div class="char-count">
+          <span class="char-current">0</span>/<span class="char-limit">3000</span>
+        </div>
+      </div>
+
+      <div class="syndication-tab-panel" data-panel="substack" style="display: none;">
+        <textarea class="syndication-textarea" data-platform="substack" placeholder="Substack content..."></textarea>
+      </div>
+    </div>
+
+    <div class="syndication-actions">
+      <button class="syndication-copy-button">Copy</button>
+    </div>
+
+    <div class="syndication-status"></div>
+  </div>
+</div>
+
+<script is:inline>
+  (function() {
+    var modal = document.getElementById('syndication-modal');
+    if (!modal) return;
+
+    var backdrop = modal.querySelector('.syndication-modal-backdrop');
+    var closeButton = modal.querySelector('.syndication-close-button');
+    var tabButtons = modal.querySelectorAll('.syndication-tab-button');
+    var tabPanels = modal.querySelectorAll('.syndication-tab-panel');
+    var tabUnderline = modal.querySelector('.syndication-tab-underline');
+    var copyButton = modal.querySelector('.syndication-copy-button');
+    var statusEl = modal.querySelector('.syndication-status');
+    var linkedinTextarea = modal.querySelector('.syndication-textarea[data-platform="linkedin"]');
+    var substackTextarea = modal.querySelector('.syndication-textarea[data-platform="substack"]');
+    var charCurrentEl = modal.querySelector('.char-current');
+    var charCountContainer = modal.querySelector('.char-count');
+    var activeTab = 'linkedin';
+
+    function openModal() {
+      modal.setAttribute('data-open', 'true');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal() {
+      modal.setAttribute('data-open', 'false');
+      document.body.style.overflow = '';
+      if (statusEl) {
+        statusEl.textContent = '';
+      }
+    }
+
+    function switchTab(tab) {
+      activeTab = tab;
+      tabButtons.forEach(function(btn) {
+        btn.setAttribute('aria-pressed', (btn.dataset.tab === tab).toString());
+      });
+      tabPanels.forEach(function(panel) {
+        panel.style.display = panel.dataset.panel === tab ? '' : 'none';
+      });
+      updateTabUnderline();
+    }
+
+    function updateTabUnderline() {
+      var activeButton = modal.querySelector('.syndication-tab-button[aria-pressed="true"]');
+      if (activeButton && tabUnderline) {
+        var buttonRect = activeButton.getBoundingClientRect();
+        var containerRect = activeButton.parentElement.getBoundingClientRect();
+        var offsetLeft = buttonRect.left - containerRect.left;
+        tabUnderline.style.transform = 'translateX(' + offsetLeft + 'px)';
+        tabUnderline.style.width = buttonRect.width + 'px';
+      }
+    }
+
+    function updateCharCount() {
+      if (!linkedinTextarea || !charCurrentEl || !charCountContainer) return;
+      var len = linkedinTextarea.value.length;
+      charCurrentEl.textContent = len;
+      if (len > 3000) {
+        charCountContainer.classList.add('over-limit');
+      } else {
+        charCountContainer.classList.remove('over-limit');
+      }
+    }
+
+    function showStatus(message) {
+      if (!statusEl) return;
+      statusEl.textContent = message;
+      setTimeout(function() {
+        if (statusEl.textContent === message) {
+          statusEl.textContent = '';
+        }
+      }, 2000);
+    }
+
+    // Tab click handlers
+    tabButtons.forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        switchTab(btn.dataset.tab);
+      });
+    });
+
+    // Character count live update
+    if (linkedinTextarea) {
+      linkedinTextarea.addEventListener('input', updateCharCount);
+    }
+
+    // Copy button
+    if (copyButton) {
+      copyButton.addEventListener('click', function() {
+        var textarea = activeTab === 'linkedin' ? linkedinTextarea : substackTextarea;
+        if (textarea && textarea.value) {
+          navigator.clipboard.writeText(textarea.value).then(function() {
+            showStatus('Copied!');
+          }).catch(function() {
+            showStatus('Failed to copy');
+          });
+        }
+      });
+    }
+
+    // Close handlers
+    if (closeButton) {
+      closeButton.addEventListener('click', closeModal);
+    }
+    if (backdrop) {
+      backdrop.addEventListener('click', closeModal);
+    }
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape' && modal.getAttribute('data-open') === 'true') {
+        closeModal();
+      }
+    });
+
+    // Global function to open the modal
+    window.openSyndicationModal = function(data) {
+      if (!data) return;
+
+      // Populate textareas
+      if (linkedinTextarea && data.linkedinText) {
+        linkedinTextarea.value = data.linkedinText;
+      }
+      if (substackTextarea && data.substackText) {
+        substackTextarea.value = data.substackText;
+      }
+
+      // Switch to requested platform tab
+      var platform = data.platform || 'linkedin';
+      switchTab(platform);
+
+      // Update char count
+      updateCharCount();
+
+      // Open
+      openModal();
+
+      // Update underline position after modal is visible
+      requestAnimationFrame(function() {
+        updateTabUnderline();
+      });
+    };
+
+    // Initialize underline on load
+    requestAnimationFrame(function() {
+      updateTabUnderline();
+    });
+  })();
+</script>

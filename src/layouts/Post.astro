@@ -92,12 +92,13 @@ const articleSchema = {
         <div class="post-meta">
           <time datetime={date.toISOString()}>{formattedDate}</time>
           <span> · {readingTime} min read</span>
-          {isDev ? (
-            <button class="draft-pill" data-status={draft ? 'draft' : 'published'} data-slug={slug}>
-              {draft ? 'Draft' : 'Published'}
-            </button>
-          ) : (
-            draft && <span class="draft-badge">Draft</span>
+          {draft && <span class="draft-badge">Draft</span>}
+          {isDev && (
+            <label class="publish-toggle" data-slug={slug}>
+              <input type="checkbox" checked={!draft} />
+              <span class="publish-toggle-slider"></span>
+              <span class="publish-toggle-text">{draft ? 'Publish' : 'Published'}</span>
+            </label>
           )}
         </div>
       </header>
@@ -346,16 +347,14 @@ Originally published at davidlarpent.com`;
 
     // Settings button click is handled by EditSettingsModal component
 
-    // Draft pill toggle
-    const draftPill = document.querySelector('.draft-pill') as HTMLButtonElement;
-    draftPill?.addEventListener('click', async () => {
-      const currentStatus = draftPill.dataset.status;
-      const pillSlug = draftPill.dataset.slug;
-      if (!pillSlug) return;
+    // Publish toggle
+    const publishToggle = document.querySelector('.publish-toggle') as HTMLLabelElement;
+    const publishCheckbox = publishToggle?.querySelector('input[type="checkbox"]') as HTMLInputElement;
+    publishCheckbox?.addEventListener('change', async () => {
+      const toggleSlug = publishToggle.dataset.slug;
+      if (!toggleSlug) return;
 
-      const isDraft = currentStatus === 'draft';
-      // Toggling: if currently draft, publish (draft: false); if published, unpublish (draft: true)
-      const newDraft = !isDraft;
+      const newDraft = !publishCheckbox.checked;
 
       const frontmatterUpdate: Record<string, any> = { draft: newDraft };
       // When publishing, set date to today
@@ -369,7 +368,7 @@ Originally published at davidlarpent.com`;
         const response = await fetch('/api/save-post', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ slug: pillSlug, frontmatter: frontmatterUpdate })
+          body: JSON.stringify({ slug: toggleSlug, frontmatter: frontmatterUpdate })
         });
 
         const result = await response.json();
