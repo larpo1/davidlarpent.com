@@ -40,16 +40,26 @@
         return;
       }
 
-      // Position toolbar to the LEFT of content, inline with selection
+      // Position toolbar relative to selection
       const range = selection.getRangeAt(0);
       const rect = range.getBoundingClientRect();
       const contentRect = contentEditable.getBoundingClientRect();
 
       toolbar.style.display = 'flex';
-      toolbar.style.flexDirection = 'column'; // Vertical stack
-      toolbar.style.top = `${rect.top + window.scrollY}px`; // Inline with selection
-      toolbar.style.left = `${contentRect.left - 36}px`; // Position in left margin
-      toolbar.style.transform = 'translateX(-100%)'; // Push fully left of anchor point
+
+      // On narrow screens (no left margin), position above selection as horizontal bar
+      // Toolbar width when vertical is ~36px; check if there's room in the left margin
+      if (contentRect.left < 60) {
+        toolbar.style.flexDirection = 'row'; // Horizontal layout
+        toolbar.style.top = `${rect.top + window.scrollY - 40}px`; // Above selection
+        toolbar.style.left = `${rect.left}px`;
+        toolbar.style.transform = 'none';
+      } else {
+        toolbar.style.flexDirection = 'column'; // Vertical stack
+        toolbar.style.top = `${rect.top + window.scrollY}px`; // Inline with selection
+        toolbar.style.left = `${contentRect.left - 36}px`; // Position in left margin
+        toolbar.style.transform = 'translateX(-100%)'; // Push fully left of anchor point
+      }
 
       // Update button active states
       updateToolbarState(toolbar);
