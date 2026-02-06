@@ -74,7 +74,7 @@ None of this is an argument against AI. I use it constantly. I’m running an AI
 
 But I’m trying to be deliberate about _which_ parts of my job I hand over.
 
-The stuff that’s mechanical, repetitive, or where speed genuinely matters? Take it. The stuff where the struggle is the learning? That I keep.
+The stuff that’s mechanical, repetitive, or where speed genuinely matters? Take it. The stuff where the struggle is the learning? Use it as a thought partner a trainer, a coach. Use it in every way that helps you learn, just don't let give you the answer.
 
 This might sound like an individual choice, a matter of personal discipline. But it’s not just that. It’s a design choice. A leadership choice. A parenting choice.
 
@@ -94,7 +94,9 @@ For me it is something like this:
 
 **Offer unto AI:** Research, summarisation, first drafts I’m going to heavily rewrite, scheduling, formatting, the mechanical parts of coding, anything where I already know what I think and just need it executed.
 
-**Keep for myself:** The hard thinking about what to build. The creative work I do for joy. The writing where I’m trying to figure out what I believe. The reps that build the skills I want to have.
+Take from AI: challenge, dialectic, thought partnership, different perspectives.
+
+**Keep for myself:** Arriving at the answer. Critical thinking. The creative work I do for joy. The writing where I’m trying to figure out what I believe. The reps that build the skills I want to have.
 
 **Protect for my team:** The struggles that make them grow. The decisions that build their judgment. The friction that turns juniors into seniors.
 
