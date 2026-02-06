@@ -37,8 +37,8 @@ davidlarpent.com/
 │   └── styles/
 │       └── global.css          # Minimal styles
 ├── scripts/
-│   ├── syndicate-substack.ts   # Placeholder for Substack cross-posting
-│   └── syndicate-linkedin.ts   # Placeholder for LinkedIn sharing
+│   ├── new-post.ts             # Create new post scaffold
+│   └── publish.ts              # Publish post script
 ├── astro.config.mjs            # Astro config with Vercel adapter
 └── vercel.json                 # Vercel deployment config
 ```
@@ -80,13 +80,9 @@ Configured for Vercel with static output:
 - Vercel will automatically build and deploy
 - Domain: davidlarpent.com (configure in Vercel dashboard)
 
-## Syndication (Phase 2)
+## Syndication
 
-Placeholder scripts exist for:
-- Cross-posting to Substack (`npm run syndicate:substack`)
-- Sharing on LinkedIn (`npm run syndicate:linkedin`)
-
-These will be implemented when needed.
+Syndication is handled via an in-browser modal (dev mode only). Click the LinkedIn or Substack buttons on any post to open an editable preview with copy-to-clipboard.
 
 ## Performance
 

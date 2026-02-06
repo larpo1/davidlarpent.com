@@ -9,9 +9,7 @@
     "astro": "astro",
     "new": "tsx scripts/new-post.ts",
     "publish": "tsx scripts/publish.ts",
-    "syndicate:substack": "tsx scripts/syndicate-substack.ts",
-    "syndicate:linkedin": "tsx scripts/syndicate-linkedin.ts",
-    "test": "playwright test",
+"test": "playwright test",
     "test:headed": "playwright test --headed",
     "test:ui": "playwright test --ui",
     "test:update": "playwright test --update-snapshots"
