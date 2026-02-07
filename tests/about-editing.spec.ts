@@ -17,14 +17,16 @@ test.describe('About Page Editing', () => {
     const firstParagraph = aboutContent.locator('p').first();
     await expect(firstParagraph).toBeVisible();
 
-    // Triple-click to select the whole first paragraph
-    await firstParagraph.click({ clickCount: 3 });
-    await page.waitForTimeout(300);
-
-    // Verify we have a non-empty selection inside the contenteditable
+    // Programmatically select the first paragraph's text (triple-click is unreliable in Firefox)
     const selectedText = await page.evaluate(() => {
-      const sel = window.getSelection();
-      return sel ? sel.toString().trim() : '';
+      const p = document.querySelector('[data-field="about"] p');
+      if (!p) return '';
+      const range = document.createRange();
+      range.selectNodeContents(p);
+      const sel = window.getSelection()!;
+      sel.removeAllRanges();
+      sel.addRange(range);
+      return sel.toString().trim();
     });
     expect(selectedText.length).toBeGreaterThan(0);
 

@@ -93,8 +93,9 @@ a:hover {
   color: var(--color-link-hover);
 }
 
-/* Post body content links - underline for readability */
-.post-content a {
+/* Body content links - underline for readability */
+.post-content a,
+.about-content a {
   text-decoration: underline;
 }
 

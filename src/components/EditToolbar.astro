@@ -1,6 +1,6 @@
 ---
-// Floating WYSIWYG toolbar component using execCommand
-// Link creation uses an inline input instead of prompt() to preserve selection
+// Floating WYSIWYG toolbar component
+// Link creation wraps selection in a marker span immediately, then swaps for <a> on submit
 ---
 
 <div id="edit-toolbar" class="edit-toolbar" style="display: none;">
@@ -14,7 +14,14 @@
 </div>
 
 <div id="link-input-popover" class="link-input-popover" style="display: none;">
-  <input type="text" id="link-url-input" placeholder="Enter URL and press Enter" />
+  <input type="text" id="link-url-input" placeholder="Paste URL" />
+  <button id="link-submit-btn" type="button">Add</button>
+</div>
+
+<div id="link-inspect-popover" class="link-inspect-popover" style="display: none;">
+  <span id="link-inspect-url" class="link-inspect-url"></span>
+  <button id="link-inspect-open" type="button" class="link-inspect-open-btn">Open</button>
+  <button id="link-inspect-remove" type="button" class="link-inspect-remove-btn">Remove</button>
 </div>
 
 <script is:inline>
@@ -22,19 +29,82 @@
     const toolbar = document.getElementById('edit-toolbar');
     const linkPopover = document.getElementById('link-input-popover');
     const linkInput = document.getElementById('link-url-input');
+    const linkSubmitBtn = document.getElementById('link-submit-btn');
     const contentEditable = document.querySelector('[contenteditable][data-field="content"]') || document.querySelector('[contenteditable][data-field="about"]');
+    const linkInspectPopover = document.getElementById('link-inspect-popover');
+    const linkInspectUrl = document.getElementById('link-inspect-url');
+    const linkInspectOpenBtn = document.getElementById('link-inspect-open');
+    const linkInspectRemoveBtn = document.getElementById('link-inspect-remove');
 
-    if (!toolbar || !contentEditable || !linkPopover || !linkInput) return;
+    if (!toolbar || !contentEditable || !linkPopover || !linkInput || !linkSubmitBtn) return;
 
-    // Saved selection range for link creation
-    var savedLinkRange = null;
+    // Currently inspected link element
+    var inspectedLink = null;
+
+    // Walk up from a node to find a parent <a> within the contenteditable
+    function findParentLink(node) {
+      while (node && node !== contentEditable) {
+        if (node.nodeType === 1 && node.tagName === 'A') return node;
+        node = node.parentNode;
+      }
+      return null;
+    }
+
+    // Show or hide the link inspect popover
+    function updateLinkInspectPopover(selection) {
+      if (!linkInspectPopover) return;
+
+      // Don't show while creating a new link
+      if (linkPopover.style.display !== 'none') {
+        hideLinkInspectPopover();
+        return;
+      }
+
+      if (!selection || !selection.anchorNode || !contentEditable.contains(selection.anchorNode)) {
+        hideLinkInspectPopover();
+        return;
+      }
+
+      var anchor = findParentLink(selection.anchorNode);
+      if (anchor) {
+        showLinkInspectPopover(anchor);
+      } else {
+        hideLinkInspectPopover();
+      }
+    }
+
+    function showLinkInspectPopover(anchor) {
+      inspectedLink = anchor;
+      var url = anchor.getAttribute('href') || '';
+      var displayUrl = url.length > 40 ? url.substring(0, 40) + '...' : url;
+      linkInspectUrl.textContent = displayUrl;
+      linkInspectUrl.title = url;
+
+      var anchorRect = anchor.getBoundingClientRect();
+      linkInspectPopover.style.top = (anchorRect.bottom + window.scrollY + 4) + 'px';
+      linkInspectPopover.style.left = (anchorRect.left + window.scrollX) + 'px';
+      linkInspectPopover.style.display = 'flex';
+    }
+
+    function hideLinkInspectPopover() {
+      if (linkInspectPopover) {
+        linkInspectPopover.style.display = 'none';
+      }
+      inspectedLink = null;
+    }
 
     // Show toolbar on text selection
     document.addEventListener('selectionchange', () => {
       // Don't hide toolbar while link input is visible
       if (linkPopover.style.display !== 'none') return;
+      // Don't hide toolbar while a marker exists (user is mid-link-creation)
+      if (document.getElementById('link-marker')) return;
 
       const selection = window.getSelection();
+
+      // Update link inspect popover (works for collapsed or non-collapsed selection)
+      updateLinkInspectPopover(selection);
+
       if (!selection || selection.isCollapsed || !contentEditable.contains(selection.anchorNode)) {
         toolbar.style.display = 'none';
         return;
@@ -47,74 +117,109 @@
 
       toolbar.style.display = 'flex';
 
-      // On narrow screens (no left margin), position above selection as horizontal bar
-      // Toolbar width when vertical is ~36px; check if there's room in the left margin
       if (contentRect.left < 60) {
-        toolbar.style.flexDirection = 'row'; // Horizontal layout
-        toolbar.style.top = `${rect.top + window.scrollY - 40}px`; // Above selection
-        toolbar.style.left = `${rect.left}px`;
+        toolbar.style.flexDirection = 'row';
+        toolbar.style.top = (rect.top + window.scrollY - 40) + 'px';
+        toolbar.style.left = rect.left + 'px';
         toolbar.style.transform = 'none';
       } else {
-        toolbar.style.flexDirection = 'column'; // Vertical stack
-        toolbar.style.top = `${rect.top + window.scrollY}px`; // Inline with selection
-        toolbar.style.left = `${contentRect.left - 36}px`; // Position in left margin
-        toolbar.style.transform = 'translateX(-100%)'; // Push fully left of anchor point
+        toolbar.style.flexDirection = 'column';
+        toolbar.style.top = (rect.top + window.scrollY) + 'px';
+        toolbar.style.left = (contentRect.left - 36) + 'px';
+        toolbar.style.transform = 'translateX(-100%)';
       }
 
-      // Update button active states
       updateToolbarState(toolbar);
     });
 
-    // Prevent toolbar from stealing focus/selection from contenteditable
-    toolbar.addEventListener('mousedown', (e) => {
+    // Prevent toolbar from stealing focus/selection
+    toolbar.addEventListener('mousedown', function(e) {
       e.preventDefault();
     });
 
-    // Show inline link input, saving the current selection
-    function showLinkInput() {
-      const sel = window.getSelection();
-      if (!sel || sel.rangeCount === 0) return;
-      savedLinkRange = sel.getRangeAt(0).cloneRange();
+    // Remove an existing link marker, restoring its text content
+    function removeMarker() {
+      var marker = document.getElementById('link-marker');
+      if (marker) {
+        var parent = marker.parentNode;
+        while (marker.firstChild) {
+          parent.insertBefore(marker.firstChild, marker);
+        }
+        parent.removeChild(marker);
+        parent.normalize(); // Merge adjacent text nodes
+      }
+    }
 
-      // Position popover near the toolbar
+    // Step 1: Wrap selected text in a highlighted marker span IMMEDIATELY
+    function showLinkInput() {
+      var sel = window.getSelection();
+      if (!sel || sel.rangeCount === 0 || sel.isCollapsed) return;
+
+      var range = sel.getRangeAt(0);
+
+      // Wrap selection in a marker span while we still have the live selection
+      var marker = document.createElement('span');
+      marker.id = 'link-marker';
+      marker.style.background = 'rgba(107, 164, 255, 0.3)';
+      marker.style.borderRadius = '2px';
+      try {
+        range.surroundContents(marker);
+      } catch (e) {
+        // Cross-element selection fallback
+        marker.appendChild(range.extractContents());
+        range.insertNode(marker);
+      }
+
+      // Clear selection (text is now visually highlighted by the marker)
+      sel.removeAllRanges();
+
+      // Position and show the URL input
       var toolbarRect = toolbar.getBoundingClientRect();
-      linkPopover.style.top = `${toolbarRect.bottom + window.scrollY + 4}px`;
-      linkPopover.style.left = `${toolbarRect.left + window.scrollX}px`;
-      linkPopover.style.display = 'block';
+      linkPopover.style.top = (toolbarRect.bottom + window.scrollY + 4) + 'px';
+      linkPopover.style.left = (toolbarRect.left + window.scrollX) + 'px';
+      linkPopover.style.display = 'flex';
       linkInput.value = '';
       linkInput.focus();
     }
 
-    // Apply the saved link and close popover
+    // Step 2: Replace marker with <a> when URL is submitted
     function applyLink(url) {
       linkPopover.style.display = 'none';
-      if (!url || !savedLinkRange) {
+      var marker = document.getElementById('link-marker');
+
+      if (!url || !marker) {
+        removeMarker();
         contentEditable.focus();
         return;
       }
+
+      // Create anchor and move marker's children into it
+      var a = document.createElement('a');
+      a.href = url;
+      while (marker.firstChild) {
+        a.appendChild(marker.firstChild);
+      }
+      marker.parentNode.replaceChild(a, marker);
+
+      // Place cursor after the new link
       contentEditable.focus();
       var sel = window.getSelection();
       sel.removeAllRanges();
-      sel.addRange(savedLinkRange);
-      document.execCommand('createLink', false, url);
-      savedLinkRange = null;
-      updateToolbarState(toolbar);
+      var newRange = document.createRange();
+      newRange.setStartAfter(a);
+      newRange.collapse(true);
+      sel.addRange(newRange);
     }
 
-    // Cancel link input
+    // Cancel: remove marker, restore plain text
     function cancelLinkInput() {
       linkPopover.style.display = 'none';
-      if (savedLinkRange) {
-        contentEditable.focus();
-        var sel = window.getSelection();
-        sel.removeAllRanges();
-        sel.addRange(savedLinkRange);
-        savedLinkRange = null;
-      }
+      removeMarker();
+      contentEditable.focus();
     }
 
-    // Link input keyboard handling
-    linkInput.addEventListener('keydown', (e) => {
+    // Link input: Enter to submit, Escape to cancel
+    linkInput.addEventListener('keydown', function(e) {
       if (e.key === 'Enter') {
         e.preventDefault();
         applyLink(linkInput.value.trim());
@@ -124,23 +229,62 @@
       }
     });
 
-    // Close link input on blur (e.g. clicking elsewhere)
-    linkInput.addEventListener('blur', () => {
-      // Small delay to allow Enter keydown to fire first
-      setTimeout(() => {
+    // Submit button
+    linkSubmitBtn.addEventListener('mousedown', function(e) {
+      e.preventDefault();
+    });
+    linkSubmitBtn.addEventListener('click', function() {
+      applyLink(linkInput.value.trim());
+    });
+
+    // Blur: cancel if popover still showing
+    linkInput.addEventListener('blur', function() {
+      setTimeout(function() {
         if (linkPopover.style.display !== 'none') {
           cancelLinkInput();
         }
-      }, 150);
+      }, 200);
     });
 
+    // Link inspect popover: prevent stealing focus
+    if (linkInspectPopover) {
+      linkInspectPopover.addEventListener('mousedown', function(e) {
+        e.preventDefault();
+      });
+    }
+
+    // Open link in new tab
+    if (linkInspectOpenBtn) {
+      linkInspectOpenBtn.addEventListener('click', function() {
+        if (inspectedLink) {
+          var url = inspectedLink.getAttribute('href');
+          if (url) window.open(url, '_blank');
+        }
+      });
+    }
+
+    // Remove link (unwrap <a> tag, keep text)
+    if (linkInspectRemoveBtn) {
+      linkInspectRemoveBtn.addEventListener('click', function() {
+        if (inspectedLink && inspectedLink.parentNode) {
+          var parent = inspectedLink.parentNode;
+          while (inspectedLink.firstChild) {
+            parent.insertBefore(inspectedLink.firstChild, inspectedLink);
+          }
+          parent.removeChild(inspectedLink);
+          parent.normalize();
+          hideLinkInspectPopover();
+        }
+      });
+    }
+
     // Handle toolbar button clicks
-    toolbar.addEventListener('click', (e) => {
-      const button = e.target.closest('button');
+    toolbar.addEventListener('click', function(e) {
+      var button = e.target.closest('button');
       if (!button) return;
 
-      const command = button.getAttribute('data-command');
-      const value = button.getAttribute('data-value');
+      var command = button.getAttribute('data-command');
+      var value = button.getAttribute('data-value');
 
       if (command === 'createLink') {
         showLinkInput();
@@ -154,11 +298,10 @@
     });
 
     // Keyboard shortcuts: Ctrl+B, Ctrl+I, Ctrl+K
-    document.addEventListener('keydown', (e) => {
+    document.addEventListener('keydown', function(e) {
       if (!e.ctrlKey && !e.metaKey) return;
 
-      // Only apply if focus is in content area
-      const selection = window.getSelection();
+      var selection = window.getSelection();
       if (!selection || !contentEditable.contains(selection.anchorNode)) return;
 
       switch(e.key.toLowerCase()) {
@@ -181,17 +324,14 @@
   });
 
   function updateToolbarState(toolbar) {
-    toolbar.querySelectorAll('button').forEach(button => {
-      const command = button.getAttribute('data-command');
+    toolbar.querySelectorAll('button').forEach(function(button) {
+      var command = button.getAttribute('data-command');
       if (!command) return;
-
-      // formatBlock doesn't have a queryCommandState, so only check simple commands
       if (command === 'formatBlock') {
         button.classList.remove('is-active');
         return;
       }
-
-      const isActive = document.queryCommandState(command);
+      var isActive = document.queryCommandState(command);
       button.classList.toggle('is-active', isActive);
     });
   }
@@ -245,6 +385,24 @@
     border-radius: 4px;
     padding: 0.3rem;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    display: flex;
+    gap: 0.25rem;
+    align-items: center;
+  }
+
+  #link-submit-btn {
+    background: #6ba4ff;
+    color: white;
+    border: none;
+    border-radius: 3px;
+    font-size: 0.7rem;
+    padding: 0.3rem 0.5rem;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+
+  #link-submit-btn:hover {
+    background: #5a93ee;
   }
 
   .link-input-popover input {
@@ -260,5 +418,57 @@
 
   .link-input-popover input:focus {
     border-color: #6ba4ff;
+  }
+
+  .link-inspect-popover {
+    position: absolute;
+    z-index: 1001;
+    background: var(--color-background);
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    padding: 0.3rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    display: flex;
+    gap: 0.3rem;
+    align-items: center;
+  }
+
+  .link-inspect-url {
+    font-size: 0.7rem;
+    color: var(--color-text-light);
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .link-inspect-open-btn {
+    background: #6ba4ff;
+    color: white;
+    border: none;
+    border-radius: 3px;
+    font-size: 0.65rem;
+    padding: 0.2rem 0.4rem;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+
+  .link-inspect-open-btn:hover {
+    background: #5a93ee;
+  }
+
+  .link-inspect-remove-btn {
+    background: transparent;
+    color: var(--color-text-light);
+    border: none;
+    border-radius: 3px;
+    font-size: 0.65rem;
+    padding: 0.2rem 0.4rem;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+
+  .link-inspect-remove-btn:hover {
+    color: var(--color-text);
   }
 </style>
