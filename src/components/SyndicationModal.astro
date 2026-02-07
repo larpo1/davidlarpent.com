@@ -81,6 +81,7 @@
     }
 
     function closeModal() {
+      saveToLocalStorage(); // Save both textareas + hashtags on close
       modal.setAttribute('data-open', 'false');
       document.body.style.overflow = '';
       if (statusEl) {
@@ -107,6 +108,34 @@
           statusEl.textContent = '';
         }
       }, 2000);
+    }
+
+    // Save drafts to localStorage
+    function saveToLocalStorage(platform) {
+      if (!currentSlug) return;
+      try {
+        if (!platform || platform === 'linkedin') {
+          if (linkedinTextarea) {
+            localStorage.setItem('syndication-' + currentSlug + '-linkedin', linkedinTextarea.value);
+          }
+        }
+        if (!platform || platform === 'substack') {
+          if (substackTextarea) {
+            localStorage.setItem('syndication-' + currentSlug + '-substack', substackTextarea.value);
+          }
+        }
+        // Always save hashtags
+        var hashtagData = getHashtagData();
+        localStorage.setItem('syndication-' + currentSlug + '-hashtags', JSON.stringify(hashtagData));
+      } catch (e) {}
+    }
+
+    function getHashtagData() {
+      if (!hashtagPillsContainer) return [];
+      var pills = hashtagPillsContainer.querySelectorAll('.hashtag-pill');
+      var tags = [];
+      pills.forEach(function(p) { tags.push(p.dataset.tag); });
+      return tags;
     }
 
     // AI draft generation
@@ -156,6 +185,7 @@
           showStatus('AI generation failed, using template');
         }
         updateCharCount();
+        saveToLocalStorage(platform);
       })
       .catch(function() {
         textarea.classList.remove('loading');
@@ -234,6 +264,10 @@
     // Character count live update
     if (linkedinTextarea) {
       linkedinTextarea.addEventListener('input', updateCharCount);
+      linkedinTextarea.addEventListener('blur', function() { saveToLocalStorage('linkedin'); });
+    }
+    if (substackTextarea) {
+      substackTextarea.addEventListener('blur', function() { saveToLocalStorage('substack'); });
     }
 
     // Copy buttons (one per column)
@@ -250,6 +284,7 @@
               textToCopy += '\n\n' + hashtags.join(' ');
             }
           }
+          saveToLocalStorage(platform);
           navigator.clipboard.writeText(textToCopy).then(function() {
             showStatus('Copied!');
           }).catch(function() {
