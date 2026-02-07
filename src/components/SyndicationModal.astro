@@ -35,7 +35,7 @@
           </div>
         </div>
         <div class="syndication-column-actions">
-          <button class="syndication-regenerate" data-platform="linkedin">Rewrite</button>
+          <button class="syndication-regenerate" data-platform="linkedin">Generate</button>
           <button class="syndication-copy-button" data-platform="linkedin">Copy</button>
         </div>
       </div>
@@ -44,7 +44,7 @@
         <h3 class="syndication-column-label">Substack</h3>
         <textarea class="syndication-textarea" data-platform="substack" placeholder="Substack content..."></textarea>
         <div class="syndication-column-actions">
-          <button class="syndication-regenerate" data-platform="substack">Rewrite</button>
+          <button class="syndication-regenerate" data-platform="substack">Generate</button>
           <button class="syndication-copy-button" data-platform="substack">Copy</button>
         </div>
       </div>
@@ -123,7 +123,10 @@
       // Show loading state
       textarea.value = 'Generating draft...';
       textarea.classList.add('loading');
-      if (regenBtn) regenBtn.disabled = true;
+      if (regenBtn) {
+        regenBtn.disabled = true;
+        regenBtn.textContent = 'Generating...';
+      }
       if (statusEl) statusEl.textContent = '';
 
       fetch('/api/generate-syndication-draft', {
@@ -135,7 +138,10 @@
       .then(function(data) {
         textarea.classList.remove('loading');
         generatingPlatforms[platform] = false;
-        if (regenBtn) regenBtn.disabled = false;
+        if (regenBtn) {
+          regenBtn.disabled = false;
+          regenBtn.textContent = 'Generate';
+        }
 
         if (data.success) {
           textarea.value = data.draft;
@@ -154,7 +160,10 @@
       .catch(function() {
         textarea.classList.remove('loading');
         generatingPlatforms[platform] = false;
-        if (regenBtn) regenBtn.disabled = false;
+        if (regenBtn) {
+          regenBtn.disabled = false;
+          regenBtn.textContent = 'Generate';
+        }
         // Fall back to template text
         textarea.value = fallbackText || '';
         showStatus('AI generation failed, using template');
@@ -280,16 +289,19 @@
 
       currentSlug = data.slug || '';
 
-      // Store fallback texts
-      var linkedinFallback = data.linkedinText || '';
-      var substackFallback = data.substackText || '';
+      // Load saved drafts from localStorage, or start empty
+      var savedLinkedin = '';
+      var savedSubstack = '';
+      try {
+        savedLinkedin = localStorage.getItem('syndication-' + currentSlug + '-linkedin') || '';
+        savedSubstack = localStorage.getItem('syndication-' + currentSlug + '-substack') || '';
+      } catch (e) {}
 
-      // Set fallback texts initially (will be replaced by AI if available)
       if (linkedinTextarea) {
-        linkedinTextarea.value = linkedinFallback;
+        linkedinTextarea.value = savedLinkedin;
       }
       if (substackTextarea) {
-        substackTextarea.value = substackFallback;
+        substackTextarea.value = savedSubstack;
       }
 
       // Populate link preview card
@@ -300,9 +312,17 @@
         linkPreviewTitle.textContent = data.title || '';
       }
 
-      // Populate hashtag pills from tags
+      // Load saved hashtags or populate from tags
       clearPills();
-      if (data.tags && data.tags.length > 0) {
+      var savedHashtags = null;
+      try {
+        var hashtagsJson = localStorage.getItem('syndication-' + currentSlug + '-hashtags');
+        if (hashtagsJson) savedHashtags = JSON.parse(hashtagsJson);
+      } catch (e) {}
+
+      if (savedHashtags && savedHashtags.length > 0) {
+        savedHashtags.forEach(function(tag) { addPill(tag); });
+      } else if (data.tags && data.tags.length > 0) {
         data.tags.forEach(function(tag) {
           addPill(tag);
         });
@@ -311,14 +331,8 @@
       // Update char count
       updateCharCount();
 
-      // Open
+      // Open -- no auto AI generation; user clicks Generate when ready
       openModal();
-
-      // Trigger AI draft generation for BOTH platforms simultaneously
-      if (currentSlug) {
-        generateDraft(currentSlug, 'linkedin', linkedinFallback);
-        generateDraft(currentSlug, 'substack', substackFallback);
-      }
     };
   })();
 </script>
