@@ -1,0 +1,181 @@
+---
+// SketchScrollReveal.astro
+// Scroll-driven materialisation for .sketch-illustration images.
+// Desktop (>1200px): clone to fixed position in right margin, scrub with GSAP ScrollTrigger.
+// Mobile (<=1200px): inline images animate in via IntersectionObserver.
+// This is reader-facing (production), NOT dev-only.
+---
+
+<script>
+  import { gsap } from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+  gsap.registerPlugin(ScrollTrigger);
+
+  function init() {
+    const images = document.querySelectorAll<HTMLImageElement>('.post-content .sketch-illustration');
+    if (images.length === 0) return;
+
+    const postContent = document.querySelector('.post-content') as HTMLElement;
+    if (!postContent) return;
+
+    const desktopMQ = window.matchMedia('(min-width: 1201px)');
+    let clones: HTMLImageElement[] = [];
+    let observers: IntersectionObserver[] = [];
+    let tweens: gsap.core.Tween[] = [];
+
+    function cleanUp() {
+      // Kill all ScrollTriggers created by this script
+      ScrollTrigger.getAll().forEach(st => st.kill());
+      // Remove clones
+      clones.forEach(clone => clone.remove());
+      clones = [];
+      // Disconnect observers
+      observers.forEach(obs => obs.disconnect());
+      observers = [];
+      // Kill tweens
+      tweens.forEach(t => t.kill());
+      tweens = [];
+      // Reset inline images
+      images.forEach(img => {
+        (img as HTMLElement).style.display = '';
+        gsap.set(img, { clearProps: 'all' });
+        img.classList.remove('sketch-reveal-pending');
+      });
+    }
+
+    function setupDesktop() {
+      const imageArray = Array.from(images);
+
+      imageArray.forEach((img, index) => {
+        // Hide original inline image
+        (img as HTMLElement).style.display = 'none';
+
+        // Create a clone for fixed positioning
+        const clone = img.cloneNode(true) as HTMLImageElement;
+        clone.classList.remove('sketch-illustration');
+        clone.classList.add('sketch-reveal-fixed');
+        clone.removeAttribute('contenteditable');
+
+        // Set initial custom property for blur composability
+        clone.style.setProperty('--sketch-blur', '8px');
+        gsap.set(clone, { opacity: 0, y: 20 });
+
+        document.body.appendChild(clone);
+        clones.push(clone);
+
+        // Determine the trigger zone: from this image's position to the next image's position (or end of content)
+        // Use a marker element at the image's original position as the trigger
+        const triggerStart = img;
+
+        // Calculate start/end positions for the scroll trigger
+        // We want the animation to play as the user scrolls through the section
+        // where this image's content lives
+        let endTrigger: HTMLElement;
+        if (index < imageArray.length - 1) {
+          endTrigger = imageArray[index + 1] as HTMLElement;
+        } else {
+          endTrigger = postContent;
+        }
+
+        // Create a timeline for this image's reveal
+        const tl = gsap.timeline({
+          scrollTrigger: {
+            trigger: triggerStart,
+            start: 'top center',
+            endTrigger: endTrigger,
+            end: index < imageArray.length - 1 ? 'top center' : 'bottom center',
+            scrub: true,
+          }
+        });
+
+        // Animate in: first 30% of the scroll range
+        tl.to(clone, {
+          '--sketch-blur': '0px',
+          opacity: 1,
+          y: 0,
+          duration: 0.3,
+          ease: 'none',
+        }, 0);
+
+        // Hold visible for the middle portion
+        // Then animate out in the last 30% (if there's a next image)
+        if (index < imageArray.length - 1) {
+          tl.to(clone, {
+            '--sketch-blur': '8px',
+            opacity: 0,
+            y: -20,
+            duration: 0.3,
+            ease: 'none',
+          }, 0.7);
+        }
+      });
+    }
+
+    function setupMobile() {
+      images.forEach(img => {
+        // Add pending class for initial hidden state
+        img.classList.add('sketch-reveal-pending');
+        gsap.set(img, { opacity: 0, y: 20, '--sketch-blur': '8px' });
+
+        const observer = new IntersectionObserver(
+          (entries) => {
+            entries.forEach(entry => {
+              if (entry.isIntersecting) {
+                const tween = gsap.to(img, {
+                  opacity: 1,
+                  y: 0,
+                  '--sketch-blur': '0px',
+                  duration: 0.6,
+                  ease: 'power2.out',
+                  onComplete: () => {
+                    img.classList.remove('sketch-reveal-pending');
+                  },
+                });
+                tweens.push(tween);
+              } else {
+                // Reverse when scrolling out
+                const tween = gsap.to(img, {
+                  opacity: 0,
+                  y: 20,
+                  '--sketch-blur': '8px',
+                  duration: 0.4,
+                  ease: 'power2.in',
+                  onComplete: () => {
+                    img.classList.add('sketch-reveal-pending');
+                  },
+                });
+                tweens.push(tween);
+              }
+            });
+          },
+          { threshold: 0.3 }
+        );
+
+        observer.observe(img);
+        observers.push(observer);
+      });
+    }
+
+    function setup() {
+      cleanUp();
+      if (desktopMQ.matches) {
+        setupDesktop();
+      } else {
+        setupMobile();
+      }
+    }
+
+    // Initial setup
+    setup();
+
+    // Re-setup on breakpoint change
+    desktopMQ.addEventListener('change', setup);
+  }
+
+  // Run on DOMContentLoaded
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+</script>

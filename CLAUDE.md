@@ -258,7 +258,7 @@ Before marking ANY test task [x] complete, you MUST:
       - **Test:** `npm run build` passes. `node -e "require('gsap')"` does not error.
       - **Commit:** `feat: Install GSAP for scroll-scrubbed image reveal`
 
-- [ ] **Create scroll-reveal component**
+- [x] **Create scroll-reveal component**
       - **What:** Build `src/components/SketchScrollReveal.astro` containing the core JavaScript that finds all `.sketch-illustration` images and sets up scroll-driven materialisation for each one.
       - **Why:** This is the core animation logic. A dedicated component keeps it isolated from the Post layout and makes it testable.
       - **File(s):** `src/components/SketchScrollReveal.astro`
