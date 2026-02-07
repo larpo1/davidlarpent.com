@@ -190,7 +190,7 @@ Before marking ANY test task [x] complete, you MUST:
       - **Test:** `npm run build` passes. Panel opens from toolbar button.
       - **Commit:** `feat: Create image generation panel`
 
-- [ ] **Add CSS for sketch illustrations (dark/light mode)**
+- [x] **Add CSS for sketch illustrations (dark/light mode)**
       - **What:** Style inline sketch illustrations with automatic dark/light mode inversion using CSS `filter: invert(1)`.
       - **Why:** Sketches are generated as black-on-white. In dark mode they need to appear white-on-black. CSS filter handles this without generating two images.
       - **File(s):** `src/styles/global.css`

@@ -21,6 +21,18 @@ const turndown = new TurndownService({
 // Add GFM plugin for footnote support
 turndown.use(gfm);
 
+// Preserve sketch-illustration images as raw HTML (class attribute survives roundtrip)
+turndown.addRule('sketchIllustration', {
+  filter: function (node: HTMLElement) {
+    return node.nodeName === 'IMG' && node.classList.contains('sketch-illustration');
+  },
+  replacement: function (_content: string, node: any) {
+    const src = node.getAttribute('src') || '';
+    const alt = node.getAttribute('alt') || '';
+    return `\n\n<img src="${src}" alt="${alt}" class="sketch-illustration">\n\n`;
+  }
+});
+
 export const POST: APIRoute = async ({ request }) => {
   // Dev-only security check
   if (!import.meta.env.DEV) {

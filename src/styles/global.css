@@ -441,6 +441,26 @@ a:hover {
   padding: 0;
 }
 
+/* Sketch Illustrations (inline generated images) */
+.sketch-illustration {
+  max-width: 100%;
+  height: auto;
+  margin: 1.5rem auto;
+  display: block;
+  border-radius: 4px;
+}
+
+/* Dark mode (default): invert black-on-white sketch to white-on-black */
+[data-theme="dark"] .sketch-illustration,
+:root:not([data-theme="light"]) .sketch-illustration {
+  filter: invert(1);
+}
+
+/* Light mode: show as-is (black on white, no filter) */
+[data-theme="light"] .sketch-illustration {
+  filter: none;
+}
+
 /* Back link */
 .back-link {
   display: inline-block;
