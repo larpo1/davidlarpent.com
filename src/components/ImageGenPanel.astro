@@ -107,6 +107,8 @@
 
     var DEFAULT_STYLE = "Square 1:1 aspect ratio. Minimal architectural line drawing on a pure white background. Fine black ink lines only. Clean, precise, spare linework. No shading, no cross-hatching, no fills, no gradients. Just lines on white. Think Dieter Rams sketch meets architectural blueprint. Abstract where possible. Include 1-2 minimal handwritten labels in a loose architect's hand — like notes on a draft, not typeset text. Elegant negative space. The drawing should feel like a diagram that became art.";
 
+    var FEATURE_STYLE = "Wide landscape 1.91:1 aspect ratio (1200x630 pixels). Minimal architectural line drawing on a pure white background. Fine black ink lines only. Clean, precise, spare linework. No shading, no cross-hatching, no fills, no gradients. Just lines on white. Think Dieter Rams sketch meets architectural blueprint. Abstract where possible. Include 1-2 minimal handwritten labels in a loose architect's hand — like notes on a draft, not typeset text. Elegant negative space. The drawing should feel like a diagram that became art. Composition should be horizontally balanced with generous margins on all sides — the image will be used as a social sharing preview.";
+
     var currentSlug = '';
     var generatedPath = '';
     var insertAfterEl = null;
@@ -246,7 +248,7 @@
       var sourceContent = postTitle || '';
       if (postDescription) sourceContent += ' — ' + postDescription;
       sourceText.textContent = sourceContent || '(no title or description)';
-      styleTextarea.value = DEFAULT_STYLE;
+      styleTextarea.value = FEATURE_STYLE;
 
       // Reset middle column
       promptTextarea.value = '';
