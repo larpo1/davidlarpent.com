@@ -61,8 +61,7 @@ This is what I mean by decision-first queries. Instead of asking “show me the 
 
 ## The semantic layer deserves more attention
 
-<img src="/images/posts/ai-data-architecture/sketch-1770497206.png" alt="A minimal architectural line drawing showing a flowing organic form with embedded text fragments floating within vector space boundaries, all connected by thin black ink lines, with handwritten label "semantic layer" in loose architect's handwriting. Labels inside the layer should be "reviews", "social signals", "customer feedback", "chat threads", "service tickets". 
-Square 1:1 aspect ratio. Minimal architectural line drawing on a pure white background. Fine black ink lines only. Clean, precise, spare linework. No shading, no cross-hatching, no fills, no gradients. Just lines on white. Think Dieter Rams sketch meets architectural blueprint. Abstract where possible. Elegant negative space. The drawing should feel like a diagram that became art." class="sketch-illustration">
+<img src="/images/posts/ai-data-architecture/sketch-1770497206.png" alt="" class="sketch-illustration">
 
 Of the three, I think the semantic layer is most often mishandled.
 
