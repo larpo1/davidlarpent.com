@@ -116,6 +116,9 @@
     var isEditMode = false;
     var editingImage = null; // reference to the DOM <img> being edited
 
+    // Feature image mode state
+    var isFeatureMode = false;
+
     function saveInsertionPoint() {
       var sel = window.getSelection();
       if (sel && sel.rangeCount > 0 && contentEditable && contentEditable.contains(sel.anchorNode)) {
@@ -153,6 +156,7 @@
       generatedPath = '';
       hasGeneratedPrompt = false;
       isEditMode = false;
+      isFeatureMode = false;
       editingImage = null;
 
       // Set title and button text for new image mode
@@ -188,6 +192,7 @@
       generatedPath = '';
       hasGeneratedPrompt = false;
       isEditMode = true;
+      isFeatureMode = false;
       editingImage = imageElement || null;
       insertAfterEl = null;
 
@@ -223,11 +228,55 @@
       document.body.style.overflow = 'hidden';
     }
 
+    function openModalForFeature(slug, postTitle, postDescription, currentImage) {
+      currentSlug = slug || '';
+      generatedPath = '';
+      hasGeneratedPrompt = false;
+      isEditMode = false;
+      editingImage = null;
+      isFeatureMode = true;
+      insertAfterEl = null;
+
+      // Set title and button text for feature image mode
+      if (titleEl) titleEl.textContent = 'Feature Image';
+      insertBtn.textContent = 'Set as Feature Image';
+      if (removeBtn) removeBtn.style.display = 'none';
+
+      // Left column: title + description as source text
+      var sourceContent = postTitle || '';
+      if (postDescription) sourceContent += ' — ' + postDescription;
+      sourceText.textContent = sourceContent || '(no title or description)';
+      styleTextarea.value = DEFAULT_STYLE;
+
+      // Reset middle column
+      promptTextarea.value = '';
+      promptBtn.textContent = 'Generate Prompt';
+      promptBtn.disabled = false;
+      promptBtn.style.display = '';
+      repromptBtn.style.display = 'none';
+      imageBtn.disabled = true;
+
+      // Right column: show current image if exists
+      if (currentImage) {
+        showPreviewImage(currentImage, postTitle);
+      } else {
+        resetPreview();
+      }
+
+      // Hide gallery
+      if (galleryEl) galleryEl.style.display = 'none';
+
+      // Open modal
+      modal.setAttribute('data-open', 'true');
+      document.body.style.overflow = 'hidden';
+    }
+
     function closeModal() {
       modal.setAttribute('data-open', 'false');
       document.body.style.overflow = '';
       generatedPath = '';
       isEditMode = false;
+      isFeatureMode = false;
       editingImage = null;
       if (galleryEl) galleryEl.style.display = 'none';
     }
@@ -324,14 +373,36 @@
     }
 
     function insertImage() {
+      if (!generatedPath) { console.error('ImageGen: no generatedPath'); return; }
+
+      var prompt = promptTextarea.value.trim();
+
+      // Feature image mode: save to frontmatter and dispatch event
+      if (isFeatureMode) {
+        fetch('/api/save-post', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ slug: currentSlug, frontmatter: { featureImage: generatedPath } })
+        }).then(function(response) {
+          return response.json();
+        }).then(function(result) {
+          if (result.success) {
+            window.dispatchEvent(new CustomEvent('feature-image-set', { detail: { path: generatedPath } }));
+            closeModal();
+          } else {
+            console.error('Failed to save feature image:', result.message);
+          }
+        }).catch(function(err) {
+          console.error('Failed to save feature image:', err);
+        });
+        return;
+      }
+
       if (!contentEditable) {
         contentEditable = document.querySelector('[contenteditable][data-field="content"]') || document.querySelector('[contenteditable][data-field="about"]');
       }
 
-      if (!generatedPath) { console.error('ImageGen: no generatedPath'); return; }
       if (!contentEditable) { console.error('ImageGen: no contentEditable element found'); return; }
-
-      var prompt = promptTextarea.value.trim();
 
       if (isEditMode && editingImage) {
         // Replace mode: update existing image src and alt
@@ -445,6 +516,16 @@
     window.addEventListener('image-generate-request', function(e) {
       var detail = e.detail || {};
       openModal(detail.prompt || '', detail.slug || '');
+    });
+
+    window.addEventListener('feature-image-request', function(e) {
+      var detail = e.detail || {};
+      openModalForFeature(
+        detail.slug || '',
+        detail.title || '',
+        detail.description || '',
+        detail.currentImage || ''
+      );
     });
 
     window.addEventListener('image-edit-request', function(e) {

@@ -124,6 +124,9 @@ export const POST: APIRoute = async ({ request }) => {
       if (frontmatter.draft !== undefined) {
         parsed.data.draft = frontmatter.draft;
       }
+      if (frontmatter.featureImage !== undefined) {
+        parsed.data.featureImage = frontmatter.featureImage;
+      }
     }
 
     // Update content if provided (convert HTML to Markdown using turndown)

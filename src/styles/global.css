@@ -377,6 +377,70 @@ a:hover {
   margin-bottom: 3rem;
 }
 
+/* Feature Image */
+.feature-image-wrapper {
+  margin-bottom: 1.5rem;
+}
+
+.feature-image-wrapper:empty {
+  display: none;
+}
+
+.feature-image {
+  width: 100%;
+  max-width: 300px;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+}
+
+.feature-image-placeholder {
+  border: 2px dashed var(--color-border);
+  border-radius: 4px;
+  aspect-ratio: 1;
+  max-width: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  opacity: 0.4;
+  transition: opacity 0.2s;
+  color: var(--color-text-light);
+  margin: 0 auto;
+}
+
+.feature-image-placeholder:hover {
+  opacity: 0.7;
+}
+
+@media (min-width: 1201px) {
+  .post-header {
+    position: relative;
+  }
+
+  .feature-image-wrapper {
+    position: absolute;
+    top: 0;
+    left: 100%;
+    margin-left: 24px;
+    width: calc(50vw - var(--max-width) / 2 - 48px);
+    margin-bottom: 0;
+  }
+
+  .feature-image {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .feature-image-placeholder {
+    max-width: 100%;
+    aspect-ratio: 1;
+    margin: 0;
+    position: relative;
+    z-index: 11;
+  }
+}
+
 .post-title {
   font-size: 2.6rem;
   margin: 0 0 0.5rem;
@@ -1658,7 +1722,8 @@ a:hover {
 }
 
 /* Sketch illustration click affordance in contenteditable (dev mode) */
-[contenteditable="true"] .sketch-illustration {
+/* Exclude .sketch-reveal-active so fixed-position images in right margin stay pointer-events:none */
+[contenteditable="true"] .sketch-illustration:not(.sketch-reveal-active) {
   cursor: pointer;
   pointer-events: auto;
   transition: outline-color 0.2s;
@@ -1666,7 +1731,7 @@ a:hover {
   outline-offset: 4px;
 }
 
-[contenteditable="true"] .sketch-illustration:hover {
+[contenteditable="true"] .sketch-illustration:not(.sketch-reveal-active):hover {
   outline-color: #6ba4ff;
 }
 

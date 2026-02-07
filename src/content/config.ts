@@ -9,6 +9,7 @@ const posts = defineCollection({
     draft: z.boolean().default(false),
     tags: z.array(z.string()).default([]),
     category: z.enum(['work', 'not-work']).optional(),
+    featureImage: z.string().optional(),
   }),
 });
 
