@@ -5,7 +5,7 @@ import { GoogleGenAI } from '@google/genai';
 
 export const prerender = false;
 
-const STYLE_PROMPT = 'Hand-drawn pencil sketch illustration. Black ink on white paper. Loose, expressive linework. Minimal shading with cross-hatching. No color. No text or labels. Simple composition. Think editorial illustration in The New Yorker or a Moleskine notebook sketch.';
+const DEFAULT_STYLE_PROMPT = 'Square 1:1 aspect ratio. Minimal architectural line drawing on a pure white background. Fine black ink lines only. Clean, precise, spare linework. No shading, no cross-hatching, no fills, no gradients. Just lines on white. Think Dieter Rams sketch meets architectural blueprint. Abstract where possible. Include 1-2 minimal handwritten labels in a loose architect\'s hand — like notes on a draft, not typeset text. Elegant negative space. The drawing should feel like a diagram that became art.';
 
 export const POST: APIRoute = async ({ request }) => {
   // Dev-mode guard
@@ -17,7 +17,7 @@ export const POST: APIRoute = async ({ request }) => {
   }
 
   // Parse request body
-  let body: { prompt?: string; slug?: string };
+  let body: { prompt?: string; slug?: string; stylePrompt?: string };
   try {
     body = await request.json();
   } catch {
@@ -62,8 +62,9 @@ export const POST: APIRoute = async ({ request }) => {
     );
   }
 
-  // Construct full prompt
-  const fullPrompt = `${STYLE_PROMPT}\n\nSubject: ${prompt.trim()}`;
+  // Construct full prompt (use client-provided style prompt if given)
+  const stylePrompt = (body.stylePrompt && body.stylePrompt.trim()) || DEFAULT_STYLE_PROMPT;
+  const fullPrompt = `${stylePrompt}\n\nSubject: ${prompt.trim()}`;
 
   try {
     // Call Gemini API
@@ -92,7 +93,9 @@ export const POST: APIRoute = async ({ request }) => {
 
     // Save image to public/images/posts/{slug}/
     const timestamp = Math.floor(Date.now() / 1000);
-    const filename = `sketch-${timestamp}.png`;
+    const mimeType = imagePart.inlineData.mimeType || 'image/png';
+    const ext = mimeType === 'image/jpeg' ? 'jpg' : mimeType === 'image/webp' ? 'webp' : 'png';
+    const filename = `sketch-${timestamp}.${ext}`;
     const imageDir = path.join(process.cwd(), 'public', 'images', 'posts', slug);
     const imagePath = path.join(imageDir, filename);
 
@@ -106,7 +109,7 @@ export const POST: APIRoute = async ({ request }) => {
     const publicPath = `/images/posts/${slug}/${filename}`;
 
     return new Response(
-      JSON.stringify({ success: true, path: publicPath }),
+      JSON.stringify({ success: true, path: publicPath, dataUrl: `data:${mimeType};base64,${imagePart.inlineData.data}` }),
       { status: 200, headers: { 'Content-Type': 'application/json' } }
     );
   } catch (error) {

@@ -12,7 +12,7 @@ tags:
   - product
   - strategy
 category: work
-featureImage: /images/posts/ai-data-architecture/sketch-1770497919.png
+featureImage: /images/posts/ai-data-architecture/sketch-1770497919.jpg
 ---
 [Gartner puts AI-ready organisations at 43%](https://www.gartner.com/en/newsroom/press-releases/2025-08-05-gartner-hype-cycle-identifies-top-ai-innovations-in-2025); [McKinsey’s State of AI survey](https://www.mckinsey.com/capabilities/quantumblack/our-insights/the-state-of-ai) found 88% using AI but two-thirds still stuck in pilot mode. In real estate specifically (my sector), [JLL’s 2025 technology survey](https://www.jll.com/en-us/newsroom/real-estates-ai-reality-check-companies-piloting-only-achieved-all-ai-goals) found more than 60% of firms remain unprepared strategically, organisationally and technically. The immediate advice is often: “get your data house in order”.
 
@@ -22,7 +22,7 @@ This note is to explore what that means, and what AI-ready data architecture loo
 
 We find it helpful to think about data readiness for AI in three layers: canonical data, semantic layer and correlation data. Each serves a different purpose. The canonical tells you what is, the semantic suggests why it is, the correlation data tells you whether it is you or the market. 
 
-<img src="/images/posts/ai-data-architecture/sketch-1770493987.png" alt="" class="sketch-illustration">
+<img src="/images/posts/ai-data-architecture/sketch-1770493987.jpg" alt="" class="sketch-illustration">
 
 **Canonical data** is the structured, pre-calculated, agreed-upon metrics. Revenue. Occupancy. Conversion rates. Whatever the core numbers are that your business argues about in meetings.
 
@@ -48,7 +48,7 @@ This layer is often missing entirely, or maintained informally in spreadsheets a
 
 ## Where the insight lives
 
-<img src="/images/posts/ai-data-architecture/sketch-1770497919.png" alt="" class="sketch-illustration">
+<img src="/images/posts/ai-data-architecture/sketch-1770497919.jpg" alt="" class="sketch-illustration">
 
 None of these layers is _insightful_ in isolation.
 
@@ -64,7 +64,7 @@ This is what I mean by decision-first queries. Instead of asking “show me the 
 
 ## The semantic layer deserves more attention
 
-<img src="/images/posts/ai-data-architecture/sketch-1770497206.png" alt="" class="sketch-illustration">
+<img src="/images/posts/ai-data-architecture/sketch-1770497206.jpg" alt="" class="sketch-illustration">
 
 Of the three, I think the semantic layer is most often mishandled.
 
