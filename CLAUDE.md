@@ -292,7 +292,7 @@ Before marking ANY test task [x] complete, you MUST:
       - **Test:** `npm run build` passes.
       - **Commit:** `feat: Create scroll-reveal component for sketch illustrations`
 
-- [ ] **Add CSS for desktop fixed-position sketch reveal**
+- [x] **Add CSS for desktop fixed-position sketch reveal**
       - **What:** Add styles for `.sketch-reveal-fixed` (the cloned image positioned in the right margin on desktop) and hide original inline images on desktop.
       - **Why:** The fixed-position clone needs explicit sizing, placement, and z-index to sit in the right margin without overlapping the content column or TOC.
       - **File(s):** `src/styles/global.css`

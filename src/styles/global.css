@@ -448,17 +448,55 @@ a:hover {
   margin: 1.5rem auto;
   display: block;
   border-radius: 4px;
+  --sketch-blur: 0px;
 }
 
-/* Dark mode (default): invert black-on-white sketch to white-on-black */
+/* Dark mode (default): invert + composable blur */
 [data-theme="dark"] .sketch-illustration,
 :root:not([data-theme="light"]) .sketch-illustration {
-  filter: invert(1);
+  filter: invert(1) blur(var(--sketch-blur, 0px));
 }
 
-/* Light mode: show as-is (black on white, no filter) */
+/* Light mode: composable blur only */
 [data-theme="light"] .sketch-illustration {
-  filter: none;
+  filter: blur(var(--sketch-blur, 0px));
+}
+
+/* Desktop: hide inline originals, show fixed clones instead */
+@media (min-width: 1201px) {
+  .post-content .sketch-illustration {
+    display: none;
+  }
+}
+
+/* Desktop fixed-position sketch reveal (cloned images in right margin) */
+@media (min-width: 1201px) {
+  .sketch-reveal-fixed {
+    position: fixed;
+    top: 50%;
+    transform: translateY(-50%);
+    right: calc((100vw - 700px) / 4);
+    max-width: 350px;
+    max-height: 60vh;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    z-index: 10;
+    pointer-events: none;
+    opacity: 0;
+    will-change: opacity, filter, transform;
+    --sketch-blur: 8px;
+  }
+}
+
+/* Dark/light mode inversion for fixed clones using --sketch-blur */
+[data-theme="dark"] .sketch-reveal-fixed,
+:root:not([data-theme="light"]) .sketch-reveal-fixed {
+  filter: invert(1) blur(var(--sketch-blur, 0px));
+}
+
+[data-theme="light"] .sketch-reveal-fixed {
+  filter: blur(var(--sketch-blur, 0px));
 }
 
 /* Back link */
