@@ -49,10 +49,10 @@ const imageURL = new URL(image, Astro.site);
     <!-- Open Graph / Social -->
     <meta property="og:type" content={type} />
     <meta property="og:url" content={canonicalURL} />
-    <meta property="og:title" content={title} />
+    <meta property="og:title" content={title.replace(/ \| David Larpent$/, '')} />
     <meta property="og:description" content={description} />
     <meta property="og:image" content={imageURL} />
-    <meta property="og:site_name" content="David Larpent" />
+    <!-- og:site_name removed to keep social cards clean -->
 
     <!-- Article-specific OG tags -->
     {articleMeta && (
@@ -67,7 +67,7 @@ const imageURL = new URL(image, Astro.site);
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content={title} />
+    <meta name="twitter:title" content={title.replace(/ \| David Larpent$/, '')} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={imageURL} />
 
