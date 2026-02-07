@@ -21,6 +21,8 @@ This note is to explore what that means, and what AI-ready data architecture loo
 
 We find it helpful to think about data readiness for AI in three layers: canonical data, semantic layer and correlation data. Each serves a different purpose. The canonical tells you what is, the semantic suggests why it is, the correlation data tells you whether it is you or the market. 
 
+<img src="/images/posts/ai-data-architecture/sketch-1770493987.png" alt="" class="sketch-illustration">
+
 **Canonical data** is the structured, pre-calculated, agreed-upon metrics. Revenue. Occupancy. Conversion rates. Whatever the core numbers are that your business argues about in meetings.
 
 The key word is pre-calculated. You do not want a language model writing SQL on the fly to answer “what’s our occupancy rate?” You’ll get a slightly different answer every time, depending on how the model interprets the question, which filters it applies, how it handles edge cases. That’s a recipe for eroding trust in the system. 
@@ -58,6 +60,9 @@ The value emerges when you connect them. Occupancy is down 6% (canonical). Revie
 This is what I mean by decision-first queries. Instead of asking “show me the data,” you can ask “where should I invest in facility improvements?” The system assembles evidence from all three layers. You make the judgment call.
 
 ## The semantic layer deserves more attention
+
+<img src="/images/posts/ai-data-architecture/sketch-1770497206.png" alt="A minimal architectural line drawing showing a flowing organic form with embedded text fragments floating within vector space boundaries, all connected by thin black ink lines, with handwritten label "semantic layer" in loose architect's handwriting. Labels inside the layer should be "reviews", "social signals", "customer feedback", "chat threads", "service tickets". 
+Square 1:1 aspect ratio. Minimal architectural line drawing on a pure white background. Fine black ink lines only. Clean, precise, spare linework. No shading, no cross-hatching, no fills, no gradients. Just lines on white. Think Dieter Rams sketch meets architectural blueprint. Abstract where possible. Elegant negative space. The drawing should feel like a diagram that became art." class="sketch-illustration">
 
 Of the three, I think the semantic layer is most often mishandled.
 
