@@ -127,7 +127,7 @@ Before marking ANY test task [x] complete, you MUST:
       - **Test:** `npm run build` passes.
       - **Commit:** `feat: Install Google GenAI SDK for image generation`
 
-- [ ] **Create image generation API endpoint**
+- [x] **Create image generation API endpoint**
       - **What:** Build a dev-only API endpoint that calls Gemini to generate a hand-drawn sketch illustration from a text prompt.
       - **Why:** Backend endpoint isolates the AI call and handles file storage.
       - **File(s):** `src/pages/api/generate-image.ts`
