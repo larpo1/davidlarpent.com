@@ -364,7 +364,7 @@ Before marking ANY test task [x] complete, you MUST:
       - **Test:** `npm run build` passes.
       - **Commit:** `feat: Add CSS for mobile inline sketch materialisation`
 
-- [ ] **Wire SketchScrollReveal into Post.astro**
+- [x] **Wire SketchScrollReveal into Post.astro**
       - **What:** Import and render `SketchScrollReveal` in the Post layout so the scroll-reveal script loads on every post page for all readers.
       - **Why:** Connects the component to the page. This is NOT dev-only -- it must render in both dev and production.
       - **File(s):** `src/layouts/Post.astro`

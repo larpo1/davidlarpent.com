@@ -5,6 +5,7 @@ import EditSettingsModal from '../components/EditSettingsModal.astro';
 import EditToolbar from '../components/EditToolbar.astro';
 import SyndicationModal from '../components/SyndicationModal.astro';
 import ImageGenPanel from '../components/ImageGenPanel.astro';
+import SketchScrollReveal from '../components/SketchScrollReveal.astro';
 
 interface Props {
   title: string;
@@ -133,6 +134,8 @@ const articleSchema = {
 
       <a href="/" class="back-link">← Back to essays</a>
     </article>
+
+    <SketchScrollReveal />
 
     {isDev && (
       <>
