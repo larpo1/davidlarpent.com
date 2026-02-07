@@ -47,7 +47,7 @@ This layer is often missing entirely, or maintained informally in spreadsheets a
 
 ## Where the insight lives
 
-<img src="/images/posts/ai-data-architecture/sketch-1770497919.png" alt="A minimal architectural line drawing showing three separate geometric layers or planes floating in space, each containing simple linear elements - one with grid patterns representing data dashboards, one with flowing organic lines suggesting text/reviews, and one with scattered dots connected by thin lines representing correlations. The three layers converge at a central intersection point where all lines meet, creating a precise junction. Loose handwritten architectural labels mark each section: &quot;canonical,&quot; &quot;semantic,&quot; &quot;correlation,&quot; and &quot;insight&quot; at the convergence point. Pure white background, fine black ink lines only, no shading or fills, elegant negative space, square 1:1 format. Think Dieter Rams sketch meets architectural blueprint." class="sketch-illustration">
+<img src="/images/posts/ai-data-architecture/sketch-1770497919.png" alt="" class="sketch-illustration">
 
 None of these layers is _insightful_ in isolation.
 
