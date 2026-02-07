@@ -11,6 +11,14 @@
   <button data-command="formatBlock" data-value="h3" title="Heading 3">3</button>
   <button data-command="insertUnorderedList" title="Bullet List">•</button>
   <button data-command="formatBlock" data-value="pre" title="Code Block">&lt;&gt;</button>
+  <button data-command="generateImage" title="Generate sketch illustration">
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 19l7-7 3 3-7 7-3-3z"/>
+      <path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/>
+      <path d="M2 2l7.586 7.586"/>
+      <circle cx="11" cy="11" r="2"/>
+    </svg>
+  </button>
 </div>
 
 <div id="link-input-popover" class="link-input-popover" style="display: none;">
@@ -24,6 +32,11 @@
   <button id="link-inspect-remove" type="button" class="link-inspect-remove-btn">Remove</button>
 </div>
 
+<div id="image-prompt-popover" class="image-prompt-popover" style="display: none;">
+  <input type="text" id="image-prompt-input" placeholder="Describe the sketch..." />
+  <button id="image-prompt-submit" type="button">Go</button>
+</div>
+
 <script is:inline>
   document.addEventListener('DOMContentLoaded', () => {
     const toolbar = document.getElementById('edit-toolbar');
@@ -35,6 +48,9 @@
     const linkInspectUrl = document.getElementById('link-inspect-url');
     const linkInspectOpenBtn = document.getElementById('link-inspect-open');
     const linkInspectRemoveBtn = document.getElementById('link-inspect-remove');
+    const imagePromptPopover = document.getElementById('image-prompt-popover');
+    const imagePromptInput = document.getElementById('image-prompt-input');
+    const imagePromptSubmit = document.getElementById('image-prompt-submit');
 
     if (!toolbar || !contentEditable || !linkPopover || !linkInput || !linkSubmitBtn) return;
 
@@ -278,6 +294,79 @@
       });
     }
 
+    // Image generation: dispatch event with prompt and slug
+    function dispatchImageGenerate(prompt) {
+      var article = document.querySelector('.post-article');
+      var slug = article ? article.dataset.postSlug : '';
+      window.dispatchEvent(new CustomEvent('image-generate-request', {
+        detail: { prompt: prompt, slug: slug }
+      }));
+    }
+
+    function showImagePromptInput() {
+      var toolbarRect = toolbar.getBoundingClientRect();
+      imagePromptPopover.style.top = (toolbarRect.bottom + window.scrollY + 4) + 'px';
+      imagePromptPopover.style.left = (toolbarRect.left + window.scrollX) + 'px';
+      imagePromptPopover.style.display = 'flex';
+      imagePromptInput.value = '';
+      imagePromptInput.focus();
+    }
+
+    function cancelImagePromptInput() {
+      imagePromptPopover.style.display = 'none';
+      contentEditable.focus();
+    }
+
+    function submitImagePrompt(text) {
+      imagePromptPopover.style.display = 'none';
+      if (text) {
+        dispatchImageGenerate(text);
+      }
+    }
+
+    function handleGenerateImage() {
+      var sel = window.getSelection();
+      var selectedText = '';
+      if (sel && !sel.isCollapsed && contentEditable.contains(sel.anchorNode)) {
+        selectedText = sel.toString().trim();
+      }
+      if (selectedText) {
+        dispatchImageGenerate(selectedText);
+      } else {
+        showImagePromptInput();
+      }
+    }
+
+    // Image prompt popover events
+    if (imagePromptInput) {
+      imagePromptInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          submitImagePrompt(imagePromptInput.value.trim());
+        } else if (e.key === 'Escape') {
+          e.preventDefault();
+          cancelImagePromptInput();
+        }
+      });
+
+      imagePromptInput.addEventListener('blur', function() {
+        setTimeout(function() {
+          if (imagePromptPopover.style.display !== 'none') {
+            cancelImagePromptInput();
+          }
+        }, 200);
+      });
+    }
+
+    if (imagePromptSubmit) {
+      imagePromptSubmit.addEventListener('mousedown', function(e) {
+        e.preventDefault();
+      });
+      imagePromptSubmit.addEventListener('click', function() {
+        submitImagePrompt(imagePromptInput.value.trim());
+      });
+    }
+
     // Handle toolbar button clicks
     toolbar.addEventListener('click', function(e) {
       var button = e.target.closest('button');
@@ -288,6 +377,8 @@
 
       if (command === 'createLink') {
         showLinkInput();
+      } else if (command === 'generateImage') {
+        handleGenerateImage();
       } else if (value) {
         document.execCommand(command, false, value);
       } else {
@@ -470,5 +561,48 @@
 
   .link-inspect-remove-btn:hover {
     color: var(--color-text);
+  }
+
+  .image-prompt-popover {
+    position: absolute;
+    z-index: 1001;
+    background: var(--color-background);
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    padding: 0.3rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    display: flex;
+    gap: 0.25rem;
+    align-items: center;
+  }
+
+  .image-prompt-popover input {
+    background: var(--color-code-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 3px;
+    color: var(--color-text);
+    font-size: 0.75rem;
+    padding: 0.3rem 0.4rem;
+    width: 220px;
+    outline: none;
+  }
+
+  .image-prompt-popover input:focus {
+    border-color: #6ba4ff;
+  }
+
+  #image-prompt-submit {
+    background: #6ba4ff;
+    color: white;
+    border: none;
+    border-radius: 3px;
+    font-size: 0.7rem;
+    padding: 0.3rem 0.5rem;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+
+  #image-prompt-submit:hover {
+    background: #5a93ee;
   }
 </style>

@@ -156,7 +156,7 @@ Before marking ANY test task [x] complete, you MUST:
       - **Test:** `npm run build` passes. Endpoint returns 403 in production.
       - **Commit:** `feat: Create image generation API endpoint`
 
-- [ ] **Add image generation button to WYSIWYG toolbar**
+- [x] **Add image generation button to WYSIWYG toolbar**
       - **What:** Add a pencil/image icon button to the editing toolbar that captures the current text selection and opens an image generation panel.
       - **Why:** The toolbar is the natural entry point for content-level actions.
       - **File(s):** `src/components/EditToolbar.astro`, `src/styles/global.css`
