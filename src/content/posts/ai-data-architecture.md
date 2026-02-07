@@ -1,7 +1,9 @@
 ---
 title: Data Readiness for 'Decision First' Analysis
 date: 2026-02-06T00:00:00.000Z
-description: The data prep work that de-risks the ROI on expensive AI projects
+description: >-
+  Mapping the data architecture that de-risks the ROI on expensive AI analytics
+  and insight projects
 draft: false
 tags:
   - AI
@@ -16,6 +18,8 @@ category: work
 This note is to explore what that means, and what AI-ready data architecture looks like. Not the abstract principle, but the practical structure. Here’s a mental model that’s been useful to me, and might be useful to others thinking through the same problem.
 
 ## Three layers
+
+<img src="/images/posts/ai-data-architecture/sketch-1770487390.png" alt="Three data layers" class="sketch-illustration">
 
 We find it helpful to think about data readiness for AI in three layers: canonical data, semantic layer and correlation data. Each serves a different purpose. The canonical tells you what is, the semantic suggests why it is, the correlation data tells you whether it is you or the market. 
 
