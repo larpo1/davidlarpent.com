@@ -114,7 +114,135 @@ Before marking ANY test task [x] complete, you MUST:
 
 ## Current Tasks
 
-### Syndication Modal: Generate on Demand + Auto-Save
+### Phase 1: Inline Image Generation (Sketch Illustrations)
+
+- [x] **Install Google GenAI SDK and add API key**
+      - **What:** Add `@google/genai` as a dependency. Document the `GOOGLE_AI_API_KEY` requirement in Architecture Decisions.
+      - **Why:** Image generation uses Gemini Nano Banana Pro model (`gemini-3-pro-image-preview`) via the Google GenAI SDK.
+      - **File(s):** `package.json`, `.env`, `CLAUDE.md`
+      - **Implementation:**
+        1. Run `npm install @google/genai`
+        2. Add `GOOGLE_AI_API_KEY=` to `.env` (user will fill in their key)
+        3. In Architecture Decisions, add: `**Image Generation:** Uses @google/genai with gemini-3-pro-image-preview (Nano Banana Pro) for inline sketch illustrations. Dev-mode only. Requires GOOGLE_AI_API_KEY.`
+      - **Test:** `npm run build` passes.
+      - **Commit:** `feat: Install Google GenAI SDK for image generation`
+
+- [ ] **Create image generation API endpoint**
+      - **What:** Build a dev-only API endpoint that calls Gemini to generate a hand-drawn sketch illustration from a text prompt.
+      - **Why:** Backend endpoint isolates the AI call and handles file storage.
+      - **File(s):** `src/pages/api/generate-image.ts`
+      - **Implementation:**
+        1. Create `src/pages/api/generate-image.ts`:
+           - `export const prerender = false;`
+           - Dev-mode guard: return 403 if `!import.meta.env.DEV`
+           - Accept POST with JSON body: `{ prompt: string, slug: string }`
+           - Validate: prompt required (400), slug required (400), `GOOGLE_AI_API_KEY` must exist (500)
+        2. Construct system prompt that enforces the sketch style:
+           - "Hand-drawn pencil sketch illustration. Black ink on white paper. Loose, expressive linework. Minimal shading with cross-hatching. No color. No text or labels. Simple composition. Think editorial illustration in The New Yorker or a Moleskine notebook sketch."
+           - Combine with user's selected text as the subject
+        3. Call Gemini API:
+           ```typescript
+           import { GoogleGenAI } from '@google/genai';
+           const ai = new GoogleGenAI({ apiKey });
+           const response = await ai.models.generateContent({
+             model: 'gemini-3-pro-image-preview',
+             contents: fullPrompt,
+           });
+           ```
+        4. Extract image data from response (`part.inlineData.data` base64)
+        5. Save to `public/images/posts/{slug}/` with timestamp filename (e.g., `sketch-1707264000.png`)
+        6. Create directory if it doesn't exist
+        7. Return `{ success: true, path: '/images/posts/{slug}/sketch-{ts}.png' }` or `{ success: false, message }` on error
+      - **Test:** `npm run build` passes. Endpoint returns 403 in production.
+      - **Commit:** `feat: Create image generation API endpoint`
+
+- [ ] **Add image generation button to WYSIWYG toolbar**
+      - **What:** Add a pencil/image icon button to the editing toolbar that captures the current text selection and opens an image generation panel.
+      - **Why:** The toolbar is the natural entry point for content-level actions.
+      - **File(s):** `src/components/EditToolbar.astro`, `src/styles/global.css`
+      - **Implementation:**
+        1. Add a new button to the toolbar: `<button data-command="generateImage" title="Generate sketch">✎</button>` (pencil character or simple SVG)
+        2. On click: capture `window.getSelection().toString()` as the prompt text
+        3. If selection is empty, show a small text input popover (reuse the link-input-popover pattern) for typing a prompt manually
+        4. Dispatch a custom event `image-generate-request` with `{ prompt, slug }` that the generation panel will listen for
+        5. Style the button consistently with existing toolbar buttons
+      - **Test:** `npm run build` passes. Button appears in toolbar.
+      - **Commit:** `feat: Add image generation button to toolbar`
+
+- [ ] **Create image generation panel**
+      - **What:** Build a floating panel that shows when the toolbar image button is clicked. Shows the prompt, a Generate button, a preview of the generated image, and an Insert button.
+      - **Why:** The panel gives the user control: preview before inserting, edit the prompt, regenerate if needed.
+      - **File(s):** `src/components/ImageGenPanel.astro`, `src/styles/global.css`
+      - **Implementation:**
+        1. Create `src/components/ImageGenPanel.astro`:
+           - Panel div: `#image-gen-panel.image-gen-panel` (position: fixed, z-index 1001, hidden by default)
+           - Prompt textarea: editable, pre-filled with selected text, 2-3 lines
+           - System prompt display: small muted text showing the style prompt (read-only)
+           - "Generate" button: calls `/api/generate-image` with prompt + slug
+           - Loading state: "Generating..." with spinner/pulse animation on the preview area
+           - Image preview: `<img>` tag showing the generated sketch (max-width 400px)
+           - "Regenerate" button: appears after first generation, same as Generate
+           - "Insert" button: inserts `<img src="{path}" alt="{prompt}" class="sketch-illustration">` at the cursor position in the contenteditable
+           - "Cancel" / close button
+        2. Panel positioning: appear below the toolbar or centered in the viewport
+        3. Listen for `image-generate-request` custom event
+        4. On Insert: use `document.execCommand('insertHTML', ...)` or direct DOM insertion
+      - **Test:** `npm run build` passes. Panel opens from toolbar button.
+      - **Commit:** `feat: Create image generation panel`
+
+- [ ] **Add CSS for sketch illustrations (dark/light mode)**
+      - **What:** Style inline sketch illustrations with automatic dark/light mode inversion using CSS `filter: invert(1)`.
+      - **Why:** Sketches are generated as black-on-white. In dark mode they need to appear white-on-black. CSS filter handles this without generating two images.
+      - **File(s):** `src/styles/global.css`
+      - **Implementation:**
+        1. Add `.sketch-illustration` class:
+           ```css
+           .sketch-illustration {
+             max-width: 100%;
+             height: auto;
+             margin: 1.5rem auto;
+             display: block;
+             border-radius: 4px;
+           }
+           ```
+        2. In dark mode (default), invert the sketch:
+           ```css
+           [data-theme="dark"] .sketch-illustration,
+           :root:not([data-theme="light"]) .sketch-illustration {
+             filter: invert(1);
+           }
+           ```
+        3. In light mode, show as-is (black on white, no filter)
+        4. Ensure the save-post API preserves `<img class="sketch-illustration">` tags in the HTML-to-markdown conversion
+      - **Test:** `npm run build` passes.
+      - **Commit:** `feat: Add CSS for sketch illustrations with dark/light mode inversion`
+
+- [ ] **Test: Phase 1 image generation**
+      - **Blocked By:** All implementation tasks above (must be [x])
+      - **Test File:** tests/image-generation.spec.ts (new)
+      - **Current Test Count:** 214 passing (run `npm test` to verify)
+      - **Expected Test Count:** 214 + 6 = 220 passing (+6)
+
+      - **Tests to Add:**
+        1. Image generation button appears in toolbar when text is selected (dev mode)
+        2. Clicking image button with selection opens generation panel with prompt pre-filled
+        3. Generation panel has Generate, Insert, and Cancel buttons
+        4. Insert button is disabled before image is generated
+        5. Cancel closes the panel without inserting
+        6. Sketch illustration images have correct CSS class and invert in dark mode
+
+      - **Verification Checklist:**
+        - [ ] File tests/image-generation.spec.ts created
+        - [ ] Run `npm test` - all tests pass
+        - [ ] Test count is 220+ passing
+        - [ ] All 6 test scenarios implemented
+
+      - **Files:** tests/image-generation.spec.ts
+      - **Commit:** `test: Add Phase 1 image generation tests`
+
+---
+
+### Completed: Syndication Modal: Generate on Demand + Auto-Save
 
 - [x] **Replace auto-generation with Generate button**
       - **What:** Remove the auto-AI-generation that fires when the modal opens. Instead, show a "Generate" button in each column. Textarea starts empty (or with last saved draft from localStorage). Clicking Generate calls the AI endpoint for that column only.
@@ -572,6 +700,7 @@ npm run test:update   # Update baseline screenshots
 - **TOC:** Always visible on desktop (>1200px). Toggle overlay on mobile/tablet.
 - **Tabs:** Homepage splits posts into "Work" (default) and "Not work" categories.
 - **Syndication:** Full-screen modal with side-by-side LinkedIn/Substack columns. Dev-mode only. Both AI drafts generated in parallel on open. Editable preview with hashtag pills, compact link preview card (LinkedIn only), blue Copy button. Falls back to naive template if AI unavailable. Columns stack vertically on mobile.
+- **Image Generation:** Uses @google/genai with gemini-3-pro-image-preview (Nano Banana Pro) for inline sketch illustrations. Dev-mode only. Requires GOOGLE_AI_API_KEY.
 
 ---
 
