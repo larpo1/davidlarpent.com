@@ -17,7 +17,7 @@ This note is to explore what that means, and what AI-ready data architecture loo
 
 ## Three layers
 
-We find it helpful to think about data readiness for AI in three layers. Each serves a different purpose, and getting them confused tends to cause problems.
+We find it helpful to think about data readiness for AI in three layers: canonical data, semantic layer and correlation data. The canonical tells you what is, the semantic suggests why it is, the correlation data tells you whether it is you or the market. Each serves a different purpose, and getting them confused tends to cause problems.
 
 **Canonical data** is the structured, pre-calculated, agreed-upon metrics. Revenue. Occupancy. Conversion rates. Whatever the core numbers are that your business argues about in meetings.
 
