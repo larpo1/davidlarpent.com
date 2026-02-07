@@ -2,8 +2,8 @@
 title: Data Readiness for 'Decision First' Analysis
 date: 2026-02-06T00:00:00.000Z
 description: >-
-  Mapping the data architecture that de-risks the ROI on expensive AI analytics
-  and insight projects
+  Mapping the data architecture that de-risks the ROI on expensive AI insights
+  projects
 draft: false
 tags:
   - AI
