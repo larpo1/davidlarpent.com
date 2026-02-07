@@ -9,6 +9,7 @@ tags:
   - learning
   - cognitive-science
 category: not-work
+featureImage: /images/posts/what-we-lose-when-we-stop-struggling/sketch-1770508192.jpg
 ---
 I wrote this the old fashioned way. Partly to conjure some new neural pathways into being. Partly so I can get my lines right with my kids.  
 
