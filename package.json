@@ -12,7 +12,8 @@
     "test": "playwright test",
     "test:headed": "playwright test --headed",
     "test:ui": "playwright test --ui",
-    "test:update": "playwright test --update-snapshots"
+    "test:update": "playwright test --update-snapshots",
+    "og": "node scripts/generate-og-image.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.73.0",
