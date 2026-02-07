@@ -12,7 +12,7 @@ tags:
   - product
   - strategy
 category: work
-featureImage: /images/posts/ai-data-architecture/sketch-1770507342.jpg
+featureImage: /images/posts/ai-data-architecture/sketch-1770507224.jpg
 ---
 [Gartner puts AI-ready organisations at 43%](https://www.gartner.com/en/newsroom/press-releases/2025-08-05-gartner-hype-cycle-identifies-top-ai-innovations-in-2025); [McKinsey’s State of AI survey](https://www.mckinsey.com/capabilities/quantumblack/our-insights/the-state-of-ai) found 88% using AI but two-thirds still stuck in pilot mode. In real estate specifically (my sector), [JLL’s 2025 technology survey](https://www.jll.com/en-us/newsroom/real-estates-ai-reality-check-companies-piloting-only-achieved-all-ai-goals) found more than 60% of firms remain unprepared strategically, organisationally and technically. The immediate advice is often: “get your data house in order”.
 
