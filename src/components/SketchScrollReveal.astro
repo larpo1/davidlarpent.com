@@ -1,8 +1,12 @@
 ---
 // SketchScrollReveal.astro
 // Scroll-driven materialisation for .sketch-illustration images.
-// Desktop (>1200px): clone to fixed position in right margin, scrub with GSAP ScrollTrigger.
-// Mobile (<=1200px): inline images animate in via IntersectionObserver.
+// Desktop (>1200px): image goes position:fixed in right margin, scrub with GSAP ScrollTrigger.
+//   - Fades in when the image's section text hits the fold
+//   - Stays visible while reading that section
+//   - Fades out when the next section heading reaches the bottom of the fold
+// Mobile (<=1200px): image stays inline, animates in via IntersectionObserver.
+// No cloning -- same element, different positioning via CSS media queries.
 // This is reader-facing (production), NOT dev-only.
 ---
 
@@ -11,109 +15,136 @@
   import { ScrollTrigger } from 'gsap/ScrollTrigger';
   gsap.registerPlugin(ScrollTrigger);
 
+  // Track state at module level so refresh can clean up previous run
+  let markers: HTMLElement[] = [];
+  let observers: IntersectionObserver[] = [];
+  let tweens: gsap.core.Tween[] = [];
+  let prevImages: HTMLImageElement[] = [];
+  let desktopMQListener: (() => void) | null = null;
+
   function init() {
     const images = document.querySelectorAll<HTMLImageElement>('.post-content .sketch-illustration');
-    if (images.length === 0) return;
 
     const postContent = document.querySelector('.post-content') as HTMLElement;
     if (!postContent) return;
 
     const desktopMQ = window.matchMedia('(min-width: 1201px)');
-    let clones: HTMLImageElement[] = [];
-    let observers: IntersectionObserver[] = [];
-    let tweens: gsap.core.Tween[] = [];
 
     function cleanUp() {
-      // Kill all ScrollTriggers created by this script
       ScrollTrigger.getAll().forEach(st => st.kill());
-      // Remove clones
-      clones.forEach(clone => clone.remove());
-      clones = [];
-      // Disconnect observers
+      markers.forEach(m => m.remove());
+      markers = [];
       observers.forEach(obs => obs.disconnect());
       observers = [];
-      // Kill tweens
       tweens.forEach(t => t.kill());
       tweens = [];
-      // Reset inline images
-      images.forEach(img => {
-        (img as HTMLElement).style.display = '';
+      // Clean up both previous and current images (handles removed images)
+      const allImages = new Set([...prevImages, ...Array.from(images)]);
+      allImages.forEach(img => {
         gsap.set(img, { clearProps: 'all' });
         img.classList.remove('sketch-reveal-pending');
+        img.classList.remove('sketch-reveal-active');
       });
+      prevImages = Array.from(images);
+    }
+
+    // Find the next heading (h2/h3) after a given element in the post content
+    function findNextHeading(el: Element): HTMLElement | null {
+      // Walk up to find the direct child of .post-content that contains el
+      let anchor: Element | null = el;
+      while (anchor && anchor.parentElement !== postContent) {
+        anchor = anchor.parentElement;
+      }
+      // If el IS a direct child of postContent, anchor is el itself
+      // If el is not inside postContent at all, anchor is null
+      if (!anchor) return null;
+
+      // Walk forward through siblings looking for a heading
+      let next = anchor.nextElementSibling;
+      while (next) {
+        const tag = next.tagName;
+        if (tag === 'H1' || tag === 'H2' || tag === 'H3') return next as HTMLElement;
+        next = next.nextElementSibling;
+      }
+      return null;
     }
 
     function setupDesktop() {
       const imageArray = Array.from(images);
 
-      imageArray.forEach((img, index) => {
-        // Hide original inline image
-        (img as HTMLElement).style.display = 'none';
+      imageArray.forEach((img) => {
+        img.classList.add('sketch-reveal-active');
 
-        // Create a clone for fixed positioning
-        const clone = img.cloneNode(true) as HTMLImageElement;
-        clone.classList.remove('sketch-illustration');
-        clone.classList.add('sketch-reveal-fixed');
-        clone.removeAttribute('contenteditable');
+        // Insert a zero-height marker where the image sits in the DOM.
+        // ScrollTrigger uses this marker to know when to animate,
+        // since the image itself is position:fixed and has no scroll position.
+        const marker = document.createElement('span');
+        marker.className = 'sketch-scroll-marker';
+        marker.setAttribute('aria-hidden', 'true');
+        img.parentElement!.insertBefore(marker, img);
+        markers.push(marker);
 
-        // Set initial custom property for blur composability
-        clone.style.setProperty('--sketch-blur', '8px');
-        gsap.set(clone, { opacity: 0, y: 20 });
+        // Set initial state (yPercent: -50 keeps image vertically centered with top: 50%)
+        img.style.setProperty('--sketch-blur', '8px');
+        gsap.set(img, { opacity: 0, y: 20, yPercent: -50 });
 
-        document.body.appendChild(clone);
-        clones.push(clone);
+        // Find the next section heading after this image
+        const nextHeading = findNextHeading(marker);
 
-        // Determine the trigger zone: from this image's position to the next image's position (or end of content)
-        // Use a marker element at the image's original position as the trigger
-        const triggerStart = img;
+        requestAnimationFrame(() => {
+          // FADE IN: as the image's section text hits the fold (scrolling down)
+          // Starts when marker reaches bottom of viewport, fully visible by 30% from top
+          gsap.timeline({
+            scrollTrigger: {
+              trigger: marker,
+              start: 'top bottom',
+              end: 'top 30%',
+              scrub: true,
+            }
+          }).fromTo(img,
+            { '--sketch-blur': '8px', opacity: 0, y: 20, yPercent: -50 },
+            { '--sketch-blur': '0px', opacity: 1, y: 0, yPercent: -50, ease: 'none' }
+          );
 
-        // Calculate start/end positions for the scroll trigger
-        // We want the animation to play as the user scrolls through the section
-        // where this image's content lives
-        let endTrigger: HTMLElement;
-        if (index < imageArray.length - 1) {
-          endTrigger = imageArray[index + 1] as HTMLElement;
-        } else {
-          endTrigger = postContent;
-        }
-
-        // Create a timeline for this image's reveal
-        const tl = gsap.timeline({
-          scrollTrigger: {
-            trigger: triggerStart,
-            start: 'top center',
-            endTrigger: endTrigger,
-            end: index < imageArray.length - 1 ? 'top center' : 'bottom center',
-            scrub: true,
+          // FADE OUT: when the next section heading approaches the fold
+          if (nextHeading) {
+            gsap.timeline({
+              scrollTrigger: {
+                trigger: nextHeading,
+                start: 'top 120%',
+                end: 'top 50%',
+                scrub: true,
+              }
+            }).to(img, {
+              '--sketch-blur': '8px',
+              opacity: 0,
+              y: -20,
+              yPercent: -50,
+              ease: 'none',
+            });
+          } else {
+            // Last section: fade out near end of article
+            gsap.timeline({
+              scrollTrigger: {
+                trigger: postContent,
+                start: 'bottom bottom',
+                end: 'bottom 30%',
+                scrub: true,
+              }
+            }).to(img, {
+              '--sketch-blur': '8px',
+              opacity: 0,
+              y: -20,
+              yPercent: -50,
+              ease: 'none',
+            });
           }
         });
-
-        // Animate in: first 30% of the scroll range
-        tl.to(clone, {
-          '--sketch-blur': '0px',
-          opacity: 1,
-          y: 0,
-          duration: 0.3,
-          ease: 'none',
-        }, 0);
-
-        // Hold visible for the middle portion
-        // Then animate out in the last 30% (if there's a next image)
-        if (index < imageArray.length - 1) {
-          tl.to(clone, {
-            '--sketch-blur': '8px',
-            opacity: 0,
-            y: -20,
-            duration: 0.3,
-            ease: 'none',
-          }, 0.7);
-        }
       });
     }
 
     function setupMobile() {
       images.forEach(img => {
-        // Add pending class for initial hidden state
         img.classList.add('sketch-reveal-pending');
         gsap.set(img, { opacity: 0, y: 20, '--sketch-blur': '8px' });
 
@@ -127,22 +158,17 @@
                   '--sketch-blur': '0px',
                   duration: 0.6,
                   ease: 'power2.out',
-                  onComplete: () => {
-                    img.classList.remove('sketch-reveal-pending');
-                  },
+                  onComplete: () => img.classList.remove('sketch-reveal-pending'),
                 });
                 tweens.push(tween);
               } else {
-                // Reverse when scrolling out
                 const tween = gsap.to(img, {
                   opacity: 0,
                   y: 20,
                   '--sketch-blur': '8px',
                   duration: 0.4,
                   ease: 'power2.in',
-                  onComplete: () => {
-                    img.classList.add('sketch-reveal-pending');
-                  },
+                  onComplete: () => img.classList.add('sketch-reveal-pending'),
                 });
                 tweens.push(tween);
               }
@@ -165,17 +191,24 @@
       }
     }
 
-    // Initial setup
-    setup();
+    // Remove previous matchMedia listener if re-running init
+    if (desktopMQListener) {
+      desktopMQ.removeEventListener('change', desktopMQListener);
+    }
+    desktopMQListener = setup;
 
-    // Re-setup on breakpoint change
+    setup();
     desktopMQ.addEventListener('change', setup);
   }
 
-  // Run on DOMContentLoaded
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);
   } else {
     init();
   }
+
+  // Allow re-initialisation when images are added/removed/replaced
+  window.addEventListener('sketch-reveal-refresh', () => {
+    init();
+  });
 </script>

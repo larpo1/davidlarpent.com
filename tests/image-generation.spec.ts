@@ -47,8 +47,8 @@ test.describe('Image Generation', () => {
     await expect(imageButton).toBeVisible();
   });
 
-  // Test 2: Clicking image button with selection opens generation panel with prompt pre-filled
-  test('Clicking image button with selection opens generation panel with prompt pre-filled', async ({ page }) => {
+  // Test 2: Clicking image button with selection opens generation modal with source text
+  test('Clicking image button with selection opens generation modal with source text', async ({ page }) => {
     await page.goto('/posts/ralph-loops/');
     await dismissDevToolbar(page);
 
@@ -66,40 +66,42 @@ test.describe('Image Generation', () => {
     const imageButton = toolbar.locator('button[data-command="generateImage"]');
     await imageButton.click();
 
-    // Panel should be visible
-    const panel = page.locator('#image-gen-panel');
-    await expect(panel).toBeVisible();
+    // Modal should be open
+    const modal = page.locator('#image-gen-modal');
+    await expect(modal).toHaveAttribute('data-open', 'true');
 
-    // Prompt textarea should be pre-filled with selected text
-    const promptTextarea = panel.locator('#image-gen-prompt');
-    const promptValue = await promptTextarea.inputValue();
-    expect(promptValue.length).toBeGreaterThan(0);
-    expect(selectedText).toContain(promptValue.substring(0, 20));
+    // Source text should contain the selected text
+    const sourceEl = modal.locator('#image-gen-source');
+    const sourceContent = await sourceEl.textContent();
+    expect(sourceContent!.length).toBeGreaterThan(0);
+    expect(selectedText).toContain(sourceContent!.substring(0, 20));
   });
 
-  // Test 3: Generation panel has Generate, Insert, and Cancel buttons
-  test('Generation panel has Generate, Insert, and Cancel buttons', async ({ page }) => {
+  // Test 3: Generation modal has Generate Prompt, Generate Image, Insert, and Close buttons
+  test('Generation modal has Generate Prompt, Generate Image, Insert, and Close buttons', async ({ page }) => {
     await page.goto('/posts/ralph-loops/');
     await dismissDevToolbar(page);
 
-    // Select text and open panel
+    // Select text and open modal
     await selectTextInContent(page);
 
     const toolbar = page.locator('#edit-toolbar');
     const imageButton = toolbar.locator('button[data-command="generateImage"]');
     await imageButton.click();
 
-    const panel = page.locator('#image-gen-panel');
-    await expect(panel).toBeVisible();
+    const modal = page.locator('#image-gen-modal');
+    await expect(modal).toHaveAttribute('data-open', 'true');
 
-    // Verify all three buttons exist
-    const generateBtn = panel.locator('#image-gen-generate');
-    const insertBtn = panel.locator('#image-gen-insert');
-    const cancelBtn = panel.locator('#image-gen-cancel');
+    // Verify all key buttons exist
+    const promptBtn = modal.locator('#image-gen-prompt-btn');
+    const imageBtn = modal.locator('#image-gen-image-btn');
+    const insertBtn = modal.locator('#image-gen-insert');
+    const closeBtn = modal.locator('.image-gen-close-button');
 
-    await expect(generateBtn).toBeVisible();
+    await expect(promptBtn).toBeVisible();
+    await expect(imageBtn).toBeVisible();
     await expect(insertBtn).toBeVisible();
-    await expect(cancelBtn).toBeVisible();
+    await expect(closeBtn).toBeVisible();
   });
 
   // Test 4: Insert button is disabled before image is generated
@@ -107,42 +109,42 @@ test.describe('Image Generation', () => {
     await page.goto('/posts/ralph-loops/');
     await dismissDevToolbar(page);
 
-    // Select text and open panel
+    // Select text and open modal
     await selectTextInContent(page);
 
     const toolbar = page.locator('#edit-toolbar');
     const imageButton = toolbar.locator('button[data-command="generateImage"]');
     await imageButton.click();
 
-    const panel = page.locator('#image-gen-panel');
-    await expect(panel).toBeVisible();
+    const modal = page.locator('#image-gen-modal');
+    await expect(modal).toHaveAttribute('data-open', 'true');
 
     // Insert button should be disabled initially
-    const insertBtn = panel.locator('#image-gen-insert');
+    const insertBtn = modal.locator('#image-gen-insert');
     await expect(insertBtn).toBeDisabled();
   });
 
-  // Test 5: Cancel closes the panel without inserting
-  test('Cancel closes the panel without inserting', async ({ page }) => {
+  // Test 5: Close button closes the modal without inserting
+  test('Close button closes the modal without inserting', async ({ page }) => {
     await page.goto('/posts/ralph-loops/');
     await dismissDevToolbar(page);
 
-    // Select text and open panel
+    // Select text and open modal
     await selectTextInContent(page);
 
     const toolbar = page.locator('#edit-toolbar');
     const imageButton = toolbar.locator('button[data-command="generateImage"]');
     await imageButton.click();
 
-    const panel = page.locator('#image-gen-panel');
-    await expect(panel).toBeVisible();
+    const modal = page.locator('#image-gen-modal');
+    await expect(modal).toHaveAttribute('data-open', 'true');
 
-    // Click cancel
-    const cancelBtn = panel.locator('#image-gen-cancel');
-    await cancelBtn.click();
+    // Click close
+    const closeBtn = modal.locator('.image-gen-close-button');
+    await closeBtn.click();
 
-    // Panel should be hidden
-    await expect(panel).not.toBeVisible();
+    // Modal should be closed
+    await expect(modal).toHaveAttribute('data-open', 'false');
 
     // No sketch-illustration images should have been inserted
     const sketchImages = page.locator('.post-content .sketch-illustration');

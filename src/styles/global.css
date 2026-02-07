@@ -451,52 +451,45 @@ a:hover {
   --sketch-blur: 0px;
 }
 
-/* Dark mode (default): invert + composable blur */
+/* Dark mode (default): invert + blend to make paper background invisible */
 [data-theme="dark"] .sketch-illustration,
 :root:not([data-theme="light"]) .sketch-illustration {
   filter: invert(1) blur(var(--sketch-blur, 0px));
+  mix-blend-mode: screen;
 }
 
-/* Light mode: composable blur only */
+/* Light mode: multiply blend makes white paper transparent */
 [data-theme="light"] .sketch-illustration {
   filter: blur(var(--sketch-blur, 0px));
+  mix-blend-mode: multiply;
 }
 
-/* Desktop: hide inline originals, show fixed clones instead */
+/* Desktop: when scroll-reveal activates, switch to fixed positioning in right margin */
 @media (min-width: 1201px) {
-  .post-content .sketch-illustration {
-    display: none;
-  }
-}
-
-/* Desktop fixed-position sketch reveal (cloned images in right margin) */
-@media (min-width: 1201px) {
-  .sketch-reveal-fixed {
+  .sketch-illustration.sketch-reveal-active {
     position: fixed;
     top: 50%;
-    transform: translateY(-50%);
-    right: calc((100vw - 700px) / 4);
-    max-width: 350px;
-    max-height: 60vh;
+    /* Vertical centering handled by GSAP yPercent: -50 (CSS transform gets overwritten) */
+    right: 24px;
+    max-width: calc(50vw - var(--max-width) / 2 - 48px);
+    max-height: 70vh;
     width: auto;
     height: auto;
     object-fit: contain;
     z-index: 10;
     pointer-events: none;
+    margin: 0;
     opacity: 0;
     will-change: opacity, filter, transform;
     --sketch-blur: 8px;
   }
 }
 
-/* Dark/light mode inversion for fixed clones using --sketch-blur */
-[data-theme="dark"] .sketch-reveal-fixed,
-:root:not([data-theme="light"]) .sketch-reveal-fixed {
-  filter: invert(1) blur(var(--sketch-blur, 0px));
-}
-
-[data-theme="light"] .sketch-reveal-fixed {
-  filter: blur(var(--sketch-blur, 0px));
+/* Zero-height marker left in the DOM where the image was, for scroll tracking */
+.sketch-scroll-marker {
+  display: block;
+  height: 0;
+  overflow: hidden;
 }
 
 /* Mobile: pending state for IntersectionObserver materialisation */
@@ -505,15 +498,6 @@ a:hover {
   transform: translateY(20px);
   will-change: opacity, filter, transform;
   --sketch-blur: 8px;
-}
-
-[data-theme="dark"] .sketch-reveal-pending,
-:root:not([data-theme="light"]) .sketch-reveal-pending {
-  filter: invert(1) blur(var(--sketch-blur, 8px));
-}
-
-[data-theme="light"] .sketch-reveal-pending {
-  filter: blur(var(--sketch-blur, 8px));
 }
 
 /* Back link */
@@ -757,6 +741,19 @@ a:hover {
 .toc-toggle.open .bar:nth-child(3) {
   top: 50%;
   transform: translateX(-50%) translateY(-50%) rotate(-45deg);
+}
+
+/* Desktop: tighter column for readability, no horizontal padding */
+@media (min-width: 1201px) {
+  :root {
+    --max-width: 600px;
+  }
+
+  .container,
+  .post-layout {
+    padding-left: 0;
+    padding-right: 0;
+  }
 }
 
 /* Desktop: TOC always visible, toggle always hidden (not needed) */
@@ -1361,67 +1358,112 @@ a:hover {
   }
 }
 
-/* Image Generation Panel */
-.image-gen-panel {
+/* Image Generation Modal */
+.image-gen-modal {
   position: fixed;
-  z-index: 1001;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background: var(--color-background);
-  border: 1px solid var(--color-border);
-  border-radius: 8px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-  width: 440px;
-  max-width: 90vw;
-  max-height: 90vh;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 300;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease-in-out;
 }
 
-.image-gen-panel-header {
+.image-gen-modal[data-open="true"] {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.image-gen-modal-backdrop {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+}
+
+.image-gen-modal-content {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  background: var(--color-background);
+  display: flex;
+  flex-direction: column;
+  padding: 2rem;
+}
+
+.image-gen-modal-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0.75rem 1rem;
-  border-bottom: 1px solid var(--color-border);
+  margin-bottom: 1.5rem;
 }
 
-.image-gen-panel-title {
-  font-size: 0.9rem;
-  font-weight: 600;
+.image-gen-modal-header h2 {
+  margin: 0;
+  font-size: 1.25rem;
 }
 
-.image-gen-close {
+.image-gen-close-button {
   background: none;
   border: none;
   cursor: pointer;
   color: var(--color-text-light);
-  font-size: 1.2rem;
-  padding: 0.2rem;
-  line-height: 1;
+  padding: 0.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   transition: color 0.2s;
 }
 
-.image-gen-close:hover {
+.image-gen-close-button:hover {
   color: var(--color-text);
 }
 
-.image-gen-panel-body {
-  padding: 1rem;
+/* 3-column layout */
+.image-gen-columns {
+  flex: 1;
   display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
+  gap: 2rem;
+  min-height: 0;
 }
 
-.image-gen-label {
+.image-gen-column {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  position: relative;
+}
+
+.image-gen-column-label {
+  display: block;
+  margin: 0 0 0.5rem 0;
   font-size: 0.8rem;
   font-weight: 600;
   color: var(--color-text-light);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
-.image-gen-prompt {
+.image-gen-source-text {
+  flex: 1;
+  padding: 0.75rem;
+  background: var(--color-code-bg);
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  font-family: 'Newsreader', Georgia, serif;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: var(--color-text-light);
+  overflow-y: auto;
+  white-space: pre-wrap;
+}
+
+.image-gen-textarea {
   width: 100%;
   font-family: 'Newsreader', Georgia, serif;
   font-size: 0.9rem;
@@ -1430,29 +1472,33 @@ a:hover {
   color: var(--color-text);
   border: 1px solid var(--color-border);
   border-radius: 4px;
-  padding: 0.5rem;
-  resize: vertical;
+  padding: 0.75rem;
+  resize: none;
+  box-sizing: border-box;
 }
 
-.image-gen-prompt:focus {
+.image-gen-textarea:focus {
   outline: none;
   border-color: var(--color-link);
 }
 
-.image-gen-style-hint {
-  font-size: 0.7rem;
-  color: var(--color-text-light);
-  line-height: 1.4;
-  font-style: italic;
+.image-gen-style-textarea {
+  flex: none;
 }
 
-.image-gen-actions {
+.image-gen-prompt-textarea {
+  flex: 1;
+  min-height: 0;
+}
+
+.image-gen-column-actions {
+  margin-top: 0.75rem;
   display: flex;
-  gap: 0.5rem;
+  justify-content: flex-end;
+  gap: 0.75rem;
 }
 
-.image-gen-generate-btn,
-.image-gen-regenerate-btn {
+.image-gen-secondary-btn {
   padding: 0.4rem 0.8rem;
   font-size: 0.85rem;
   border-radius: 4px;
@@ -1464,23 +1510,60 @@ a:hover {
   transition: background 0.2s, border-color 0.2s;
 }
 
-.image-gen-generate-btn:hover,
-.image-gen-regenerate-btn:hover {
+.image-gen-secondary-btn:hover {
   background: var(--color-border);
   color: var(--color-text);
 }
 
-.image-gen-generate-btn:disabled,
-.image-gen-regenerate-btn:disabled {
+.image-gen-secondary-btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
 
+.image-gen-primary-btn {
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+  border-radius: 4px;
+  cursor: pointer;
+  border: none;
+  background: #6ba4ff;
+  color: white;
+  font-family: 'Newsreader', Georgia, serif;
+  transition: background 0.2s;
+}
+
+.image-gen-primary-btn:hover:not(:disabled) {
+  background: #5a93ee;
+}
+
+.image-gen-primary-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
 .image-gen-preview {
-  min-height: 60px;
+  flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  background: var(--color-code-bg);
+  min-height: 0;
+  overflow: hidden;
+  position: relative;
+}
+
+.image-gen-preview.image-gen-dropzone-active {
+  border-color: #6ba4ff;
+  border-style: dashed;
+  background: rgba(107, 164, 255, 0.05);
+}
+
+.image-gen-preview-placeholder {
+  font-size: 0.85rem;
+  color: var(--color-text-light);
+  opacity: 0.5;
 }
 
 .image-gen-loading {
@@ -1499,29 +1582,115 @@ a:hover {
 
 .image-gen-image {
   max-width: 100%;
-  max-height: 300px;
+  max-height: 100%;
   border-radius: 4px;
-  border: 1px solid var(--color-border);
+  object-fit: contain;
 }
 
-.image-gen-insert-btn {
-  padding: 0.5rem 1rem;
-  font-size: 0.9rem;
+/* Image Gen: Remove from post button (destructive) */
+.image-gen-remove-btn {
+  padding: 0.4rem 0.8rem;
+  font-size: 0.85rem;
   border-radius: 4px;
   cursor: pointer;
-  border: none;
-  background: #6ba4ff;
-  color: white;
+  border: 1px solid #dc2626;
+  background: transparent;
+  color: #f87171;
   font-family: 'Newsreader', Georgia, serif;
-  transition: background 0.2s;
+  transition: background 0.2s, color 0.2s;
+  margin-right: auto;
 }
 
-.image-gen-insert-btn:hover:not(:disabled) {
-  background: #5a93ee;
+.image-gen-remove-btn:hover {
+  background: #dc2626;
+  color: white;
 }
 
-.image-gen-insert-btn:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
+/* Image Gen: Gallery */
+.image-gen-gallery {
+  position: absolute;
+  inset: 0;
+  background: var(--color-code-bg);
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.image-gen-gallery-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.image-gen-gallery-grid {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 0.5rem;
+  padding: 0.75rem;
+  overflow-y: auto;
+  align-content: start;
+}
+
+.image-gen-gallery-thumb {
+  aspect-ratio: 1;
+  border-radius: 4px;
+  overflow: hidden;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: border-color 0.2s;
+}
+
+.image-gen-gallery-thumb:hover {
+  border-color: #6ba4ff;
+}
+
+.image-gen-gallery-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Sketch illustration click affordance in contenteditable (dev mode) */
+[contenteditable="true"] .sketch-illustration {
+  cursor: pointer;
+  pointer-events: auto;
+  transition: outline-color 0.2s;
+  outline: 2px solid transparent;
+  outline-offset: 4px;
+}
+
+[contenteditable="true"] .sketch-illustration:hover {
+  outline-color: #6ba4ff;
+}
+
+/* Mobile: stack columns vertically */
+@media (max-width: 768px) {
+  .image-gen-modal-content {
+    padding: 1rem;
+  }
+
+  .image-gen-columns {
+    flex-direction: column;
+    overflow-y: auto;
+  }
+
+  .image-gen-column {
+    flex: none;
+  }
+
+  .image-gen-prompt-textarea {
+    min-height: 150px;
+  }
+
+  .image-gen-preview {
+    min-height: 200px;
+  }
 }
 

@@ -303,6 +303,70 @@
       }));
     }
 
+    // Click handler for existing sketch illustrations - opens modal in edit mode
+    contentEditable.addEventListener('click', function(e) {
+      var img = e.target.closest('.sketch-illustration');
+      if (!img) return;
+      e.preventDefault();
+      e.stopPropagation();
+      var article = document.querySelector('.post-article');
+      var slug = article ? article.dataset.postSlug : '';
+      window.dispatchEvent(new CustomEvent('image-edit-request', {
+        detail: {
+          imagePath: img.getAttribute('src'),
+          imageAlt: img.getAttribute('alt') || '',
+          slug: slug,
+          imageElement: img
+        }
+      }));
+    });
+
+    // Paste handler for images directly in contenteditable
+    contentEditable.addEventListener('paste', function(e) {
+      var items = e.clipboardData && e.clipboardData.items;
+      if (!items) return;
+      for (var i = 0; i < items.length; i++) {
+        if (items[i].type.indexOf('image/') === 0) {
+          e.preventDefault();
+          var file = items[i].getAsFile();
+          if (!file) return;
+          var article = document.querySelector('.post-article');
+          var slug = article ? article.dataset.postSlug : '';
+          if (!slug) return;
+          var formData = new FormData();
+          formData.append('file', file);
+          formData.append('slug', slug);
+          fetch('/api/upload-image', { method: 'POST', body: formData })
+            .then(function(r) { return r.json(); })
+            .then(function(result) {
+              if (result.success && result.path) {
+                var img = document.createElement('img');
+                img.src = result.path;
+                img.alt = 'Uploaded image';
+                img.className = 'sketch-illustration';
+                var wrapper = document.createElement('p');
+                wrapper.appendChild(img);
+                var sel = window.getSelection();
+                if (sel && sel.rangeCount > 0 && contentEditable.contains(sel.anchorNode)) {
+                  var node = sel.anchorNode;
+                  while (node && node.parentNode !== contentEditable) {
+                    node = node.parentNode;
+                  }
+                  if (node) {
+                    node.parentNode.insertBefore(wrapper, node.nextSibling);
+                  } else {
+                    contentEditable.appendChild(wrapper);
+                  }
+                } else {
+                  contentEditable.appendChild(wrapper);
+                }
+              }
+            });
+          return;
+        }
+      }
+    });
+
     function showImagePromptInput() {
       var toolbarRect = toolbar.getBoundingClientRect();
       imagePromptPopover.style.top = (toolbarRect.bottom + window.scrollY + 4) + 'px';

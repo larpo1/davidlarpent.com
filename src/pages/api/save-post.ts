@@ -28,7 +28,7 @@ turndown.addRule('sketchIllustration', {
   },
   replacement: function (_content: string, node: any) {
     const src = node.getAttribute('src') || '';
-    const alt = node.getAttribute('alt') || '';
+    const alt = (node.getAttribute('alt') || '').replace(/"/g, '&quot;');
     return `\n\n<img src="${src}" alt="${alt}" class="sketch-illustration">\n\n`;
   }
 });

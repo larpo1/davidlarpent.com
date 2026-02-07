@@ -1,193 +1,553 @@
 ---
-// Image Generation Panel component
-// Floating panel for generating sketch illustrations via Gemini API
-// Listens for 'image-generate-request' custom event from EditToolbar
+// ImageGenPanel - Full-screen modal for generating sketch illustrations
+// 3-column layout: source context | synthesized prompt | image output
+// Supports two entry modes:
+//   - 'image-generate-request' event: new image creation (Insert)
+//   - 'image-edit-request' event: edit/replace existing image (Replace)
+// Also supports: gallery browsing, file upload, paste, drag-drop, remove from post
 ---
 
-<div id="image-gen-panel" class="image-gen-panel" style="display: none;">
-  <div class="image-gen-panel-header">
-    <span class="image-gen-panel-title">Generate Sketch</span>
-    <button id="image-gen-cancel" class="image-gen-close" type="button" title="Close">&times;</button>
-  </div>
-
-  <div class="image-gen-panel-body">
-    <label class="image-gen-label">Prompt</label>
-    <textarea id="image-gen-prompt" class="image-gen-prompt" rows="3" placeholder="Describe what to sketch..."></textarea>
-
-    <div class="image-gen-style-hint">
-      Style: Hand-drawn pencil sketch. Black ink on white paper. Loose linework, cross-hatching. No color, no text.
+<div id="image-gen-modal" class="image-gen-modal" data-open="false">
+  <div class="image-gen-modal-backdrop"></div>
+  <div class="image-gen-modal-content">
+    <div class="image-gen-modal-header">
+      <h2 id="image-gen-title">Generate Sketch</h2>
+      <button class="image-gen-close-button" title="Close">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
     </div>
 
-    <div class="image-gen-actions">
-      <button id="image-gen-generate" class="image-gen-generate-btn" type="button">Generate</button>
-      <button id="image-gen-regenerate" class="image-gen-regenerate-btn" type="button" style="display: none;">Regenerate</button>
-    </div>
+    <div class="image-gen-columns">
+      <!-- Left column: Source text + Style prompt -->
+      <div class="image-gen-column">
+        <label class="image-gen-column-label">Source text</label>
+        <div id="image-gen-source" class="image-gen-source-text"></div>
 
-    <div id="image-gen-preview" class="image-gen-preview">
-      <div id="image-gen-loading" class="image-gen-loading" style="display: none;">Generating...</div>
-      <img id="image-gen-image" class="image-gen-image" style="display: none;" alt="" />
-    </div>
+        <label class="image-gen-column-label" style="margin-top: 1rem;">Style prompt</label>
+        <textarea id="image-gen-style" class="image-gen-textarea image-gen-style-textarea" rows="6"></textarea>
 
-    <button id="image-gen-insert" class="image-gen-insert-btn" type="button" disabled>Insert</button>
+        <div class="image-gen-column-actions">
+          <button id="image-gen-prompt-btn" class="image-gen-secondary-btn" type="button">Generate Prompt</button>
+        </div>
+      </div>
+
+      <!-- Middle column: Synthesized prompt -->
+      <div class="image-gen-column">
+        <label class="image-gen-column-label">Synthesized prompt</label>
+        <textarea id="image-gen-prompt" class="image-gen-textarea image-gen-prompt-textarea" placeholder="Click 'Generate Prompt' to synthesize, or type your own..."></textarea>
+
+        <div class="image-gen-column-actions">
+          <button id="image-gen-reprompt-btn" class="image-gen-secondary-btn" type="button" style="display: none;">Regenerate Prompt</button>
+          <button id="image-gen-image-btn" class="image-gen-primary-btn" type="button" disabled>Generate Image</button>
+        </div>
+      </div>
+
+      <!-- Right column: Image preview + actions -->
+      <div class="image-gen-column">
+        <label class="image-gen-column-label">Preview</label>
+        <div id="image-gen-preview" class="image-gen-preview">
+          <div id="image-gen-loading" class="image-gen-loading" style="display: none;">Generating...</div>
+          <img id="image-gen-image" class="image-gen-image" style="display: none;" alt="" />
+          <div id="image-gen-placeholder" class="image-gen-preview-placeholder">Image will appear here</div>
+        </div>
+
+        <!-- Gallery overlay (hidden by default) -->
+        <div id="image-gen-gallery" class="image-gen-gallery" style="display: none;">
+          <div class="image-gen-gallery-header">
+            <span class="image-gen-column-label">Gallery</span>
+            <button id="image-gen-gallery-close" class="image-gen-secondary-btn" type="button" style="padding: 0.2rem 0.5rem; font-size: 0.75rem;">Close</button>
+          </div>
+          <div id="image-gen-gallery-grid" class="image-gen-gallery-grid"></div>
+        </div>
+
+        <div class="image-gen-column-actions">
+          <input type="file" id="image-gen-file-input" accept="image/png,image/jpeg,image/webp,image/gif" style="display: none;" />
+          <button id="image-gen-upload-btn" class="image-gen-secondary-btn" type="button">Upload</button>
+          <button id="image-gen-gallery-btn" class="image-gen-secondary-btn" type="button">Gallery</button>
+          <button id="image-gen-remove-btn" class="image-gen-remove-btn" type="button" style="display: none;">Remove from post</button>
+          <button id="image-gen-insert" class="image-gen-primary-btn" type="button" disabled>Insert</button>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 
 <script is:inline>
   document.addEventListener('DOMContentLoaded', function() {
-    var panel = document.getElementById('image-gen-panel');
+    var modal = document.getElementById('image-gen-modal');
+    var backdrop = modal && modal.querySelector('.image-gen-modal-backdrop');
+    var closeBtn = modal && modal.querySelector('.image-gen-close-button');
+    var titleEl = document.getElementById('image-gen-title');
+    var sourceText = document.getElementById('image-gen-source');
+    var styleTextarea = document.getElementById('image-gen-style');
     var promptTextarea = document.getElementById('image-gen-prompt');
-    var generateBtn = document.getElementById('image-gen-generate');
-    var regenerateBtn = document.getElementById('image-gen-regenerate');
+    var promptBtn = document.getElementById('image-gen-prompt-btn');
+    var repromptBtn = document.getElementById('image-gen-reprompt-btn');
+    var imageBtn = document.getElementById('image-gen-image-btn');
     var insertBtn = document.getElementById('image-gen-insert');
-    var cancelBtn = document.getElementById('image-gen-cancel');
     var loadingEl = document.getElementById('image-gen-loading');
     var imageEl = document.getElementById('image-gen-image');
+    var placeholderEl = document.getElementById('image-gen-placeholder');
+    var previewEl = document.getElementById('image-gen-preview');
     var contentEditable = document.querySelector('[contenteditable][data-field="content"]');
 
-    if (!panel || !promptTextarea || !generateBtn || !insertBtn || !cancelBtn) return;
+    // New elements
+    var uploadBtn = document.getElementById('image-gen-upload-btn');
+    var fileInput = document.getElementById('image-gen-file-input');
+    var galleryBtn = document.getElementById('image-gen-gallery-btn');
+    var galleryEl = document.getElementById('image-gen-gallery');
+    var galleryGrid = document.getElementById('image-gen-gallery-grid');
+    var galleryCloseBtn = document.getElementById('image-gen-gallery-close');
+    var removeBtn = document.getElementById('image-gen-remove-btn');
+
+    if (!modal || !sourceText || !styleTextarea || !promptTextarea || !promptBtn || !imageBtn || !insertBtn) return;
+
+    var DEFAULT_STYLE = "Square 1:1 aspect ratio. Minimal architectural line drawing on a pure white background. Fine black ink lines only. Clean, precise, spare linework. No shading, no cross-hatching, no fills, no gradients. Just lines on white. Think Dieter Rams sketch meets architectural blueprint. Abstract where possible. Include 1-2 minimal handwritten labels in a loose architect's hand — like notes on a draft, not typeset text. Elegant negative space. The drawing should feel like a diagram that became art.";
 
     var currentSlug = '';
     var generatedPath = '';
-    var savedRange = null;
+    var insertAfterEl = null;
+    var hasGeneratedPrompt = false;
 
-    // Save the current selection/cursor position before panel opens
-    function saveSelection() {
+    // Edit mode state
+    var isEditMode = false;
+    var editingImage = null; // reference to the DOM <img> being edited
+
+    function saveInsertionPoint() {
       var sel = window.getSelection();
       if (sel && sel.rangeCount > 0 && contentEditable && contentEditable.contains(sel.anchorNode)) {
-        savedRange = sel.getRangeAt(0).cloneRange();
+        var node = sel.anchorNode;
+        while (node && node.parentNode !== contentEditable) {
+          node = node.parentNode;
+        }
+        insertAfterEl = node || null;
       }
     }
 
-    // Restore saved selection
-    function restoreSelection() {
-      if (savedRange && contentEditable) {
-        contentEditable.focus();
-        var sel = window.getSelection();
-        sel.removeAllRanges();
-        sel.addRange(savedRange);
-      }
+    function showPreviewImage(src, alt) {
+      generatedPath = src;
+      imageEl.src = src + (src.indexOf('?') === -1 ? '?t=' + Date.now() : '');
+      imageEl.alt = alt || '';
+      imageEl.style.display = 'block';
+      loadingEl.style.display = 'none';
+      if (placeholderEl) placeholderEl.style.display = 'none';
+      insertBtn.disabled = false;
     }
 
-    function openPanel(prompt, slug) {
-      saveSelection();
-      currentSlug = slug || '';
-      generatedPath = '';
-      promptTextarea.value = prompt || '';
+    function resetPreview() {
       imageEl.style.display = 'none';
       imageEl.src = '';
       loadingEl.style.display = 'none';
-      generateBtn.style.display = '';
-      regenerateBtn.style.display = 'none';
+      loadingEl.textContent = 'Generating...';
+      if (placeholderEl) placeholderEl.style.display = '';
       insertBtn.disabled = true;
-      panel.style.display = 'flex';
-    }
-
-    function closePanel() {
-      panel.style.display = 'none';
       generatedPath = '';
     }
 
+    function openModal(prompt, slug) {
+      saveInsertionPoint();
+      currentSlug = slug || '';
+      generatedPath = '';
+      hasGeneratedPrompt = false;
+      isEditMode = false;
+      editingImage = null;
+
+      // Set title and button text for new image mode
+      if (titleEl) titleEl.textContent = 'Generate Sketch';
+      insertBtn.textContent = 'Insert';
+      if (removeBtn) removeBtn.style.display = 'none';
+
+      // Reset left column
+      sourceText.textContent = prompt || '(no text selected)';
+      styleTextarea.value = DEFAULT_STYLE;
+
+      // Reset middle column
+      promptTextarea.value = '';
+      promptBtn.textContent = 'Generate Prompt';
+      promptBtn.disabled = false;
+      promptBtn.style.display = '';
+      repromptBtn.style.display = 'none';
+      imageBtn.disabled = true;
+
+      // Reset right column
+      resetPreview();
+
+      // Hide gallery
+      if (galleryEl) galleryEl.style.display = 'none';
+
+      // Open modal
+      modal.setAttribute('data-open', 'true');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function openModalForEdit(imagePath, imageAlt, slug, imageElement) {
+      currentSlug = slug || '';
+      generatedPath = '';
+      hasGeneratedPrompt = false;
+      isEditMode = true;
+      editingImage = imageElement || null;
+      insertAfterEl = null;
+
+      // Set title and button text for edit mode
+      if (titleEl) titleEl.textContent = 'Edit Sketch';
+      insertBtn.textContent = 'Replace';
+      if (removeBtn) removeBtn.style.display = '';
+
+      // Left column: show image alt as source text
+      sourceText.textContent = imageAlt || '(no alt text)';
+      styleTextarea.value = DEFAULT_STYLE;
+
+      // Reset middle column
+      promptTextarea.value = '';
+      promptBtn.textContent = 'Generate Prompt';
+      promptBtn.disabled = false;
+      promptBtn.style.display = '';
+      repromptBtn.style.display = 'none';
+      imageBtn.disabled = true;
+
+      // Right column: show current image
+      if (imagePath) {
+        showPreviewImage(imagePath, imageAlt);
+      } else {
+        resetPreview();
+      }
+
+      // Hide gallery
+      if (galleryEl) galleryEl.style.display = 'none';
+
+      // Open modal
+      modal.setAttribute('data-open', 'true');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal() {
+      modal.setAttribute('data-open', 'false');
+      document.body.style.overflow = '';
+      generatedPath = '';
+      isEditMode = false;
+      editingImage = null;
+      if (galleryEl) galleryEl.style.display = 'none';
+    }
+
+    // Enable Generate Image when prompt textarea has content
+    promptTextarea.addEventListener('input', function() {
+      imageBtn.disabled = !promptTextarea.value.trim();
+    });
+
+    // Generate Prompt via Anthropic
+    async function generatePrompt() {
+      var source = sourceText.textContent.trim();
+      var style = styleTextarea.value.trim();
+      if (!source || !style) return;
+
+      promptBtn.disabled = true;
+      promptBtn.textContent = 'Generating...';
+      if (repromptBtn) {
+        repromptBtn.disabled = true;
+      }
+
+      try {
+        var response = await fetch('/api/generate-image-prompt', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ sourceText: source, stylePrompt: style })
+        });
+
+        var result = await response.json();
+
+        if (result.success && result.prompt) {
+          promptTextarea.value = result.prompt;
+          imageBtn.disabled = false;
+          hasGeneratedPrompt = true;
+          // Switch to Regenerate Prompt
+          promptBtn.style.display = 'none';
+          repromptBtn.style.display = '';
+          repromptBtn.disabled = false;
+        } else {
+          promptBtn.textContent = 'Error: ' + (result.message || 'Failed');
+          promptBtn.disabled = false;
+          if (repromptBtn) repromptBtn.disabled = false;
+        }
+      } catch (err) {
+        promptBtn.textContent = 'Error: ' + err.message;
+        promptBtn.disabled = false;
+        if (repromptBtn) repromptBtn.disabled = false;
+      }
+    }
+
+    // Generate Image via Gemini
     async function generateImage() {
       var prompt = promptTextarea.value.trim();
       if (!prompt) return;
 
-      generateBtn.disabled = true;
-      regenerateBtn.disabled = true;
+      imageBtn.disabled = true;
+      imageBtn.textContent = 'Generating...';
       loadingEl.style.display = 'flex';
       imageEl.style.display = 'none';
+      if (placeholderEl) placeholderEl.style.display = 'none';
       insertBtn.disabled = true;
 
       try {
         var response = await fetch('/api/generate-image', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ prompt: prompt, slug: currentSlug })
+          body: JSON.stringify({ prompt: prompt, slug: currentSlug, stylePrompt: styleTextarea.value.trim() })
         });
 
         var result = await response.json();
 
         if (result.success && result.path) {
           generatedPath = result.path;
-          imageEl.src = result.path + '?t=' + Date.now();
+          imageEl.src = result.dataUrl || (result.path + '?t=' + Date.now());
           imageEl.alt = prompt;
           imageEl.style.display = 'block';
           insertBtn.disabled = false;
-          generateBtn.style.display = 'none';
-          regenerateBtn.style.display = '';
         } else {
           loadingEl.textContent = 'Error: ' + (result.message || 'Generation failed');
+          imageBtn.disabled = false;
+          imageBtn.textContent = 'Generate Image';
+          return;
         }
       } catch (err) {
         loadingEl.textContent = 'Error: ' + err.message;
+        imageBtn.disabled = false;
+        imageBtn.textContent = 'Generate Image';
+        return;
       }
 
       loadingEl.style.display = 'none';
-      generateBtn.disabled = false;
-      regenerateBtn.disabled = false;
+      imageBtn.disabled = false;
+      imageBtn.textContent = 'Generate Image';
     }
 
     function insertImage() {
-      if (!generatedPath || !contentEditable) return;
+      if (!contentEditable) {
+        contentEditable = document.querySelector('[contenteditable][data-field="content"]') || document.querySelector('[contenteditable][data-field="about"]');
+      }
+
+      if (!generatedPath) { console.error('ImageGen: no generatedPath'); return; }
+      if (!contentEditable) { console.error('ImageGen: no contentEditable element found'); return; }
 
       var prompt = promptTextarea.value.trim();
 
-      restoreSelection();
+      if (isEditMode && editingImage) {
+        // Replace mode: update existing image src and alt
+        editingImage.src = generatedPath;
+        if (prompt) editingImage.alt = prompt;
+        closeModal();
+        window.dispatchEvent(new CustomEvent('sketch-reveal-refresh'));
+        return;
+      }
 
-      // Insert the image HTML at cursor position
+      // Insert mode: create new image
       var img = document.createElement('img');
       img.src = generatedPath;
       img.alt = prompt;
       img.className = 'sketch-illustration';
 
-      var sel = window.getSelection();
-      if (sel && sel.rangeCount > 0 && contentEditable.contains(sel.anchorNode)) {
-        var range = sel.getRangeAt(0);
-        range.collapse(false);
+      var wrapper = document.createElement('p');
+      wrapper.appendChild(img);
 
-        // Wrap in a paragraph for block-level display
-        var wrapper = document.createElement('p');
-        wrapper.appendChild(img);
-        range.insertNode(wrapper);
-
-        // Move cursor after the inserted image
-        var newRange = document.createRange();
-        newRange.setStartAfter(wrapper);
-        newRange.collapse(true);
-        sel.removeAllRanges();
-        sel.addRange(newRange);
+      if (insertAfterEl && contentEditable.contains(insertAfterEl)) {
+        insertAfterEl.parentNode.insertBefore(wrapper, insertAfterEl.nextSibling);
       } else {
-        // Fallback: append to end of content
-        var wrapper = document.createElement('p');
-        wrapper.appendChild(img);
         contentEditable.appendChild(wrapper);
       }
 
-      closePanel();
+      closeModal();
+      window.dispatchEvent(new CustomEvent('sketch-reveal-refresh'));
     }
 
-    // Listen for custom event from toolbar
+    // Remove image from post (edit mode only)
+    function removeFromPost() {
+      if (!editingImage) return;
+      var parent = editingImage.parentNode;
+      if (parent) {
+        // If the parent is a <p> that only contains this image, remove the whole <p>
+        if (parent.tagName === 'P' && parent.children.length === 1 && parent.children[0] === editingImage) {
+          parent.parentNode.removeChild(parent);
+        } else {
+          parent.removeChild(editingImage);
+        }
+      }
+      closeModal();
+      window.dispatchEvent(new CustomEvent('sketch-reveal-refresh'));
+    }
+
+    // Upload file handler
+    async function handleFileUpload(file) {
+      if (!file || !file.type.match(/^image\/(png|jpeg|webp|gif)$/)) return;
+      if (!currentSlug) return;
+
+      loadingEl.textContent = 'Uploading...';
+      loadingEl.style.display = 'flex';
+      imageEl.style.display = 'none';
+      if (placeholderEl) placeholderEl.style.display = 'none';
+      insertBtn.disabled = true;
+
+      try {
+        var formData = new FormData();
+        formData.append('file', file);
+        formData.append('slug', currentSlug);
+
+        var response = await fetch('/api/upload-image', {
+          method: 'POST',
+          body: formData
+        });
+
+        var result = await response.json();
+
+        if (result.success && result.path) {
+          showPreviewImage(result.path, file.name);
+        } else {
+          loadingEl.textContent = 'Error: ' + (result.message || 'Upload failed');
+        }
+      } catch (err) {
+        loadingEl.textContent = 'Error: ' + err.message;
+      }
+    }
+
+    // Gallery: load and display images
+    async function loadGallery() {
+      if (!currentSlug || !galleryGrid || !galleryEl) return;
+
+      galleryGrid.innerHTML = '<div class="image-gen-loading">Loading...</div>';
+      galleryEl.style.display = '';
+
+      try {
+        var response = await fetch('/api/list-post-images?slug=' + encodeURIComponent(currentSlug));
+        var result = await response.json();
+
+        if (result.success && result.images && result.images.length > 0) {
+          galleryGrid.innerHTML = '';
+          result.images.forEach(function(img) {
+            var thumb = document.createElement('div');
+            thumb.className = 'image-gen-gallery-thumb';
+            thumb.innerHTML = '<img src="' + img.path + '?t=' + Date.now() + '" alt="' + img.filename + '" />';
+            thumb.addEventListener('click', function() {
+              showPreviewImage(img.path, img.filename);
+              galleryEl.style.display = 'none';
+            });
+            galleryGrid.appendChild(thumb);
+          });
+        } else {
+          galleryGrid.innerHTML = '<div class="image-gen-preview-placeholder">No images found</div>';
+        }
+      } catch (err) {
+        galleryGrid.innerHTML = '<div class="image-gen-preview-placeholder">Error loading gallery</div>';
+      }
+    }
+
+    // Listen for custom events
     window.addEventListener('image-generate-request', function(e) {
       var detail = e.detail || {};
-      openPanel(detail.prompt || '', detail.slug || '');
+      openModal(detail.prompt || '', detail.slug || '');
+    });
+
+    window.addEventListener('image-edit-request', function(e) {
+      var detail = e.detail || {};
+      openModalForEdit(
+        detail.imagePath || '',
+        detail.imageAlt || '',
+        detail.slug || '',
+        detail.imageElement || null
+      );
     });
 
     // Button handlers
-    generateBtn.addEventListener('click', generateImage);
-    regenerateBtn.addEventListener('click', generateImage);
+    promptBtn.addEventListener('click', generatePrompt);
+    if (repromptBtn) repromptBtn.addEventListener('click', generatePrompt);
+    imageBtn.addEventListener('click', generateImage);
     insertBtn.addEventListener('click', insertImage);
-    cancelBtn.addEventListener('click', closePanel);
+    closeBtn.addEventListener('click', closeModal);
+
+    if (removeBtn) {
+      removeBtn.addEventListener('click', removeFromPost);
+    }
+
+    if (uploadBtn && fileInput) {
+      uploadBtn.addEventListener('click', function() {
+        fileInput.click();
+      });
+      fileInput.addEventListener('change', function() {
+        if (fileInput.files && fileInput.files[0]) {
+          handleFileUpload(fileInput.files[0]);
+          fileInput.value = ''; // reset for re-upload
+        }
+      });
+    }
+
+    if (galleryBtn) {
+      galleryBtn.addEventListener('click', loadGallery);
+    }
+
+    if (galleryCloseBtn && galleryEl) {
+      galleryCloseBtn.addEventListener('click', function() {
+        galleryEl.style.display = 'none';
+      });
+    }
+
+    // Backdrop click to close
+    backdrop.addEventListener('click', closeModal);
 
     // Escape to close
     document.addEventListener('keydown', function(e) {
-      if (e.key === 'Escape' && panel.style.display !== 'none') {
-        closePanel();
+      if (e.key === 'Escape' && modal.getAttribute('data-open') === 'true') {
+        // Close gallery first if open, then close modal
+        if (galleryEl && galleryEl.style.display !== 'none') {
+          galleryEl.style.display = 'none';
+          return;
+        }
+        closeModal();
       }
     });
 
-    // Prevent panel interactions from stealing contenteditable focus
-    panel.addEventListener('mousedown', function(e) {
-      // Allow interactions within the panel (textarea, buttons)
-      // but don't propagate to document selectionchange
+    // Drag-and-drop on preview area
+    if (previewEl) {
+      previewEl.addEventListener('dragover', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        previewEl.classList.add('image-gen-dropzone-active');
+      });
+
+      previewEl.addEventListener('dragleave', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        previewEl.classList.remove('image-gen-dropzone-active');
+      });
+
+      previewEl.addEventListener('drop', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        previewEl.classList.remove('image-gen-dropzone-active');
+        var files = e.dataTransfer && e.dataTransfer.files;
+        if (files && files[0] && files[0].type.match(/^image\//)) {
+          handleFileUpload(files[0]);
+        }
+      });
+    }
+
+    // Paste handler on modal (Cmd+V with image)
+    modal.addEventListener('paste', function(e) {
+      // Don't intercept paste in textareas
+      if (e.target.tagName === 'TEXTAREA') return;
+      var items = e.clipboardData && e.clipboardData.items;
+      if (!items) return;
+      for (var i = 0; i < items.length; i++) {
+        if (items[i].type.indexOf('image/') === 0) {
+          e.preventDefault();
+          var file = items[i].getAsFile();
+          if (file) handleFileUpload(file);
+          return;
+        }
+      }
+    });
+
+    // Prevent modal interactions from stealing contenteditable focus
+    modal.addEventListener('mousedown', function(e) {
       e.stopPropagation();
     });
   });

@@ -45,7 +45,7 @@ test.describe('Sketch Scroll Reveal', () => {
     await expect(sketchImage).toHaveClass(/sketch-illustration/);
   });
 
-  // Test 2: desktop: inline sketch images are hidden
+  // Test 2: desktop: sketch images get sketch-reveal-active class
   test('desktop: inline sketch images are hidden', async ({ page, browserName }, testInfo) => {
     // This test only makes sense at desktop width (>1200px)
     const isDesktop = testInfo.project.name === 'Desktop Chrome' || testInfo.project.name === 'Desktop Firefox';
@@ -59,15 +59,18 @@ test.describe('Sketch Scroll Reveal', () => {
     // Wait for JS to run
     await page.waitForTimeout(500);
 
-    // The inline .sketch-illustration should be hidden via CSS or JS
+    // The .sketch-illustration should have .sketch-reveal-active class on desktop
     const sketchImage = page.locator('.post-content .sketch-illustration');
-    const display = await sketchImage.evaluate((el: Element) => {
-      return window.getComputedStyle(el).display;
+    await expect(sketchImage).toHaveClass(/sketch-reveal-active/);
+
+    // It should be position: fixed (moved to right margin)
+    const position = await sketchImage.evaluate((el: Element) => {
+      return window.getComputedStyle(el).position;
     });
-    expect(display).toBe('none');
+    expect(position).toBe('fixed');
   });
 
-  // Test 3: desktop: fixed clone exists in right margin
+  // Test 3: desktop: sketch-reveal-active element exists in right margin
   test('desktop: fixed clone exists in right margin', async ({ page }, testInfo) => {
     const isDesktop = testInfo.project.name === 'Desktop Chrome' || testInfo.project.name === 'Desktop Firefox';
     test.skip(!isDesktop, 'Desktop-only test');
@@ -77,14 +80,14 @@ test.describe('Sketch Scroll Reveal', () => {
     await page.goto('/posts/ralph-loops/');
     await dismissDevToolbar(page);
 
-    // Wait for JS to create the clone
+    // Wait for JS to set up
     await page.waitForTimeout(500);
 
-    const fixedClone = page.locator('.sketch-reveal-fixed');
-    await expect(fixedClone).toHaveCount(1);
+    const fixedImage = page.locator('.sketch-reveal-active');
+    await expect(fixedImage).toHaveCount(1);
   });
 
-  // Test 4: desktop: fixed clone is positioned to the right of content
+  // Test 4: desktop: sketch-reveal-active is positioned to the right of content
   test('desktop: fixed clone is positioned to the right of content', async ({ page }, testInfo) => {
     const isDesktop = testInfo.project.name === 'Desktop Chrome' || testInfo.project.name === 'Desktop Firefox';
     test.skip(!isDesktop, 'Desktop-only test');
@@ -94,32 +97,32 @@ test.describe('Sketch Scroll Reveal', () => {
     await page.goto('/posts/ralph-loops/');
     await dismissDevToolbar(page);
 
-    // Wait for JS to create the clone
+    // Wait for JS to set up
     await page.waitForTimeout(500);
 
-    const fixedClone = page.locator('.sketch-reveal-fixed');
-    await expect(fixedClone).toHaveCount(1);
+    const fixedImage = page.locator('.sketch-reveal-active');
+    await expect(fixedImage).toHaveCount(1);
 
     // Get bounding rects and computed styles
     const positions = await page.evaluate(() => {
       const content = document.querySelector('.post-content');
-      const clone = document.querySelector('.sketch-reveal-fixed') as HTMLElement;
-      if (!content || !clone) return null;
+      const img = document.querySelector('.sketch-reveal-active') as HTMLElement;
+      if (!content || !img) return null;
       const contentRect = content.getBoundingClientRect();
-      const cloneStyle = window.getComputedStyle(clone);
+      const imgStyle = window.getComputedStyle(img);
       return {
         contentRight: contentRect.right,
-        clonePosition: cloneStyle.position,
-        cloneRight: cloneStyle.right,
+        imgPosition: imgStyle.position,
+        imgRight: imgStyle.right,
         viewportWidth: window.innerWidth,
       };
     });
 
     expect(positions).not.toBeNull();
-    // Verify the clone has fixed positioning in the right margin
-    expect(positions!.clonePosition).toBe('fixed');
-    // The clone should have a right offset that places it in the right margin
-    const rightValue = parseFloat(positions!.cloneRight);
+    // Verify the image has fixed positioning in the right margin
+    expect(positions!.imgPosition).toBe('fixed');
+    // The image should have a right offset that places it in the right margin
+    const rightValue = parseFloat(positions!.imgRight);
     expect(rightValue).toBeGreaterThan(0);
   });
 
@@ -146,7 +149,7 @@ test.describe('Sketch Scroll Reveal', () => {
     expect(display).not.toBe('none');
   });
 
-  // Test 6: mobile: no fixed clones exist
+  // Test 6: mobile: no fixed-position images exist
   test('mobile: no fixed clones exist', async ({ page }, testInfo) => {
     const isMobile = testInfo.project.name === 'Mobile' || testInfo.project.name === 'Tablet';
     test.skip(!isMobile, 'Mobile/tablet-only test');
@@ -158,8 +161,9 @@ test.describe('Sketch Scroll Reveal', () => {
     // Wait for JS
     await page.waitForTimeout(500);
 
-    const fixedClones = page.locator('.sketch-reveal-fixed');
-    await expect(fixedClones).toHaveCount(0);
+    // On mobile, images should NOT have sketch-reveal-active (that's desktop only)
+    const activeImages = page.locator('.sketch-reveal-active');
+    await expect(activeImages).toHaveCount(0);
   });
 
   // Test 7: sketch images invert in dark mode
@@ -175,18 +179,11 @@ test.describe('Sketch Scroll Reveal', () => {
     // Dark mode is either data-theme="dark" or no data-theme attribute (default)
     expect(theme === 'dark' || theme === null).toBeTruthy();
 
-    // Check the inline image or the clone (depending on viewport)
-    // Use page.evaluate to get the computed filter on any sketch element
+    // Check the sketch illustration's computed filter
     const filter = await page.evaluate(() => {
-      // Try the inline image first
       const img = document.querySelector('.sketch-illustration') as HTMLElement;
       if (img) {
         return window.getComputedStyle(img).filter;
-      }
-      // On desktop, try the fixed clone
-      const clone = document.querySelector('.sketch-reveal-fixed') as HTMLElement;
-      if (clone) {
-        return window.getComputedStyle(clone).filter;
       }
       return '';
     });
