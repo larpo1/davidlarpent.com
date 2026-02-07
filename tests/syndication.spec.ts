@@ -31,8 +31,20 @@ test.describe('Syndication Modal', () => {
     await expect(substackTextarea).toBeVisible();
   });
 
-  // Test 2: LinkedIn textarea shows pre-populated excerpt with title and paragraphs
-  test('LinkedIn textarea shows pre-populated excerpt with title and paragraphs', async ({ page }) => {
+  // Test 2: Modal opens without triggering API calls (no loading state)
+  test('Modal opens without triggering API calls', async ({ page }) => {
+    let apiCallCount = 0;
+
+    // Intercept API calls to count them
+    await page.route('**/api/generate-syndication-draft', async (route) => {
+      apiCallCount++;
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ success: true, draft: 'Should not appear', hashtags: [] })
+      });
+    });
+
     await page.goto('/posts/ralph-loops/');
     await dismissDevToolbar(page);
 
@@ -42,22 +54,90 @@ test.describe('Syndication Modal', () => {
     const modal = page.locator('#syndication-modal');
     await expect(modal).toHaveAttribute('data-open', 'true');
 
-    // Wait for AI generation to complete (falls back to template)
-    const textarea = modal.locator('.syndication-textarea[data-platform="linkedin"]');
-    await expect(textarea).not.toHaveClass(/loading/, { timeout: 10000 });
+    // Neither textarea should be in loading state
+    const linkedinTextarea = modal.locator('.syndication-textarea[data-platform="linkedin"]');
+    const substackTextarea = modal.locator('.syndication-textarea[data-platform="substack"]');
+    await expect(linkedinTextarea).not.toHaveClass(/loading/);
+    await expect(substackTextarea).not.toHaveClass(/loading/);
 
-    const value = await textarea.inputValue();
-
-    // Should contain the post title
-    expect(value).toContain('Ralph');
-    // Should contain the essay link
-    expect(value).toContain('https://davidlarpent.com/posts/ralph-loops');
-    // Should be an excerpt (not full content)
-    expect(value.length).toBeGreaterThan(100);
-    expect(value.length).toBeLessThan(3000);
+    // No API calls should have been made
+    expect(apiCallCount).toBe(0);
   });
 
-  // Test 3: Substack button opens syndication modal with both columns visible
+  // Test 3: Both textareas start empty when no saved draft exists
+  test('Both textareas start empty when no saved draft exists', async ({ page }) => {
+    await page.goto('/posts/ralph-loops/');
+    await dismissDevToolbar(page);
+
+    // Clear any saved drafts
+    await page.evaluate(() => {
+      localStorage.removeItem('syndication-ralph-loops-linkedin');
+      localStorage.removeItem('syndication-ralph-loops-substack');
+      localStorage.removeItem('syndication-ralph-loops-hashtags');
+    });
+
+    const linkedinButton = page.locator('.linkedin-copy-button');
+    await linkedinButton.click();
+
+    const modal = page.locator('#syndication-modal');
+    await expect(modal).toHaveAttribute('data-open', 'true');
+
+    // Both textareas should be empty
+    const linkedinTextarea = modal.locator('.syndication-textarea[data-platform="linkedin"]');
+    const substackTextarea = modal.locator('.syndication-textarea[data-platform="substack"]');
+    await expect(linkedinTextarea).toHaveValue('');
+    await expect(substackTextarea).toHaveValue('');
+  });
+
+  // Test 4: Generate button triggers loading state and populates textarea
+  test('Generate button triggers loading state and populates textarea', async ({ page }) => {
+    // Intercept API call with slight delay
+    await page.route('**/api/generate-syndication-draft', async (route) => {
+      await new Promise((resolve) => setTimeout(resolve, 500));
+      const body = JSON.parse(route.request().postData() || '{}');
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          success: true,
+          draft: body.platform + ' generated content',
+          hashtags: ['test']
+        })
+      });
+    });
+
+    await page.goto('/posts/ralph-loops/');
+    await dismissDevToolbar(page);
+
+    const linkedinButton = page.locator('.linkedin-copy-button');
+    await linkedinButton.click();
+
+    const modal = page.locator('#syndication-modal');
+    await expect(modal).toHaveAttribute('data-open', 'true');
+
+    // Textarea should start empty (no auto-generation)
+    const textarea = modal.locator('.syndication-textarea[data-platform="linkedin"]');
+    await expect(textarea).toHaveValue('');
+
+    // Click Generate button
+    const linkedinColumn = modal.locator('.syndication-column[data-platform="linkedin"]');
+    const generateButton = linkedinColumn.locator('.syndication-regenerate');
+    await generateButton.click();
+
+    // Should show loading state
+    await expect(textarea).toHaveClass(/loading/);
+    await expect(textarea).toHaveValue('Generating draft...');
+    await expect(generateButton).toBeDisabled();
+    await expect(generateButton).toHaveText('Generating...');
+
+    // Wait for generation to complete
+    await expect(textarea).not.toHaveClass(/loading/, { timeout: 10000 });
+    await expect(textarea).toHaveValue('linkedin generated content');
+    await expect(generateButton).toHaveText('Generate');
+    await expect(generateButton).not.toBeDisabled();
+  });
+
+  // Test 5: Substack button opens syndication modal with both columns visible
   test('Substack button opens syndication modal with both columns', async ({ page }) => {
     await page.goto('/posts/ralph-loops/');
     await dismissDevToolbar(page);
@@ -78,32 +158,7 @@ test.describe('Syndication Modal', () => {
     await expect(substackTextarea).toBeVisible();
   });
 
-  // Test 4: Substack textarea shows raw markdown with canonical footer
-  test('Substack textarea shows raw markdown with canonical footer', async ({ page }) => {
-    await page.goto('/posts/ralph-loops/');
-    await dismissDevToolbar(page);
-
-    const substackButton = page.locator('.substack-copy-button');
-    await substackButton.click();
-
-    const modal = page.locator('#syndication-modal');
-    await expect(modal).toHaveAttribute('data-open', 'true');
-
-    // Wait for AI generation to complete (loading class appears then disappears)
-    const textarea = modal.locator('.syndication-textarea[data-platform="substack"]');
-    await expect(textarea).not.toHaveClass(/loading/, { timeout: 10000 });
-
-    const value = await textarea.inputValue();
-
-    // Should contain canonical footer (from fallback template)
-    expect(value).toContain('Originally published at davidlarpent.com');
-    // Should be markdown (has markdown syntax)
-    expect(value).toMatch(/^##\s+/m);
-    // Should be full content, not excerpt
-    expect(value.length).toBeGreaterThan(2000);
-  });
-
-  // Test 5: Syndication modal has correct side-by-side layout
+  // Test 6: Syndication modal has correct side-by-side layout
   test('syndication modal has correct side-by-side layout with columns', async ({ page }) => {
     await page.goto('/posts/ralph-loops/');
     await dismissDevToolbar(page);
@@ -136,7 +191,7 @@ test.describe('Syndication Modal', () => {
     await expect(linkedinTextarea).toBeVisible();
     await expect(substackTextarea).toBeVisible();
 
-    // Check each column has its own Copy and Rewrite buttons
+    // Check each column has its own Copy and Generate buttons
     const linkedinCopy = linkedinColumn.locator('.syndication-copy-button');
     const substackCopy = substackColumn.locator('.syndication-copy-button');
     await expect(linkedinCopy).toBeVisible();
@@ -144,19 +199,19 @@ test.describe('Syndication Modal', () => {
     await expect(linkedinCopy).toHaveText('Copy');
     await expect(substackCopy).toHaveText('Copy');
 
-    const linkedinRewrite = linkedinColumn.locator('.syndication-regenerate');
-    const substackRewrite = substackColumn.locator('.syndication-regenerate');
-    await expect(linkedinRewrite).toBeVisible();
-    await expect(substackRewrite).toBeVisible();
-    await expect(linkedinRewrite).toHaveText('Rewrite');
-    await expect(substackRewrite).toHaveText('Rewrite');
+    const linkedinGenerate = linkedinColumn.locator('.syndication-regenerate');
+    const substackGenerate = substackColumn.locator('.syndication-regenerate');
+    await expect(linkedinGenerate).toBeVisible();
+    await expect(substackGenerate).toBeVisible();
+    await expect(linkedinGenerate).toHaveText('Generate');
+    await expect(substackGenerate).toHaveText('Generate');
 
     // Check close button exists
     const closeButton = modal.locator('.syndication-close-button');
     await expect(closeButton).toBeVisible();
   });
 
-  // Test 6: API returns markdown (unchanged)
+  // Test 7: API returns markdown (unchanged)
   test('get-post-markdown API returns markdown', async ({ request }) => {
     const response = await request.get('/api/get-post-markdown?slug=ralph-loops');
     expect(response.ok()).toBeTruthy();
@@ -169,7 +224,7 @@ test.describe('Syndication Modal', () => {
     expect(data.markdown).toMatch(/^##\s+/m); // Has markdown headings
   });
 
-  // Test 7: API requires slug (unchanged)
+  // Test 8: API requires slug (unchanged)
   test('get-post-markdown API requires slug', async ({ request }) => {
     const response = await request.get('/api/get-post-markdown');
     expect(response.status()).toBe(400);
@@ -179,7 +234,7 @@ test.describe('Syndication Modal', () => {
     expect(data.message).toContain('Slug required');
   });
 
-  // Test 8: LinkedIn column shows character count that highlights when over 3000
+  // Test 9: LinkedIn column shows character count that highlights when over 3000
   test('LinkedIn column shows character count that highlights when over 3000', async ({ page }) => {
     await page.goto('/posts/ralph-loops/');
     await dismissDevToolbar(page);
@@ -190,15 +245,14 @@ test.describe('Syndication Modal', () => {
     const modal = page.locator('#syndication-modal');
     await expect(modal).toHaveAttribute('data-open', 'true');
 
-    // Wait for AI generation to complete
+    // Textarea starts empty (no auto-generation)
     const textarea = modal.locator('.syndication-textarea[data-platform="linkedin"]');
-    await expect(textarea).not.toHaveClass(/loading/, { timeout: 10000 });
 
     // Char count should be visible
     const charCount = modal.locator('.char-count');
     await expect(charCount).toBeVisible();
 
-    // Should not be over limit initially
+    // Should not be over limit initially (textarea is empty)
     await expect(charCount).not.toHaveClass(/over-limit/);
 
     // Type enough text to exceed 3000 chars
@@ -212,7 +266,7 @@ test.describe('Syndication Modal', () => {
     await expect(charCurrent).toHaveText('3001');
   });
 
-  // Test 9: Link preview card shows post title inside LinkedIn column
+  // Test 10: Link preview card shows post title inside LinkedIn column
   test('Link preview card shows post title inside LinkedIn column', async ({ page }) => {
     await page.goto('/posts/ralph-loops/');
     await dismissDevToolbar(page);
@@ -237,10 +291,15 @@ test.describe('Syndication Modal', () => {
     await expect(previewUrl).toHaveText('davidlarpent.com');
   });
 
-  // Test 10: Hashtag pills render from post tags and are removable
+  // Test 11: Hashtag pills render from post tags and are removable
   test('Hashtag pills render from post tags and are removable', async ({ page }) => {
     await page.goto('/posts/ralph-loops/');
     await dismissDevToolbar(page);
+
+    // Clear saved hashtags so we get defaults from post tags
+    await page.evaluate(() => {
+      localStorage.removeItem('syndication-ralph-loops-hashtags');
+    });
 
     const linkedinButton = page.locator('.linkedin-copy-button');
     await linkedinButton.click();
@@ -270,7 +329,7 @@ test.describe('Syndication Modal', () => {
     expect(newPillCount).toBe(pillCount - 1);
   });
 
-  // Test 11: Copy button copies textarea content to clipboard and shows status
+  // Test 12: Copy button copies textarea content to clipboard and shows status
   test('Copy button copies textarea content and shows status', async ({ page, context, browserName }) => {
     test.skip(browserName !== 'chromium', 'Clipboard API only works reliably on Chromium');
 
@@ -302,7 +361,7 @@ test.describe('Syndication Modal', () => {
     expect(clipboardText).toContain('Test syndication content');
   });
 
-  // Test 12: Modal closes on Escape key and close button
+  // Test 13: Modal closes on Escape key and close button
   test('Modal closes on Escape key and close button', async ({ page }) => {
     await page.goto('/posts/ralph-loops/');
     await dismissDevToolbar(page);
@@ -328,80 +387,8 @@ test.describe('Syndication Modal', () => {
     await expect(modal).toHaveAttribute('data-open', 'false');
   });
 
-  // Phase 2: AI Integration Tests
-
-  // Test 13: Modal shows loading state when generating draft
-  test('Modal shows loading state when generating draft', async ({ page }) => {
-    // Intercept API call and delay response
-    await page.route('**/api/generate-syndication-draft', async (route) => {
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({ success: true, draft: 'Delayed draft', hashtags: [] })
-      });
-    });
-
-    await page.goto('/posts/ralph-loops/');
-    await dismissDevToolbar(page);
-
-    const linkedinButton = page.locator('.linkedin-copy-button');
-    await linkedinButton.click();
-
-    const modal = page.locator('#syndication-modal');
-    await expect(modal).toHaveAttribute('data-open', 'true');
-
-    // LinkedIn textarea should show loading state
-    const textarea = modal.locator('.syndication-textarea[data-platform="linkedin"]');
-    await expect(textarea).toHaveClass(/loading/);
-    await expect(textarea).toHaveValue('Generating draft...');
-
-    // LinkedIn rewrite button should be disabled during loading
-    const linkedinColumn = modal.locator('.syndication-column[data-platform="linkedin"]');
-    const rewriteButton = linkedinColumn.locator('.syndication-regenerate');
-    await expect(rewriteButton).toBeDisabled();
-
-    // Wait for loading to complete
-    await expect(textarea).not.toHaveClass(/loading/, { timeout: 10000 });
-    await expect(textarea).toHaveValue('Delayed draft');
-  });
-
-  // Test 14: Modal falls back to template on API failure
-  test('Modal falls back to template on API failure', async ({ page }) => {
-    // Mock API to return 500 error
-    await page.route('**/api/generate-syndication-draft', async (route) => {
-      await route.fulfill({
-        status: 500,
-        contentType: 'application/json',
-        body: JSON.stringify({ success: false, message: 'Server error' })
-      });
-    });
-
-    await page.goto('/posts/ralph-loops/');
-    await dismissDevToolbar(page);
-
-    const linkedinButton = page.locator('.linkedin-copy-button');
-    await linkedinButton.click();
-
-    const modal = page.locator('#syndication-modal');
-    await expect(modal).toHaveAttribute('data-open', 'true');
-
-    // Wait for loading to complete
-    const textarea = modal.locator('.syndication-textarea[data-platform="linkedin"]');
-    await expect(textarea).not.toHaveClass(/loading/, { timeout: 10000 });
-
-    // Should fall back to template text (contains the post title and essay link)
-    const value = await textarea.inputValue();
-    expect(value).toContain('Ralph');
-    expect(value).toContain('https://davidlarpent.com/posts/ralph-loops');
-
-    // Status should show error message
-    const status = modal.locator('.syndication-status');
-    await expect(status).toHaveText('AI generation failed, using template');
-  });
-
-  // Test 15: Rewrite button triggers new API call
-  test('Rewrite button triggers new API call', async ({ page }) => {
+  // Test 14: Generate button triggers API call and populates textarea
+  test('Generate button triggers new API call', async ({ page }) => {
     let requestCount = 0;
 
     // Track API calls
@@ -428,24 +415,68 @@ test.describe('Syndication Modal', () => {
     const modal = page.locator('#syndication-modal');
     await expect(modal).toHaveAttribute('data-open', 'true');
 
-    // Wait for initial generation to complete (both platforms generate simultaneously)
+    // No API calls on open (no auto-generation)
+    expect(requestCount).toBe(0);
+
+    // Click LinkedIn Generate
+    const linkedinColumn = modal.locator('.syndication-column[data-platform="linkedin"]');
+    const generateButton = linkedinColumn.locator('.syndication-regenerate');
+    await generateButton.click();
+
+    // Wait for generation to complete
     const textarea = modal.locator('.syndication-textarea[data-platform="linkedin"]');
     await expect(textarea).not.toHaveClass(/loading/, { timeout: 10000 });
 
-    // Both platforms were generated on open, so requestCount should be 2
-    const initialCount = requestCount;
-    expect(initialCount).toBe(2);
+    // Verify one API call was made
+    expect(requestCount).toBe(1);
 
-    // Click LinkedIn rewrite
-    const linkedinColumn = modal.locator('.syndication-column[data-platform="linkedin"]');
-    const rewriteButton = linkedinColumn.locator('.syndication-regenerate');
-    await rewriteButton.click();
-
-    // Wait for regeneration
+    // Click Generate again
+    await generateButton.click();
     await expect(textarea).not.toHaveClass(/loading/, { timeout: 10000 });
 
-    // Verify one more API call was made
-    expect(requestCount).toBe(initialCount + 1);
+    // Verify second API call was made
+    expect(requestCount).toBe(2);
+  });
+
+  // Test 15: Modal falls back to template on API failure via Generate button
+  test('Modal falls back to template on API failure', async ({ page }) => {
+    // Mock API to return 500 error
+    await page.route('**/api/generate-syndication-draft', async (route) => {
+      await route.fulfill({
+        status: 500,
+        contentType: 'application/json',
+        body: JSON.stringify({ success: false, message: 'Server error' })
+      });
+    });
+
+    await page.goto('/posts/ralph-loops/');
+    await dismissDevToolbar(page);
+
+    // First put some content in the textarea so fallback uses it
+    const linkedinButton = page.locator('.linkedin-copy-button');
+    await linkedinButton.click();
+
+    const modal = page.locator('#syndication-modal');
+    await expect(modal).toHaveAttribute('data-open', 'true');
+
+    const textarea = modal.locator('.syndication-textarea[data-platform="linkedin"]');
+    await textarea.fill('My existing content');
+
+    // Click Generate -- should fail and fall back to current textarea content
+    const linkedinColumn = modal.locator('.syndication-column[data-platform="linkedin"]');
+    const generateButton = linkedinColumn.locator('.syndication-regenerate');
+    await generateButton.click();
+
+    // Wait for loading to complete
+    await expect(textarea).not.toHaveClass(/loading/, { timeout: 10000 });
+
+    // Should fall back to the content that was in textarea before Generate was clicked
+    const value = await textarea.inputValue();
+    expect(value).toContain('My existing content');
+
+    // Status should show error message
+    const status = modal.locator('.syndication-status');
+    await expect(status).toHaveText('AI generation failed, using template');
   });
 
   // Test 16: AI-generated draft is editable in textarea
@@ -472,6 +503,11 @@ test.describe('Syndication Modal', () => {
     const modal = page.locator('#syndication-modal');
     await expect(modal).toHaveAttribute('data-open', 'true');
 
+    // Click Generate to trigger AI
+    const linkedinColumn = modal.locator('.syndication-column[data-platform="linkedin"]');
+    const generateButton = linkedinColumn.locator('.syndication-regenerate');
+    await generateButton.click();
+
     // Wait for generation to complete
     const textarea = modal.locator('.syndication-textarea[data-platform="linkedin"]');
     await expect(textarea).not.toHaveClass(/loading/, { timeout: 10000 });
@@ -487,8 +523,6 @@ test.describe('Syndication Modal', () => {
     expect(value).toContain('AI generated content here');
     expect(value).toContain('with my edits');
   });
-
-  // New tests for side-by-side redesign
 
   // Test 17: Copy button has blue background styling
   test('Copy button has blue background styling', async ({ page }) => {
