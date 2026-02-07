@@ -114,7 +114,95 @@ Before marking ANY test task [x] complete, you MUST:
 
 ## Current Tasks
 
-### Phase 1: Syndication Modal UX (no AI)
+### Syndication Modal Redesign
+
+- [x] **Convert syndication modal to side-by-side layout**
+      - **What:** Replace the tabbed LinkedIn/Substack layout with a two-column side-by-side view. LinkedIn on the left, Substack on the right. Kill the tab navigation entirely.
+      - **Why:** There's plenty of horizontal space. Side-by-side lets you see and edit both drafts simultaneously without switching tabs.
+      - **File(s):** `src/components/SyndicationModal.astro`, `src/styles/global.css`
+      - **Implementation:**
+        1. Remove the tab navigation HTML (`.syndication-tab-navigation`, tab buttons, underline)
+        2. Replace `.syndication-tab-panels` with a two-column flex layout: `display: flex; gap: 2rem;` with each column at `flex: 1`
+        3. Each column gets: platform label (h3), textarea, and its own Copy + Regenerate buttons
+        4. LinkedIn column also gets: character count (3000 limit) and hashtag pills below the textarea
+        5. Substack column: just textarea + buttons (no char count, no hashtags)
+        6. Remove all tab switching JS logic (no more `switchTab`, `aria-pressed`, underline animation)
+        7. On modal open, generate BOTH platforms simultaneously (two parallel API calls to `/api/generate-syndication-draft`)
+        8. On mobile (<768px), stack columns vertically instead of side-by-side
+      - **Test:** `npm run build` passes. Modal shows two columns on desktop, stacked on mobile.
+      - **Commit:** `refactor: Convert syndication modal to side-by-side layout`
+
+- [x] **Reposition link preview card**
+      - **What:** Move the OG link preview card from its current overlapping position to a small thumbnail below the LinkedIn textarea
+      - **Why:** Currently overlays the textarea content, blocking text
+      - **File(s):** `src/components/SyndicationModal.astro`, `src/styles/global.css`
+      - **Implementation:**
+        1. Move the `.link-preview-card` HTML to sit below the LinkedIn textarea (inside the LinkedIn column)
+        2. Resize: max-width 250px, image max-height 100px
+        3. Keep title and URL display but make them smaller (0.75rem)
+        4. Remove the description from the preview card (just image + title + URL)
+        5. Ensure it doesn't push the layout — sits inline below the textarea
+      - **Test:** `npm run build` passes. Link preview shows as a compact card below the LinkedIn textarea.
+      - **Commit:** `refactor: Reposition link preview card below LinkedIn textarea`
+
+- [x] **Simplify OG image to title only**
+      - **What:** Update the default OG image to show only the post title. Remove "David Larpent", "Essays on AI, Philosophy, Product", the Bauhaus crosses, and "DAVIDLARPENT.COM"
+      - **Why:** The current image is too busy and the branding is redundant — the URL already tells people who wrote it
+      - **File(s):** Look for the OG image generation source. If it's a static file (`public/og-default.jpg`), this may need a dynamic approach or a new static template. Check if there's an OG image API endpoint or if it uses something like `@vercel/og` or Satori.
+      - **Implementation:**
+        1. Investigate how the OG image is currently generated/created
+        2. If static: create a cleaner static template with just a plain dark background and post title in Newsreader font (centered, large)
+        3. If there's infrastructure for dynamic generation: simplify the template to title-only
+        4. The link preview card in the modal should reflect whatever image the post will actually use
+      - **Note:** If dynamic OG image generation requires significant new infrastructure (Satori, Canvas, etc.), create a simple improved static fallback and document what a dynamic solution would look like. Don't over-engineer.
+      - **Test:** `npm run build` passes. OG meta tag still present and pointing to a valid image.
+      - **Commit:** `refactor: Simplify OG image to title only`
+
+- [x] **Style fixes: blue Copy button, Regenerate label**
+      - **What:** Make the Copy button blue (`#6ba4ff` or `var(--color-link)`). Rename "Regenerate" to "Rewrite" for clarity.
+      - **Why:** Copy is the primary action and should look like it. "Regenerate" is ambiguous — "Rewrite" makes it clear the AI will produce a new draft.
+      - **File(s):** `src/components/SyndicationModal.astro`, `src/styles/global.css`
+      - **Implementation:**
+        1. Update `.syndication-copy-button` background to `#6ba4ff`, hover to `#5a93ee`
+        2. Rename "Regenerate" button text to "Rewrite" in the HTML
+        3. Each column gets its own Copy and Rewrite buttons (from the side-by-side task)
+      - **Test:** `npm run build` passes.
+      - **Commit:** `fix: Blue copy button, rename Regenerate to Rewrite`
+
+- [x] **Test: Syndication modal redesign**
+      - **Blocked By:** All implementation tasks above (must be [x])
+      - **Test File:** tests/syndication.spec.ts (update existing)
+      - **Current Test Count:** Run `npm test` to get current count
+      - **Expected Test Count:** Update existing tests to match new layout, +2 new tests
+
+      - **Tests to Update/Add:**
+        1. Update existing tab tests to verify side-by-side columns instead of tabs
+        2. Both LinkedIn and Substack textareas visible simultaneously
+        3. Link preview card appears below LinkedIn textarea (not overlapping)
+        4. Copy button has blue background styling
+        5. Each column has its own Copy and Rewrite buttons
+        6. On mobile viewport, columns stack vertically
+
+      - **Verification Checklist:**
+        - [ ] Run `npm test` - all tests pass
+        - [ ] No test failures related to removed tab navigation
+        - [ ] New layout tests pass on both Desktop and Mobile viewports
+
+      - **Files:** tests/syndication.spec.ts
+      - **Commit:** `test: Update syndication tests for side-by-side layout`
+
+---
+
+### Completed: Draft Management
+
+- [x] **Add draft/published pill toggle to post detail view**
+- [x] **Add git-push API endpoint**
+- [x] **Convert settings modal to slide-out panel**
+- [x] **Delete the /drafts page**
+- [x] **Update Architecture Decisions in CLAUDE.md**
+- [x] **Test: Draft pill toggle and slide-out panel**
+
+### Completed: Syndication Modal (original build)
 
 - [x] **Create SyndicationModal component**
       - **What:** Build a full-screen takeover modal with LinkedIn and Substack tabs, textareas, character count, and copy functionality
@@ -346,7 +434,7 @@ Before marking ANY test task [x] complete, you MUST:
 - SEO: JSON-LD, Open Graph, robots.txt, sitemap, RSS feed, meta tags
 - Inline editing system (title, description, content, slide-out settings panel)
 - WYSIWYG toolbar (bold, italic, link, headings)
-- Syndication workflow (full-screen modal, LinkedIn/Substack tabs, AI drafts, hashtag pills, link preview)
+- Syndication workflow (full-screen modal, side-by-side columns, AI drafts, hashtag pills, link preview, blue Copy)
 - Table of Contents (desktop sidebar, mobile overlay, scroll tracking)
 - Tag system with cross-linking and tag pages
 - Draft system (pill toggle on post detail, dev-only, auto-push on publish)
@@ -354,7 +442,7 @@ Before marking ANY test task [x] complete, you MUST:
 - Google Analytics (production only)
 - About page (editable in dev mode)
 - Git-push API endpoint (dev-only)
-- 95+ Playwright tests across 6 test files
+- 214+ Playwright tests across 6 test files
 
 ---
 
@@ -423,7 +511,7 @@ npm run test:update   # Update baseline screenshots
 - **Draft management:** Pill toggle on post detail view (dev only). Publishing sets date to today and git pushes. No separate /drafts page.
 - **TOC:** Always visible on desktop (>1200px). Toggle overlay on mobile/tablet.
 - **Tabs:** Homepage splits posts into "Work" (default) and "Not work" categories.
-- **Syndication:** Full-screen modal with LinkedIn and Substack tabs. Dev-mode only. Editable preview with hashtag pills and link preview card. AI-generated drafts via Anthropic SDK (dev-only endpoint). Falls back to naive template if AI unavailable.
+- **Syndication:** Full-screen modal with side-by-side LinkedIn/Substack columns. Dev-mode only. Both AI drafts generated in parallel on open. Editable preview with hashtag pills, compact link preview card (LinkedIn only), blue Copy button. Falls back to naive template if AI unavailable. Columns stack vertically on mobile.
 
 ---
 
