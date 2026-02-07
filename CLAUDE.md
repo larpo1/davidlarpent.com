@@ -242,6 +242,174 @@ Before marking ANY test task [x] complete, you MUST:
 
 ---
 
+### Phase 2: Scroll-Scrubbed Image Reveal
+
+> **Note:** Phase 2 tasks depend on Phase 1 being complete (sketch illustrations exist as `<img class="sketch-illustration">` inline in content). All Phase 1 tasks are [x]. These tasks are reader-facing (NOT dev-only) and must work in production.
+
+- [x] **Install GSAP dependency**
+      - **What:** Add `gsap` as a production dependency for scroll-driven animations.
+      - **Why:** GSAP ScrollTrigger provides scrub-to-scroll animation that CSS alone cannot do. GSAP's core + ScrollTrigger plugin are free for standard use.
+      - **File(s):** `package.json`, `CLAUDE.md`
+      - **Implementation:**
+        1. Run `npm install gsap`
+        2. Verify `gsap` appears in `dependencies` (not `devDependencies`) since this runs in production
+        3. In CLAUDE.md Architecture Decisions, add: `**Scroll Reveal:** Uses GSAP + ScrollTrigger for scroll-scrubbed sketch illustration materialisation. Production dependency. Desktop uses scrub, mobile uses IntersectionObserver with timed animation.`
+        4. In Decision Log, add: `| 2026-02-07 | GSAP for scroll-scrubbed image reveal | Production reader-facing effect, scrub on desktop, IntersectionObserver on mobile |`
+      - **Test:** `npm run build` passes. `node -e "require('gsap')"` does not error.
+      - **Commit:** `feat: Install GSAP for scroll-scrubbed image reveal`
+
+- [ ] **Create scroll-reveal component**
+      - **What:** Build `src/components/SketchScrollReveal.astro` containing the core JavaScript that finds all `.sketch-illustration` images and sets up scroll-driven materialisation for each one.
+      - **Why:** This is the core animation logic. A dedicated component keeps it isolated from the Post layout and makes it testable.
+      - **File(s):** `src/components/SketchScrollReveal.astro`
+      - **Implementation:**
+        1. Create `src/components/SketchScrollReveal.astro` with a `<script>` block (NOT `is:inline`) so Astro bundles it
+        2. Import GSAP and register ScrollTrigger:
+           ```typescript
+           import { gsap } from 'gsap';
+           import { ScrollTrigger } from 'gsap/ScrollTrigger';
+           gsap.registerPlugin(ScrollTrigger);
+           ```
+        3. On `DOMContentLoaded`, query all `.sketch-illustration` elements in `.post-content`
+        4. Determine if desktop (`window.matchMedia('(min-width: 1201px)').matches`)
+        5. **Desktop path (>1200px):** For each `.sketch-illustration`:
+           a. Hide the original inline image (`display: none`)
+           b. Create a clone element with class `sketch-reveal-fixed` and append to `document.body`
+           c. Set initial state: `opacity: 0`, `filter: blur(8px)`, `translateY: 20px`
+           d. Calculate the "trigger zone": from this image's original DOM position to the next `.sketch-illustration`'s position (or end of `.post-content`)
+           e. Create a GSAP timeline with `ScrollTrigger({ trigger: triggerElement, start: 'top center', end: 'bottom center', scrub: true })` where `trigger` is a wrapper or the relevant content section
+           f. Timeline animates: `{ opacity: 1, filter: 'blur(0px)', y: 0 }` on enter, reverses on leave
+           g. Each image gets its own ScrollTrigger instance -- when one fades out, the next fades in
+        6. **Mobile path (<=1200px):** For each `.sketch-illustration`:
+           a. Keep image inline (do NOT hide it)
+           b. Set initial state via GSAP: `opacity: 0`, `filter: blur(8px)`, `y: 20`
+           c. Use `IntersectionObserver` with `threshold: 0.3` to detect when image enters viewport
+           d. On intersect: play a 0.6s GSAP tween to `{ opacity: 1, filter: 'blur(0px)', y: 0, duration: 0.6, ease: 'power2.out' }`
+           e. Optionally reverse when scrolling out of view (use `isIntersecting` false)
+        7. Handle resize: if user crosses the 1200px breakpoint, clean up and re-initialise (call `ScrollTrigger.killAll()` and re-run setup). Use `matchMedia` listener, not a resize debounce.
+        8. Handle zero images gracefully: if no `.sketch-illustration` found, exit early without errors
+        9. **CRITICAL -- filter composability (invert + blur):** In dark mode, `filter: invert(1)` is applied via CSS. GSAP animating `filter` directly would overwrite the invert. Solution: use a CSS custom property `--sketch-blur` and compose filters in CSS as `filter: invert(1) blur(var(--sketch-blur, 0px))`. GSAP animates `--sketch-blur` instead of `filter` directly. In light mode the CSS is just `filter: blur(var(--sketch-blur, 0px))`.
+      - **Test:** `npm run build` passes.
+      - **Commit:** `feat: Create scroll-reveal component for sketch illustrations`
+
+- [ ] **Add CSS for desktop fixed-position sketch reveal**
+      - **What:** Add styles for `.sketch-reveal-fixed` (the cloned image positioned in the right margin on desktop) and hide original inline images on desktop.
+      - **Why:** The fixed-position clone needs explicit sizing, placement, and z-index to sit in the right margin without overlapping the content column or TOC.
+      - **File(s):** `src/styles/global.css`
+      - **Implementation:**
+        1. Add `.sketch-reveal-fixed` styles (desktop only, inside `@media (min-width: 1201px)`):
+           ```css
+           @media (min-width: 1201px) {
+             .sketch-reveal-fixed {
+               position: fixed;
+               top: 50%;
+               transform: translateY(-50%);
+               right: calc((100vw - 700px) / 4);
+               max-width: 350px;
+               max-height: 60vh;
+               width: auto;
+               height: auto;
+               object-fit: contain;
+               z-index: 10;
+               pointer-events: none;
+               opacity: 0;
+             }
+           }
+           ```
+        2. Dark/light mode inversion for the clone using `--sketch-blur` custom property:
+           ```css
+           [data-theme="dark"] .sketch-reveal-fixed,
+           :root:not([data-theme="light"]) .sketch-reveal-fixed {
+             filter: invert(1) blur(var(--sketch-blur, 0px));
+           }
+           .sketch-reveal-fixed {
+             filter: blur(var(--sketch-blur, 0px));
+           }
+           ```
+        3. Hide inline originals on desktop:
+           ```css
+           @media (min-width: 1201px) {
+             .post-content .sketch-illustration {
+               display: none;
+             }
+           }
+           ```
+        4. Ensure `.sketch-reveal-fixed` does not interfere with `.toc-container` (TOC is on the left, sketches on the right -- no overlap)
+      - **Test:** `npm run build` passes.
+      - **Commit:** `feat: Add CSS for desktop fixed-position sketch reveal`
+
+- [ ] **Add CSS for mobile inline sketch materialisation**
+      - **What:** Add styles for the mobile materialisation effect -- images stay inline but start transparent/blurred and animate in via IntersectionObserver.
+      - **Why:** Mobile has no right margin. Images remain in the content flow but still get the materialisation feel.
+      - **File(s):** `src/styles/global.css`
+      - **Implementation:**
+        1. At mobile sizes (<=1200px), `.sketch-illustration` stays inline (already the case from Phase 1 CSS)
+        2. Add a class `.sketch-reveal-pending` that the JS applies before the IntersectionObserver fires:
+           ```css
+           .sketch-reveal-pending {
+             opacity: 0;
+             transform: translateY(20px);
+             will-change: opacity, filter, transform;
+             --sketch-blur: 8px;
+           }
+           [data-theme="dark"] .sketch-reveal-pending,
+           :root:not([data-theme="light"]) .sketch-reveal-pending {
+             filter: invert(1) blur(var(--sketch-blur, 8px));
+           }
+           .sketch-reveal-pending {
+             filter: blur(var(--sketch-blur, 8px));
+           }
+           ```
+        3. Add `will-change: opacity, filter, transform` to `.sketch-reveal-fixed` as well for GPU acceleration
+      - **Test:** `npm run build` passes.
+      - **Commit:** `feat: Add CSS for mobile inline sketch materialisation`
+
+- [ ] **Wire SketchScrollReveal into Post.astro**
+      - **What:** Import and render `SketchScrollReveal` in the Post layout so the scroll-reveal script loads on every post page for all readers.
+      - **Why:** Connects the component to the page. This is NOT dev-only -- it must render in both dev and production.
+      - **File(s):** `src/layouts/Post.astro`
+      - **Implementation:**
+        1. Add import at top of Post.astro frontmatter:
+           ```typescript
+           import SketchScrollReveal from '../components/SketchScrollReveal.astro';
+           ```
+        2. Render `<SketchScrollReveal />` inside the `<div class="post-layout">` block, OUTSIDE the `{isDev && ...}` guard. Place it after the closing `</article>` tag but before the dev-only controls block.
+        3. The component should be lightweight -- if no `.sketch-illustration` images exist on the page, the script exits early with zero cost.
+      - **Test:** `npm run build` passes. View page source of a built post page -- confirm the GSAP script bundle is included.
+      - **Commit:** `feat: Wire scroll-reveal component into post layout`
+
+- [ ] **Test: Scroll-scrubbed sketch reveal**
+      - **Blocked By:** All Phase 2 implementation tasks above (must be [x])
+      - **Test File:** tests/sketch-scroll-reveal.spec.ts (new)
+      - **Current Test Count:** 238 passing (run `npm test` to verify)
+      - **Expected Test Count:** 238 + 8 = 246 passing (+8)
+
+      - **Tests to Add:**
+        1. `sketch illustrations have .sketch-illustration class` -- navigate to a post with images, verify class exists
+        2. `desktop: inline sketch images are hidden` -- set viewport to 1280px wide, verify `.post-content .sketch-illustration` has `display: none`
+        3. `desktop: fixed clone exists in right margin` -- set viewport to 1280px wide, verify `.sketch-reveal-fixed` element exists in DOM
+        4. `desktop: fixed clone is positioned to the right of content` -- verify `.sketch-reveal-fixed` bounding rect left edge is greater than the content column right edge
+        5. `mobile: sketch images are inline and visible` -- set viewport to 375px wide, verify `.sketch-illustration` is visible and in flow
+        6. `mobile: no fixed clones exist` -- set viewport to 375px, verify `.sketch-reveal-fixed` count is 0
+        7. `sketch images invert in dark mode` -- verify computed `filter` includes `invert` when `data-theme="dark"`
+        8. `no errors on post without sketch images` -- navigate to a post without illustrations, verify no JS console errors
+
+      - **Test Notes:**
+        - Tests should use a post that has sketch illustrations. If no published post has one yet, the test can inject a `.sketch-illustration` image into `.post-content` via `page.evaluate()` before checking behavior.
+        - Scroll-scrub animation is difficult to test precisely in Playwright. Focus on DOM structure (clone exists, positioning, visibility) rather than mid-animation states.
+        - Use `page.on('console', ...)` or `page.on('pageerror', ...)` to catch JS errors for test 8.
+
+      - **Verification Checklist:**
+        - [ ] File tests/sketch-scroll-reveal.spec.ts created
+        - [ ] Run `npm test` - all tests pass
+        - [ ] Test count is 246+ passing
+        - [ ] All 8 test scenarios implemented
+
+      - **Files:** tests/sketch-scroll-reveal.spec.ts
+      - **Commit:** `test: Add scroll-scrubbed sketch reveal tests`
+
+---
+
 ### Completed: Syndication Modal: Generate on Demand + Auto-Save
 
 - [x] **Replace auto-generation with Generate button**
@@ -701,6 +869,7 @@ npm run test:update   # Update baseline screenshots
 - **Tabs:** Homepage splits posts into "Work" (default) and "Not work" categories.
 - **Syndication:** Full-screen modal with side-by-side LinkedIn/Substack columns. Dev-mode only. Both AI drafts generated in parallel on open. Editable preview with hashtag pills, compact link preview card (LinkedIn only), blue Copy button. Falls back to naive template if AI unavailable. Columns stack vertically on mobile.
 - **Image Generation:** Uses @google/genai with gemini-3-pro-image-preview (Nano Banana Pro) for inline sketch illustrations. Dev-mode only. Requires GOOGLE_AI_API_KEY.
+- **Scroll Reveal:** Uses GSAP + ScrollTrigger for scroll-scrubbed sketch illustration materialisation. Production dependency. Desktop uses scrub, mobile uses IntersectionObserver with timed animation.
 
 ---
 
@@ -724,6 +893,7 @@ npm run test:update   # Update baseline screenshots
 | 2026-02-06 | Anthropic SDK for syndication AI | Dev-only draft generation, graceful fallback to template |
 | 2026-02-06 | Syndication modal replaces direct clipboard copy | Editable preview, link card, hashtag pills, AI drafts |
 | 2026-02-06 | Two-phase syndication rollout | Phase 1 modal UX, Phase 2 AI generation |
+| 2026-02-07 | GSAP for scroll-scrubbed image reveal | Production reader-facing effect, scrub on desktop, IntersectionObserver on mobile |
 
 ---
 
