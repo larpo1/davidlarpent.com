@@ -338,7 +338,7 @@ Before marking ANY test task [x] complete, you MUST:
       - **Test:** `npm run build` passes.
       - **Commit:** `feat: Add CSS for desktop fixed-position sketch reveal`
 
-- [ ] **Add CSS for mobile inline sketch materialisation**
+- [x] **Add CSS for mobile inline sketch materialisation**
       - **What:** Add styles for the mobile materialisation effect -- images stay inline but start transparent/blurred and animate in via IntersectionObserver.
       - **Why:** Mobile has no right margin. Images remain in the content flow but still get the materialisation feel.
       - **File(s):** `src/styles/global.css`

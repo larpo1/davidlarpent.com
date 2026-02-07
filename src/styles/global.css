@@ -499,6 +499,23 @@ a:hover {
   filter: blur(var(--sketch-blur, 0px));
 }
 
+/* Mobile: pending state for IntersectionObserver materialisation */
+.sketch-reveal-pending {
+  opacity: 0;
+  transform: translateY(20px);
+  will-change: opacity, filter, transform;
+  --sketch-blur: 8px;
+}
+
+[data-theme="dark"] .sketch-reveal-pending,
+:root:not([data-theme="light"]) .sketch-reveal-pending {
+  filter: invert(1) blur(var(--sketch-blur, 8px));
+}
+
+[data-theme="light"] .sketch-reveal-pending {
+  filter: blur(var(--sketch-blur, 8px));
+}
+
 /* Back link */
 .back-link {
   display: inline-block;
