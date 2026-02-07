@@ -378,7 +378,7 @@ Before marking ANY test task [x] complete, you MUST:
       - **Test:** `npm run build` passes. View page source of a built post page -- confirm the GSAP script bundle is included.
       - **Commit:** `feat: Wire scroll-reveal component into post layout`
 
-- [ ] **Test: Scroll-scrubbed sketch reveal**
+- [x] **Test: Scroll-scrubbed sketch reveal**
       - **Blocked By:** All Phase 2 implementation tasks above (must be [x])
       - **Test File:** tests/sketch-scroll-reveal.spec.ts (new)
       - **Current Test Count:** 238 passing (run `npm test` to verify)
@@ -400,10 +400,10 @@ Before marking ANY test task [x] complete, you MUST:
         - Use `page.on('console', ...)` or `page.on('pageerror', ...)` to catch JS errors for test 8.
 
       - **Verification Checklist:**
-        - [ ] File tests/sketch-scroll-reveal.spec.ts created
-        - [ ] Run `npm test` - all tests pass
-        - [ ] Test count is 246+ passing
-        - [ ] All 8 test scenarios implemented
+        - [x] File tests/sketch-scroll-reveal.spec.ts created
+        - [x] Run `npm test` - all tests pass
+        - [x] Test count is 246+ passing (260 passing across 4 browser configs)
+        - [x] All 8 test scenarios implemented
 
       - **Files:** tests/sketch-scroll-reveal.spec.ts
       - **Commit:** `test: Add scroll-scrubbed sketch reveal tests`

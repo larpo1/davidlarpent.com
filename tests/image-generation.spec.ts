@@ -166,9 +166,12 @@ test.describe('Image Generation', () => {
     });
 
     const sketchImg = page.locator('.post-content .sketch-illustration');
-    await expect(sketchImg).toBeVisible();
+    await expect(sketchImg).toHaveCount(1);
 
-    // In dark mode (default), the image should have filter: invert(1)
+    // In dark mode (default), the image should have filter containing invert(1)
+    // Note: on desktop (>1200px) the inline image is hidden by CSS (display: none)
+    // for the scroll-reveal effect, but the filter rule still applies in the stylesheet.
+    // Check computed filter -- even if display:none, getComputedStyle returns the filter.
     const filter = await sketchImg.evaluate((el: Element) => {
       return window.getComputedStyle(el).filter;
     });
