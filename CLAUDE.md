@@ -217,7 +217,7 @@ Before marking ANY test task [x] complete, you MUST:
       - **Test:** `npm run build` passes.
       - **Commit:** `feat: Add CSS for sketch illustrations with dark/light mode inversion`
 
-- [ ] **Test: Phase 1 image generation**
+- [x] **Test: Phase 1 image generation**
       - **Blocked By:** All implementation tasks above (must be [x])
       - **Test File:** tests/image-generation.spec.ts (new)
       - **Current Test Count:** 214 passing (run `npm test` to verify)
@@ -232,10 +232,10 @@ Before marking ANY test task [x] complete, you MUST:
         6. Sketch illustration images have correct CSS class and invert in dark mode
 
       - **Verification Checklist:**
-        - [ ] File tests/image-generation.spec.ts created
-        - [ ] Run `npm test` - all tests pass
-        - [ ] Test count is 220+ passing
-        - [ ] All 6 test scenarios implemented
+        - [x] File tests/image-generation.spec.ts created
+        - [x] Run `npm test` - all tests pass
+        - [x] Test count is 220+ passing (238 passing across 4 browser configs)
+        - [x] All 6 test scenarios implemented
 
       - **Files:** tests/image-generation.spec.ts
       - **Commit:** `test: Add Phase 1 image generation tests`
