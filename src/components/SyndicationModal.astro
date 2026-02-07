@@ -27,6 +27,13 @@
         <div class="hashtag-pills">
           <input class="hashtag-input" placeholder="Add hashtag..." />
         </div>
+        <div class="link-preview-card">
+          <img class="link-preview-image" src="/og-default.jpg" alt="Link preview" />
+          <div class="link-preview-text">
+            <div class="link-preview-title"></div>
+            <div class="link-preview-url">davidlarpent.com</div>
+          </div>
+        </div>
         <div class="syndication-column-actions">
           <button class="syndication-regenerate" data-platform="linkedin">Rewrite</button>
           <button class="syndication-copy-button" data-platform="linkedin">Copy</button>
@@ -40,15 +47,6 @@
           <button class="syndication-regenerate" data-platform="substack">Rewrite</button>
           <button class="syndication-copy-button" data-platform="substack">Copy</button>
         </div>
-      </div>
-    </div>
-
-    <div class="link-preview-card">
-      <img class="link-preview-image" src="/og-default.jpg" alt="Link preview" />
-      <div class="link-preview-text">
-        <div class="link-preview-title"></div>
-        <div class="link-preview-description"></div>
-        <div class="link-preview-url">davidlarpent.com</div>
       </div>
     </div>
 
@@ -74,7 +72,6 @@
     var regenerateButtons = modal.querySelectorAll('.syndication-regenerate');
     var linkPreviewImage = modal.querySelector('.link-preview-image');
     var linkPreviewTitle = modal.querySelector('.link-preview-title');
-    var linkPreviewDescription = modal.querySelector('.link-preview-description');
     var currentSlug = '';
     var generatingPlatforms = {};
 
@@ -301,10 +298,6 @@
       }
       if (linkPreviewTitle) {
         linkPreviewTitle.textContent = data.title || '';
-      }
-      if (linkPreviewDescription) {
-        var desc = data.description || '';
-        linkPreviewDescription.textContent = desc.length > 120 ? desc.substring(0, 120) + '...' : desc;
       }
 
       // Populate hashtag pills from tags
