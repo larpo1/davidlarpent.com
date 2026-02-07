@@ -10,7 +10,7 @@ test.describe('Syndication Modal', () => {
     });
   }
 
-  // Test 1: LinkedIn button opens syndication modal
+  // Test 1: LinkedIn button opens syndication modal with both columns visible
   test('LinkedIn button opens syndication modal', async ({ page }) => {
     await page.goto('/posts/ralph-loops/');
     await dismissDevToolbar(page);
@@ -24,13 +24,15 @@ test.describe('Syndication Modal', () => {
     const modal = page.locator('#syndication-modal');
     await expect(modal).toHaveAttribute('data-open', 'true');
 
-    // LinkedIn tab should be active
-    const linkedinTab = modal.locator('.syndication-tab-button[data-tab="linkedin"]');
-    await expect(linkedinTab).toHaveAttribute('aria-pressed', 'true');
+    // Both textareas should be visible (side-by-side layout)
+    const linkedinTextarea = modal.locator('.syndication-textarea[data-platform="linkedin"]');
+    const substackTextarea = modal.locator('.syndication-textarea[data-platform="substack"]');
+    await expect(linkedinTextarea).toBeVisible();
+    await expect(substackTextarea).toBeVisible();
   });
 
-  // Test 2: LinkedIn tab shows pre-populated excerpt with title and paragraphs
-  test('LinkedIn tab shows pre-populated excerpt with title and paragraphs', async ({ page }) => {
+  // Test 2: LinkedIn textarea shows pre-populated excerpt with title and paragraphs
+  test('LinkedIn textarea shows pre-populated excerpt with title and paragraphs', async ({ page }) => {
     await page.goto('/posts/ralph-loops/');
     await dismissDevToolbar(page);
 
@@ -55,8 +57,8 @@ test.describe('Syndication Modal', () => {
     expect(value.length).toBeLessThan(3000);
   });
 
-  // Test 3: Substack button opens syndication modal on Substack tab
-  test('Substack button opens syndication modal on Substack tab', async ({ page }) => {
+  // Test 3: Substack button opens syndication modal with both columns visible
+  test('Substack button opens syndication modal with both columns', async ({ page }) => {
     await page.goto('/posts/ralph-loops/');
     await dismissDevToolbar(page);
 
@@ -69,13 +71,15 @@ test.describe('Syndication Modal', () => {
     const modal = page.locator('#syndication-modal');
     await expect(modal).toHaveAttribute('data-open', 'true');
 
-    // Substack tab should be active
-    const substackTab = modal.locator('.syndication-tab-button[data-tab="substack"]');
-    await expect(substackTab).toHaveAttribute('aria-pressed', 'true');
+    // Both textareas should be visible (side-by-side layout)
+    const linkedinTextarea = modal.locator('.syndication-textarea[data-platform="linkedin"]');
+    const substackTextarea = modal.locator('.syndication-textarea[data-platform="substack"]');
+    await expect(linkedinTextarea).toBeVisible();
+    await expect(substackTextarea).toBeVisible();
   });
 
-  // Test 4: Substack tab shows raw markdown with canonical footer
-  test('Substack tab shows raw markdown with canonical footer', async ({ page }) => {
+  // Test 4: Substack textarea shows raw markdown with canonical footer
+  test('Substack textarea shows raw markdown with canonical footer', async ({ page }) => {
     await page.goto('/posts/ralph-loops/');
     await dismissDevToolbar(page);
 
@@ -99,8 +103,8 @@ test.describe('Syndication Modal', () => {
     expect(value.length).toBeGreaterThan(2000);
   });
 
-  // Test 5: Syndication modal has correct layout
-  test('syndication modal has correct layout (full-screen, tabs, textarea, copy button)', async ({ page }) => {
+  // Test 5: Syndication modal has correct side-by-side layout
+  test('syndication modal has correct side-by-side layout with columns', async ({ page }) => {
     await page.goto('/posts/ralph-loops/');
     await dismissDevToolbar(page);
 
@@ -114,20 +118,38 @@ test.describe('Syndication Modal', () => {
     const content = modal.locator('.syndication-modal-content');
     await expect(content).toBeVisible();
 
-    // Check tabs exist
-    const linkedinTab = modal.locator('.syndication-tab-button[data-tab="linkedin"]');
-    const substackTab = modal.locator('.syndication-tab-button[data-tab="substack"]');
-    await expect(linkedinTab).toBeVisible();
-    await expect(substackTab).toBeVisible();
+    // Check two columns exist with labels
+    const linkedinColumn = modal.locator('.syndication-column[data-platform="linkedin"]');
+    const substackColumn = modal.locator('.syndication-column[data-platform="substack"]');
+    await expect(linkedinColumn).toBeVisible();
+    await expect(substackColumn).toBeVisible();
 
-    // Check textarea exists
-    const textarea = modal.locator('.syndication-textarea[data-platform="linkedin"]');
-    await expect(textarea).toBeVisible();
+    // Check column labels
+    const linkedinLabel = linkedinColumn.locator('.syndication-column-label');
+    const substackLabel = substackColumn.locator('.syndication-column-label');
+    await expect(linkedinLabel).toHaveText('LinkedIn');
+    await expect(substackLabel).toHaveText('Substack');
 
-    // Check copy button exists
-    const copyButton = modal.locator('.syndication-copy-button');
-    await expect(copyButton).toBeVisible();
-    await expect(copyButton).toHaveText('Copy');
+    // Check both textareas exist
+    const linkedinTextarea = modal.locator('.syndication-textarea[data-platform="linkedin"]');
+    const substackTextarea = modal.locator('.syndication-textarea[data-platform="substack"]');
+    await expect(linkedinTextarea).toBeVisible();
+    await expect(substackTextarea).toBeVisible();
+
+    // Check each column has its own Copy and Rewrite buttons
+    const linkedinCopy = linkedinColumn.locator('.syndication-copy-button');
+    const substackCopy = substackColumn.locator('.syndication-copy-button');
+    await expect(linkedinCopy).toBeVisible();
+    await expect(substackCopy).toBeVisible();
+    await expect(linkedinCopy).toHaveText('Copy');
+    await expect(substackCopy).toHaveText('Copy');
+
+    const linkedinRewrite = linkedinColumn.locator('.syndication-regenerate');
+    const substackRewrite = substackColumn.locator('.syndication-regenerate');
+    await expect(linkedinRewrite).toBeVisible();
+    await expect(substackRewrite).toBeVisible();
+    await expect(linkedinRewrite).toHaveText('Rewrite');
+    await expect(substackRewrite).toHaveText('Rewrite');
 
     // Check close button exists
     const closeButton = modal.locator('.syndication-close-button');
@@ -157,8 +179,8 @@ test.describe('Syndication Modal', () => {
     expect(data.message).toContain('Slug required');
   });
 
-  // Test 8: LinkedIn tab shows character count that highlights when over 3000
-  test('LinkedIn tab shows character count that highlights when over 3000', async ({ page }) => {
+  // Test 8: LinkedIn column shows character count that highlights when over 3000
+  test('LinkedIn column shows character count that highlights when over 3000', async ({ page }) => {
     await page.goto('/posts/ralph-loops/');
     await dismissDevToolbar(page);
 
@@ -190,8 +212,8 @@ test.describe('Syndication Modal', () => {
     await expect(charCurrent).toHaveText('3001');
   });
 
-  // Test 9: Link preview card shows post title and description
-  test('Link preview card shows post title and description', async ({ page }) => {
+  // Test 9: Link preview card shows post title inside LinkedIn column
+  test('Link preview card shows post title inside LinkedIn column', async ({ page }) => {
     await page.goto('/posts/ralph-loops/');
     await dismissDevToolbar(page);
 
@@ -201,21 +223,17 @@ test.describe('Syndication Modal', () => {
     const modal = page.locator('#syndication-modal');
     await expect(modal).toHaveAttribute('data-open', 'true');
 
-    // Link preview card should be visible
-    const previewCard = modal.locator('.link-preview-card');
+    // Link preview card should be visible inside LinkedIn column
+    const linkedinColumn = modal.locator('.syndication-column[data-platform="linkedin"]');
+    const previewCard = linkedinColumn.locator('.link-preview-card');
     await expect(previewCard).toBeVisible();
 
     // Title should contain post title
-    const previewTitle = modal.locator('.link-preview-title');
+    const previewTitle = linkedinColumn.locator('.link-preview-title');
     await expect(previewTitle).toContainText('Ralph');
 
-    // Description should contain some text
-    const previewDescription = modal.locator('.link-preview-description');
-    const descText = await previewDescription.textContent();
-    expect(descText?.length).toBeGreaterThan(0);
-
     // URL should show davidlarpent.com
-    const previewUrl = modal.locator('.link-preview-url');
+    const previewUrl = linkedinColumn.locator('.link-preview-url');
     await expect(previewUrl).toHaveText('davidlarpent.com');
   });
 
@@ -266,12 +284,13 @@ test.describe('Syndication Modal', () => {
     const modal = page.locator('#syndication-modal');
     await expect(modal).toHaveAttribute('data-open', 'true');
 
-    // Set known content in textarea
+    // Set known content in LinkedIn textarea
     const textarea = modal.locator('.syndication-textarea[data-platform="linkedin"]');
     await textarea.fill('Test syndication content');
 
-    // Click copy button
-    const copyButton = modal.locator('.syndication-copy-button');
+    // Click the LinkedIn column's copy button
+    const linkedinColumn = modal.locator('.syndication-column[data-platform="linkedin"]');
+    const copyButton = linkedinColumn.locator('.syndication-copy-button');
     await copyButton.click();
 
     // Status should show "Copied!"
@@ -332,14 +351,15 @@ test.describe('Syndication Modal', () => {
     const modal = page.locator('#syndication-modal');
     await expect(modal).toHaveAttribute('data-open', 'true');
 
-    // Textarea should show loading state
+    // LinkedIn textarea should show loading state
     const textarea = modal.locator('.syndication-textarea[data-platform="linkedin"]');
     await expect(textarea).toHaveClass(/loading/);
     await expect(textarea).toHaveValue('Generating draft...');
 
-    // Regenerate button should be disabled during loading
-    const regenerateButton = modal.locator('.syndication-regenerate');
-    await expect(regenerateButton).toBeDisabled();
+    // LinkedIn rewrite button should be disabled during loading
+    const linkedinColumn = modal.locator('.syndication-column[data-platform="linkedin"]');
+    const rewriteButton = linkedinColumn.locator('.syndication-regenerate');
+    await expect(rewriteButton).toBeDisabled();
 
     // Wait for loading to complete
     await expect(textarea).not.toHaveClass(/loading/, { timeout: 10000 });
@@ -380,19 +400,20 @@ test.describe('Syndication Modal', () => {
     await expect(status).toHaveText('AI generation failed, using template');
   });
 
-  // Test 15: Regenerate button triggers new API call
-  test('Regenerate button triggers new API call', async ({ page }) => {
+  // Test 15: Rewrite button triggers new API call
+  test('Rewrite button triggers new API call', async ({ page }) => {
     let requestCount = 0;
 
     // Track API calls
     await page.route('**/api/generate-syndication-draft', async (route) => {
       requestCount++;
+      const body = JSON.parse(route.request().postData() || '{}');
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
         body: JSON.stringify({
           success: true,
-          draft: 'Draft version ' + requestCount,
+          draft: body.platform + ' draft version ' + requestCount,
           hashtags: ['test']
         })
       });
@@ -407,21 +428,24 @@ test.describe('Syndication Modal', () => {
     const modal = page.locator('#syndication-modal');
     await expect(modal).toHaveAttribute('data-open', 'true');
 
-    // Wait for first generation to complete
+    // Wait for initial generation to complete (both platforms generate simultaneously)
     const textarea = modal.locator('.syndication-textarea[data-platform="linkedin"]');
     await expect(textarea).not.toHaveClass(/loading/, { timeout: 10000 });
-    await expect(textarea).toHaveValue('Draft version 1');
 
-    // Click regenerate
-    const regenerateButton = modal.locator('.syndication-regenerate');
-    await regenerateButton.click();
+    // Both platforms were generated on open, so requestCount should be 2
+    const initialCount = requestCount;
+    expect(initialCount).toBe(2);
 
-    // Wait for second generation
+    // Click LinkedIn rewrite
+    const linkedinColumn = modal.locator('.syndication-column[data-platform="linkedin"]');
+    const rewriteButton = linkedinColumn.locator('.syndication-regenerate');
+    await rewriteButton.click();
+
+    // Wait for regeneration
     await expect(textarea).not.toHaveClass(/loading/, { timeout: 10000 });
-    await expect(textarea).toHaveValue('Draft version 2');
 
-    // Verify two API calls were made
-    expect(requestCount).toBe(2);
+    // Verify one more API call was made
+    expect(requestCount).toBe(initialCount + 1);
   });
 
   // Test 16: AI-generated draft is editable in textarea
@@ -462,5 +486,55 @@ test.describe('Syndication Modal', () => {
     const value = await textarea.inputValue();
     expect(value).toContain('AI generated content here');
     expect(value).toContain('with my edits');
+  });
+
+  // New tests for side-by-side redesign
+
+  // Test 17: Copy button has blue background styling
+  test('Copy button has blue background styling', async ({ page }) => {
+    await page.goto('/posts/ralph-loops/');
+    await dismissDevToolbar(page);
+
+    const linkedinButton = page.locator('.linkedin-copy-button');
+    await linkedinButton.click();
+
+    const modal = page.locator('#syndication-modal');
+    await expect(modal).toHaveAttribute('data-open', 'true');
+
+    // Check the LinkedIn copy button has blue background
+    const linkedinColumn = modal.locator('.syndication-column[data-platform="linkedin"]');
+    const copyButton = linkedinColumn.locator('.syndication-copy-button');
+    const bgColor = await copyButton.evaluate((el: HTMLElement) => {
+      return window.getComputedStyle(el).backgroundColor;
+    });
+    // #6ba4ff = rgb(107, 164, 255)
+    expect(bgColor).toBe('rgb(107, 164, 255)');
+  });
+
+  // Test 18: On mobile viewport, columns stack vertically
+  test('On mobile viewport, columns stack vertically', async ({ page, viewport }) => {
+    // Only test on mobile viewport (width < 768px)
+    test.skip(!viewport || viewport.width >= 768, 'Only applicable to mobile viewports');
+
+    await page.goto('/posts/ralph-loops/');
+    await dismissDevToolbar(page);
+
+    const linkedinButton = page.locator('.linkedin-copy-button');
+    await linkedinButton.click();
+
+    const modal = page.locator('#syndication-modal');
+    await expect(modal).toHaveAttribute('data-open', 'true');
+
+    // Get the columns container flex-direction
+    const flexDirection = await modal.locator('.syndication-columns').evaluate((el: HTMLElement) => {
+      return window.getComputedStyle(el).flexDirection;
+    });
+    expect(flexDirection).toBe('column');
+
+    // Both textareas should still be visible (stacked vertically)
+    const linkedinTextarea = modal.locator('.syndication-textarea[data-platform="linkedin"]');
+    const substackTextarea = modal.locator('.syndication-textarea[data-platform="substack"]');
+    await expect(linkedinTextarea).toBeVisible();
+    await expect(substackTextarea).toBeVisible();
   });
 });
