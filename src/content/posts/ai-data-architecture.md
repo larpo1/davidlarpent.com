@@ -43,7 +43,7 @@ This layer is often missing entirely, or maintained informally in spreadsheets a
 
 ## Where the insight lives
 
-None of these layers is insightful in isolation.
+None of these layers is _insightful_ in isolation.
 
 Canonical data alone gives you dashboards. You can see that occupancy is down 6% at a particular property, but not why, and not what to do about it.
 
