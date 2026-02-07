@@ -169,7 +169,7 @@ Before marking ANY test task [x] complete, you MUST:
       - **Test:** `npm run build` passes. Button appears in toolbar.
       - **Commit:** `feat: Add image generation button to toolbar`
 
-- [ ] **Create image generation panel**
+- [x] **Create image generation panel**
       - **What:** Build a floating panel that shows when the toolbar image button is clicked. Shows the prompt, a Generate button, a preview of the generated image, and an Insert button.
       - **Why:** The panel gives the user control: preview before inserting, edit the prompt, regenerate if needed.
       - **File(s):** `src/components/ImageGenPanel.astro`, `src/styles/global.css`
