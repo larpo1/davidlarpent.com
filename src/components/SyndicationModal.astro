@@ -110,6 +110,17 @@
       }, 2000);
     }
 
+    // Update Copy button disabled state based on textarea content
+    function updateCopyButtonState() {
+      copyButtons.forEach(function(btn) {
+        var platform = btn.dataset.platform;
+        var textarea = platform === 'linkedin' ? linkedinTextarea : substackTextarea;
+        if (textarea) {
+          btn.disabled = !textarea.value;
+        }
+      });
+    }
+
     // Save drafts to localStorage
     function saveToLocalStorage(platform) {
       if (!currentSlug) return;
@@ -185,6 +196,7 @@
           showStatus('AI generation failed, using template');
         }
         updateCharCount();
+        updateCopyButtonState();
         saveToLocalStorage(platform);
       })
       .catch(function() {
@@ -198,6 +210,7 @@
         textarea.value = fallbackText || '';
         showStatus('AI generation failed, using template');
         updateCharCount();
+        updateCopyButtonState();
       });
     }
 
@@ -261,12 +274,13 @@
       });
     }
 
-    // Character count live update
+    // Character count live update + Copy button state
     if (linkedinTextarea) {
-      linkedinTextarea.addEventListener('input', updateCharCount);
+      linkedinTextarea.addEventListener('input', function() { updateCharCount(); updateCopyButtonState(); });
       linkedinTextarea.addEventListener('blur', function() { saveToLocalStorage('linkedin'); });
     }
     if (substackTextarea) {
+      substackTextarea.addEventListener('input', function() { updateCopyButtonState(); });
       substackTextarea.addEventListener('blur', function() { saveToLocalStorage('substack'); });
     }
 
@@ -363,8 +377,9 @@
         });
       }
 
-      // Update char count
+      // Update char count and copy button state
       updateCharCount();
+      updateCopyButtonState();
 
       // Open -- no auto AI generation; user clicks Generate when ready
       openModal();

@@ -1217,8 +1217,14 @@ a:hover {
   transition: background 0.2s;
 }
 
-.syndication-copy-button:hover {
+.syndication-copy-button:hover:not(:disabled) {
   background: #5a93ee;
+}
+
+.syndication-copy-button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  background: #6ba4ff;
 }
 
 /* Regenerate Button */
