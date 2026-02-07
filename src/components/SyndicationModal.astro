@@ -1,6 +1,7 @@
 ---
 // SyndicationModal - Full-screen modal for editing and copying syndication content
 // Dev-mode only component. Opened via window.openSyndicationModal(data)
+// Side-by-side layout: LinkedIn on left, Substack on right
 ---
 
 <div id="syndication-modal" class="syndication-modal" data-open="false">
@@ -16,18 +17,9 @@
       </button>
     </div>
 
-    <div class="syndication-tab-navigation">
-      <button class="syndication-tab-button" data-tab="linkedin" aria-pressed="true">
-        LinkedIn
-      </button>
-      <button class="syndication-tab-button" data-tab="substack" aria-pressed="false">
-        Substack
-      </button>
-      <div class="syndication-tab-underline" aria-hidden="true"></div>
-    </div>
-
-    <div class="syndication-tab-panels">
-      <div class="syndication-tab-panel" data-panel="linkedin">
+    <div class="syndication-columns">
+      <div class="syndication-column" data-platform="linkedin">
+        <h3 class="syndication-column-label">LinkedIn</h3>
         <textarea class="syndication-textarea" data-platform="linkedin" placeholder="LinkedIn post content..."></textarea>
         <div class="char-count">
           <span class="char-current">0</span>/<span class="char-limit">3000</span>
@@ -35,10 +27,19 @@
         <div class="hashtag-pills">
           <input class="hashtag-input" placeholder="Add hashtag..." />
         </div>
+        <div class="syndication-column-actions">
+          <button class="syndication-regenerate" data-platform="linkedin">Rewrite</button>
+          <button class="syndication-copy-button" data-platform="linkedin">Copy</button>
+        </div>
       </div>
 
-      <div class="syndication-tab-panel" data-panel="substack" style="display: none;">
+      <div class="syndication-column" data-platform="substack">
+        <h3 class="syndication-column-label">Substack</h3>
         <textarea class="syndication-textarea" data-platform="substack" placeholder="Substack content..."></textarea>
+        <div class="syndication-column-actions">
+          <button class="syndication-regenerate" data-platform="substack">Rewrite</button>
+          <button class="syndication-copy-button" data-platform="substack">Copy</button>
+        </div>
       </div>
     </div>
 
@@ -49,11 +50,6 @@
         <div class="link-preview-description"></div>
         <div class="link-preview-url">davidlarpent.com</div>
       </div>
-    </div>
-
-    <div class="syndication-actions">
-      <button class="syndication-regenerate">Regenerate</button>
-      <button class="syndication-copy-button">Copy</button>
     </div>
 
     <div class="syndication-status"></div>
@@ -67,24 +63,20 @@
 
     var backdrop = modal.querySelector('.syndication-modal-backdrop');
     var closeButton = modal.querySelector('.syndication-close-button');
-    var tabButtons = modal.querySelectorAll('.syndication-tab-button');
-    var tabPanels = modal.querySelectorAll('.syndication-tab-panel');
-    var tabUnderline = modal.querySelector('.syndication-tab-underline');
-    var copyButton = modal.querySelector('.syndication-copy-button');
+    var copyButtons = modal.querySelectorAll('.syndication-copy-button');
     var statusEl = modal.querySelector('.syndication-status');
     var linkedinTextarea = modal.querySelector('.syndication-textarea[data-platform="linkedin"]');
     var substackTextarea = modal.querySelector('.syndication-textarea[data-platform="substack"]');
     var charCurrentEl = modal.querySelector('.char-current');
     var charCountContainer = modal.querySelector('.char-count');
+    var hashtagPillsContainer = modal.querySelector('.hashtag-pills');
+    var hashtagInput = modal.querySelector('.hashtag-input');
+    var regenerateButtons = modal.querySelectorAll('.syndication-regenerate');
     var linkPreviewImage = modal.querySelector('.link-preview-image');
     var linkPreviewTitle = modal.querySelector('.link-preview-title');
     var linkPreviewDescription = modal.querySelector('.link-preview-description');
-    var hashtagPillsContainer = modal.querySelector('.hashtag-pills');
-    var hashtagInput = modal.querySelector('.hashtag-input');
-    var regenerateButton = modal.querySelector('.syndication-regenerate');
-    var activeTab = 'linkedin';
     var currentSlug = '';
-    var isGenerating = false;
+    var generatingPlatforms = {};
 
     function openModal() {
       modal.setAttribute('data-open', 'true');
@@ -96,28 +88,6 @@
       document.body.style.overflow = '';
       if (statusEl) {
         statusEl.textContent = '';
-      }
-    }
-
-    function switchTab(tab) {
-      activeTab = tab;
-      tabButtons.forEach(function(btn) {
-        btn.setAttribute('aria-pressed', (btn.dataset.tab === tab).toString());
-      });
-      tabPanels.forEach(function(panel) {
-        panel.style.display = panel.dataset.panel === tab ? '' : 'none';
-      });
-      updateTabUnderline();
-    }
-
-    function updateTabUnderline() {
-      var activeButton = modal.querySelector('.syndication-tab-button[aria-pressed="true"]');
-      if (activeButton && tabUnderline) {
-        var buttonRect = activeButton.getBoundingClientRect();
-        var containerRect = activeButton.parentElement.getBoundingClientRect();
-        var offsetLeft = buttonRect.left - containerRect.left;
-        tabUnderline.style.transform = 'translateX(' + offsetLeft + 'px)';
-        tabUnderline.style.width = buttonRect.width + 'px';
       }
     }
 
@@ -144,16 +114,19 @@
 
     // AI draft generation
     function generateDraft(slug, platform, fallbackText) {
-      if (isGenerating) return;
-      isGenerating = true;
+      if (generatingPlatforms[platform]) return;
+      generatingPlatforms[platform] = true;
 
       var textarea = platform === 'linkedin' ? linkedinTextarea : substackTextarea;
       if (!textarea) return;
 
+      // Find the regenerate button for this platform
+      var regenBtn = modal.querySelector('.syndication-regenerate[data-platform="' + platform + '"]');
+
       // Show loading state
       textarea.value = 'Generating draft...';
       textarea.classList.add('loading');
-      if (regenerateButton) regenerateButton.disabled = true;
+      if (regenBtn) regenBtn.disabled = true;
       if (statusEl) statusEl.textContent = '';
 
       fetch('/api/generate-syndication-draft', {
@@ -164,8 +137,8 @@
       .then(function(response) { return response.json(); })
       .then(function(data) {
         textarea.classList.remove('loading');
-        isGenerating = false;
-        if (regenerateButton) regenerateButton.disabled = false;
+        generatingPlatforms[platform] = false;
+        if (regenBtn) regenBtn.disabled = false;
 
         if (data.success) {
           textarea.value = data.draft;
@@ -183,8 +156,8 @@
       })
       .catch(function() {
         textarea.classList.remove('loading');
-        isGenerating = false;
-        if (regenerateButton) regenerateButton.disabled = false;
+        generatingPlatforms[platform] = false;
+        if (regenBtn) regenBtn.disabled = false;
         // Fall back to template text
         textarea.value = fallbackText || '';
         showStatus('AI generation failed, using template');
@@ -252,32 +225,20 @@
       });
     }
 
-    // Tab click handlers
-    tabButtons.forEach(function(btn) {
-      btn.addEventListener('click', function() {
-        var tab = btn.dataset.tab;
-        switchTab(tab);
-        // If switching tabs and the other tab's textarea is empty, trigger generation
-        var textarea = tab === 'linkedin' ? linkedinTextarea : substackTextarea;
-        if (textarea && !textarea.value && currentSlug && !isGenerating) {
-          generateDraft(currentSlug, tab, '');
-        }
-      });
-    });
-
     // Character count live update
     if (linkedinTextarea) {
       linkedinTextarea.addEventListener('input', updateCharCount);
     }
 
-    // Copy button
-    if (copyButton) {
+    // Copy buttons (one per column)
+    copyButtons.forEach(function(copyButton) {
       copyButton.addEventListener('click', function() {
-        var textarea = activeTab === 'linkedin' ? linkedinTextarea : substackTextarea;
+        var platform = copyButton.dataset.platform;
+        var textarea = platform === 'linkedin' ? linkedinTextarea : substackTextarea;
         if (textarea && textarea.value) {
           var textToCopy = textarea.value;
           // Append hashtags for LinkedIn
-          if (activeTab === 'linkedin') {
+          if (platform === 'linkedin') {
             var hashtags = getHashtags();
             if (hashtags.length > 0) {
               textToCopy += '\n\n' + hashtags.join(' ');
@@ -290,17 +251,18 @@
           });
         }
       });
-    }
+    });
 
-    // Regenerate button
-    if (regenerateButton) {
-      regenerateButton.addEventListener('click', function() {
-        if (!currentSlug || isGenerating) return;
-        var textarea = activeTab === 'linkedin' ? linkedinTextarea : substackTextarea;
+    // Regenerate buttons (one per column)
+    regenerateButtons.forEach(function(regenButton) {
+      regenButton.addEventListener('click', function() {
+        var platform = regenButton.dataset.platform;
+        if (!currentSlug || generatingPlatforms[platform]) return;
+        var textarea = platform === 'linkedin' ? linkedinTextarea : substackTextarea;
         var fallbackText = textarea ? textarea.value : '';
-        generateDraft(currentSlug, activeTab, fallbackText);
+        generateDraft(currentSlug, platform, fallbackText);
       });
-    }
+    });
 
     // Close handlers
     if (closeButton) {
@@ -333,14 +295,6 @@
         substackTextarea.value = substackFallback;
       }
 
-      // Populate hashtag pills from tags
-      clearPills();
-      if (data.tags && data.tags.length > 0) {
-        data.tags.forEach(function(tag) {
-          addPill(tag);
-        });
-      }
-
       // Populate link preview card
       if (linkPreviewImage) {
         linkPreviewImage.src = data.ogImage || '/og-default.jpg';
@@ -353,9 +307,13 @@
         linkPreviewDescription.textContent = desc.length > 120 ? desc.substring(0, 120) + '...' : desc;
       }
 
-      // Switch to requested platform tab
-      var platform = data.platform || 'linkedin';
-      switchTab(platform);
+      // Populate hashtag pills from tags
+      clearPills();
+      if (data.tags && data.tags.length > 0) {
+        data.tags.forEach(function(tag) {
+          addPill(tag);
+        });
+      }
 
       // Update char count
       updateCharCount();
@@ -363,21 +321,11 @@
       // Open
       openModal();
 
-      // Update underline position after modal is visible
-      requestAnimationFrame(function() {
-        updateTabUnderline();
-      });
-
-      // Trigger AI draft generation for the active platform
+      // Trigger AI draft generation for BOTH platforms simultaneously
       if (currentSlug) {
-        var fallback = platform === 'linkedin' ? linkedinFallback : substackFallback;
-        generateDraft(currentSlug, platform, fallback);
+        generateDraft(currentSlug, 'linkedin', linkedinFallback);
+        generateDraft(currentSlug, 'substack', substackFallback);
       }
     };
-
-    // Initialize underline on load
-    requestAnimationFrame(function() {
-      updateTabUnderline();
-    });
   })();
 </script>
