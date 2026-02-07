@@ -1,5 +1,5 @@
 ---
-title: Data Readiness for 'Decision First' Analysis
+title: How to become "data ready" for AI
 date: 2026-02-06T00:00:00.000Z
 description: >-
   Mapping the data architecture that de-risks the ROI on expensive AI insights
