@@ -1211,14 +1211,14 @@ a:hover {
   border-radius: 4px;
   cursor: pointer;
   border: none;
-  background: var(--color-link);
+  background: #6ba4ff;
   color: white;
   font-family: 'Newsreader', Georgia, serif;
   transition: background 0.2s;
 }
 
 .syndication-copy-button:hover {
-  background: var(--color-link-hover);
+  background: #5a93ee;
 }
 
 /* Regenerate Button */
