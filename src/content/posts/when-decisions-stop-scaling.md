@@ -1,7 +1,7 @@
 ---
 title: When Decisions Stop Scaling
 date: 2026-02-02T00:00:00.000Z
-description: The synthesis bottleneck that dashboards couldn't solve
+description: The synthesis bottleneck that dashboards won't solve
 draft: true
 tags:
   - AI
