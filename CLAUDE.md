@@ -114,7 +114,67 @@ Before marking ANY test task [x] complete, you MUST:
 
 ## Current Tasks
 
-### Syndication Modal Redesign
+### Syndication Modal: Generate on Demand + Auto-Save
+
+- [x] **Replace auto-generation with Generate button**
+      - **What:** Remove the auto-AI-generation that fires when the modal opens. Instead, show a "Generate" button in each column. Textarea starts empty (or with last saved draft from localStorage). Clicking Generate calls the AI endpoint for that column only.
+      - **Why:** User wants control over when AI generation happens. Auto-generation overwrites previous edits and wastes API calls when the user just wants to review/edit existing copy.
+      - **File(s):** `src/components/SyndicationModal.astro`
+      - **Implementation:**
+        1. Remove the auto `generateDraft` calls from `openSyndicationModal`
+        2. Add a "Generate" button in each column (same style as "Rewrite" — in fact, rename "Rewrite" to "Generate" since there's no initial generation to "re"-write)
+        3. On modal open: load saved draft from `localStorage` if it exists (key: `syndication-{slug}-{platform}`). If no saved draft, show empty textarea with placeholder
+        4. "Generate" button calls the AI endpoint and populates the textarea (overwriting current content)
+        5. Keep a single "Generate" button per column (replaces the current "Rewrite" button)
+        6. Button text changes to "Generating..." with disabled state while API call is in progress
+      - **Test:** `npm run build` passes. Modal opens without API calls. Generate button triggers AI draft.
+      - **Commit:** `refactor: Replace auto-generation with Generate button`
+
+- [x] **Auto-save edits to localStorage**
+      - **What:** Automatically save textarea content to localStorage on blur and on modal close. Restore saved content when modal reopens for the same post.
+      - **Why:** User doesn't want to lose edits. Edits should persist across modal open/close cycles and page refreshes.
+      - **File(s):** `src/components/SyndicationModal.astro`
+      - **Implementation:**
+        1. localStorage key format: `syndication-{slug}-linkedin` and `syndication-{slug}-substack`
+        2. On textarea `blur`: save current value to localStorage
+        3. On modal close (X button, backdrop click, Escape): save both textareas to localStorage
+        4. On modal open: check localStorage for saved drafts. If found, populate textareas with saved content. If not, leave empty with placeholder.
+        5. Also save hashtags: `syndication-{slug}-hashtags` as JSON array
+        6. "Generate" button should overwrite the textarea AND save the new content to localStorage
+        7. "Copy" button should also trigger a save (so the copied version is the persisted version)
+      - **Test:** `npm run build` passes. Edits persist after closing and reopening the modal.
+      - **Commit:** `feat: Auto-save syndication edits to localStorage`
+
+- [x] **Clean up button layout**
+      - **What:** Each column should have: "Generate" button (secondary style) and "Copy" button (blue primary). Remove the separate "Rewrite" button since "Generate" replaces it.
+      - **File(s):** `src/components/SyndicationModal.astro`, `src/styles/global.css`
+      - **Implementation:**
+        1. Each column has two buttons: Generate (secondary) and Copy (blue primary)
+        2. Generate button: border style (current regenerate style), text "Generate"
+        3. Copy button: blue fill (current style), text "Copy"
+        4. When textarea is empty, Copy button should be disabled (grayed out)
+        5. Buttons sit in a row at the bottom of each column
+      - **Test:** `npm run build` passes.
+      - **Commit:** `refactor: Clean up syndication button layout`
+
+- [x] **Test: Generate on demand and auto-save**
+      - **Blocked By:** All implementation tasks above (must be [x])
+      - **Test File:** tests/syndication.spec.ts (update existing)
+      - **Current Test Count:** Run `npm test` to get current count
+      - **Expected Test Count:** Update existing tests, +3 new
+
+      - **Tests to Update/Add:**
+        1. Modal opens without triggering API calls (no "Generating..." state on open)
+        2. Both textareas start empty (or with placeholder) when no saved draft exists
+        3. Generate button triggers loading state and populates textarea
+        4. Update any existing tests that expect auto-generation behaviour
+
+      - **Files:** tests/syndication.spec.ts
+      - **Commit:** `test: Update syndication tests for generate on demand`
+
+---
+
+### Completed: Syndication Modal Redesign
 
 - [x] **Convert syndication modal to side-by-side layout**
       - **What:** Replace the tabbed LinkedIn/Substack layout with a two-column side-by-side view. LinkedIn on the left, Substack on the right. Kill the tab navigation entirely.
