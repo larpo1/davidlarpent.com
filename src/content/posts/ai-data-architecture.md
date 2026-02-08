@@ -1,8 +1,8 @@
 ---
-title: Becoming "data ready" for AI investment
+title: 'Becoming "data ready" for AI investment'
 date: 2026-02-06T00:00:00.000Z
 description: Mapping the data architecture that de-risks the ROI on expensive AI projects
-draft: false
+draft: true
 tags:
   - AI
   - data
