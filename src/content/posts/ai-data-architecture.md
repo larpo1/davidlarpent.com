@@ -12,7 +12,7 @@ tags:
   - realestate
   - proptech
 category: work
-featureImage: /images/posts/ai-data-architecture/sketch-1770507224.jpg
+featureImage: /images/posts/ai-data-architecture/sketch-1770509837.jpg
 ---
 [Gartner puts AI-ready organisations at 43%](https://www.gartner.com/en/newsroom/press-releases/2025-08-05-gartner-hype-cycle-identifies-top-ai-innovations-in-2025); [McKinsey’s State of AI survey](https://www.mckinsey.com/capabilities/quantumblack/our-insights/the-state-of-ai) found 88% using AI but two-thirds still stuck in pilot mode. In real estate specifically (my sector), [JLL’s 2025 technology survey](https://www.jll.com/en-us/newsroom/real-estates-ai-reality-check-companies-piloting-only-achieved-all-ai-goals) found more than 60% of firms remain unprepared strategically, organisationally and technically. The immediate advice is often: “get your data house in order”.
 
@@ -22,15 +22,23 @@ This note is to explore what that means, and what AI-ready data architecture loo
 
 We find it helpful to think about data readiness for AI in three layers: canonical data, semantic layer and correlation data. Each serves a different purpose. The canonical tells you what is, the semantic suggests why it is, the correlation data tells you whether it is you or the market. 
 
-<img src="/images/posts/ai-data-architecture/sketch-1770493987.jpg" alt="" class="sketch-illustration">
+### Canonical Data
 
 **Canonical data** is the structured, pre-calculated, agreed-upon metrics. Revenue. Occupancy. Conversion rates. Whatever the core numbers are that your business argues about in meetings.
+
+<img src="/images/posts/ai-data-architecture/sketch-1770511717.jpg" alt="Square 1:1 aspect ratio. Minimal architectural line drawing on a pure white background. Absolutely no border, or background shade, texture or effect, just a pure white background. Fine black ink lines only. Clean, precise but hand drawn, spare linework. No shading, no cross-hatching, no fills, no gradients. Just lines on white. Think Dieter Rams sketch meets architectural blueprint. Abstract where possible. Include 3 or 5 (odd number only) minimal handwritten labels in a loose architect's hand — like notes on a draft, not typeset text. Elegant negative space. The drawing should feel like a diagram that became art.
+
+Subject: a geometric plane on which is depicted a solid, well founded but architectural structure, and interconnected nodes from which 5 straight lines 3 of which are labeled &quot;Revenue&quot;, &quot;Occupancy&quot;, &quot;Conversion rates&quot; emerge towards an unlabelled convergence point. No curving lines." class="sketch-illustration">
 
 The key word is pre-calculated. You do not want a language model writing SQL on the fly to answer “what’s our occupancy rate?” You’ll get a slightly different answer every time, depending on how the model interprets the question, which filters it applies, how it handles edge cases. That’s a recipe for eroding trust in the system. 
 
 Canonical metrics should be boring. Computed once, stored, versioned, and treated as the source of truth. The AI’s job is to retrieve them, not to derive them.
 
+### **Semantic Layer**
+
 **Semantic data** is the unstructured stuff. Reviews, feedback, survey responses, support tickets, free-text fields that have been accumulating in databases for years, largely ignored because they don’t fit neatly into reports.
+
+<img src="/images/posts/ai-data-architecture/sketch-1770497206.jpg" alt="" class="sketch-illustration">
 
 The instinct with unstructured data is often to structure it. Build taxonomies. Create categories. Force the mess into rows and columns so it can be queried like everything else.
 
@@ -39,6 +47,8 @@ I’d argue this is precisely the wrong move for AI readiness.
 The value of language models is that they can reason over fuzzy data without requiring it to be pre-categorised. A review that mentions “the kitchen was disgusting and the landlord took three weeks to respond” contains signal about cleanliness, responsiveness, and sentiment. You don’t need to tag it with those labels in advance. You can embed the text, store the embedding, and let the model find patterns across thousands of similar comments.
 
 Keeping semantic data fuzzy isn’t laziness. It’s a deliberate architectural choice that preserves information rather than discarding it into crude buckets.
+
+### Correlation data
 
 **Correlation data** is the mapping layer. It connects your internal data to external context.
 
