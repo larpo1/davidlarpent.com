@@ -31,6 +31,8 @@ Synthesis is skilled work. It requires judgment. It’s hard to delegate. And be
 
 ## The symptoms
 
+<img src="/images/posts/when-decisions-stop-scaling/sketch-1770572837.jpg" alt="" class="sketch-illustration">
+
 You can recognise the synthesis bottleneck by its symptoms.
 
 **Decisions take longer than they should.** Not because the decision is genuinely complex, but because assembling the evidence takes time. A question that should take an hour to answer takes two weeks because it has to queue behind other requests.
@@ -46,6 +48,8 @@ You can recognise the synthesis bottleneck by its symptoms.
 If any of this sounds familiar, you’re experiencing the synthesis bottleneck.
 
 ## Why dashboards didn’t solve it
+
+<img src="/images/posts/when-decisions-stop-scaling/sketch-1770573059.jpg" alt="" class="sketch-illustration">
 
 The last generation of business intelligence tools were built on a premise: if we give people visibility into their data, they’ll make better decisions.
 
