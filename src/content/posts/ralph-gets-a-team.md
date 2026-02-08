@@ -1,7 +1,7 @@
 ---
 title: Ralph 2.0
 date: 2026-02-06T00:00:00.000Z
-description: Claude Opus 4.6 just made Ralph Looping even better.
+description: Claude Opus 4.6 makes Ralph Loops reliable
 draft: true
 tags:
   - AI
