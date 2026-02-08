@@ -403,7 +403,7 @@ a:hover {
   border: 2px dashed var(--color-border);
   border-radius: 4px;
   aspect-ratio: 1.91;
-  max-width: 300px;
+  width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -849,6 +849,12 @@ a:hover {
     margin-right: 0;
     padding-left: 0;
     padding-right: 0;
+  }
+
+  /* Bleed elements past right padding to align with grid line */
+  .feature-image-wrapper,
+  .related-post-link {
+    margin-right: -25px;
   }
 
   /* z-index layering: content above guides */
