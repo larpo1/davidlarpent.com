@@ -1,7 +1,7 @@
 ---
 title: Decision Systems, Not Dashboards
 date: 2026-02-02T00:00:00.000Z
-description: 'Build AI tools that answer ''what should I do?'', not just ''what happened?''  - Decision Systems, Part 3 of 3'
+description: 'Decision Systems, part 3 of 3: a framework for becoming ''decision first'' with the support of AI'
 draft: true
 tags:
   - AI
