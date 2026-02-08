@@ -1,7 +1,7 @@
 ---
 title: 'Becoming "data ready" for AI projects'
 date: 2026-02-07T00:00:00.000Z
-description: Mapping the data architecture that de-risks the ROI on expensive AI projects
+description: Mapping the data architecture that de-risks the ROI on expensive AI projects - Decision Systems, Part 1 of 3
 draft: false
 tags:
   - AI
