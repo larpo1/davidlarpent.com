@@ -9,6 +9,7 @@ tags:
   - tools
   - development
 category: not-work
+featureImage: /images/posts/ralph-gets-a-team/sketch-1770575431.jpg
 ---
 Last week I wrote about [running Claude Code in a bash loop](/posts/ralph-loops). One agent, one task file, a PM that kept sneaking off to write React components. Charming chaos.
 
