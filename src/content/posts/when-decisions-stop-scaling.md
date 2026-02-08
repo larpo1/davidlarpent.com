@@ -1,7 +1,7 @@
 ---
 title: When Decisions Stop Scaling
 date: 2026-02-02T00:00:00.000Z
-description: 'The synthesis bottleneck that dashboards won''t solve'
+description: 'The synthesis bottleneck that dashboards won''t solve - Decision Systems, Part 2 of 3'
 draft: true
 tags:
   - AI
@@ -15,9 +15,11 @@ Every organisation hits a ceiling on how many good decisions it can make in a gi
 
 ## How decisions get made
 
+<img src="/images/posts/when-decisions-stop-scaling/sketch-1770567649.jpg" alt="" class="sketch-illustration">
+
 Consider how a reasonably complex business decision happens today.
 
-Someone notices a problem or opportunity. They request data. An analyst pulls a report, maybe several. The data arrives, but it doesn’t quite answer the question, so there’s back-and-forth. Eventually, enough context is assembled that someone senior can weigh the trade-offs and make a call.
+Someone notices a problem or opportunity. They request data. An analyst pulls a report, maybe several. The data arrives, but it doesn’t quite answer the question, so there’s back-and-forth. Eventually, enough context is assembled that a "decision maker" can weigh the trade-offs and make a call.
 
 This process works. It’s how most organisations operate. But notice where the constraints are.
 
