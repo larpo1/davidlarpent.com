@@ -16,7 +16,7 @@ featureImage: /images/posts/ai-data-architecture/sketch-1770509837.jpg
 ---
 [Gartner puts AI-ready organisations at 43%](https://www.gartner.com/en/newsroom/press-releases/2025-08-05-gartner-hype-cycle-identifies-top-ai-innovations-in-2025); [McKinsey’s State of AI survey](https://www.mckinsey.com/capabilities/quantumblack/our-insights/the-state-of-ai) found 88% using AI but two-thirds still stuck in pilot mode. In real estate specifically (my sector), [JLL’s 2025 technology survey](https://www.jll.com/en-us/newsroom/real-estates-ai-reality-check-companies-piloting-only-achieved-all-ai-goals) found more than 60% of firms remain unprepared strategically, organisationally and technically. The immediate advice is often: “get your data house in order”.
 
-This note is to explore what that means, and what AI-ready data architecture looks like. Not the abstract principle, but the practical structure. Here’s a mental model that’s been useful to me, and might be useful to others thinking through the same problem.
+This note is to explore what that means, and what AI-ready data architecture looks like. Not the abstract principle, but the practical structure. Here’s a mental model that’s been useful to us, and might be useful to others thinking through the same problem.
 
 ## Three layers
 
@@ -78,7 +78,7 @@ This is what I mean by decision-first queries. Instead of asking “show me the 
 
 <img src="/images/posts/ai-data-architecture/sketch-1770497206.jpg" alt="" class="sketch-illustration">
 
-Of the three, I think the semantic layer is most often mishandled.
+Of the three, we have noticed the semantic layer is most often mishandled.
 
 Structured data has decades of tooling, best practices, and organisational muscle behind it. Data warehouses, BI platforms, data governance frameworks. It’s well-understood territory, even if execution is often messy.
 
