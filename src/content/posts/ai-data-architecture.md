@@ -1,5 +1,5 @@
 ---
-title: "Becoming\_\"data ready\" for AI investment"
+title: Becoming "data ready" for AI investment
 date: 2026-02-06T00:00:00.000Z
 description: Mapping the data architecture that de-risks the ROI on expensive AI projects
 draft: false
@@ -92,7 +92,7 @@ This requires a shift in thinking for data teams accustomed to the structure-eve
 
 ## A practical starting point
 
-If I were advising someone thinking through AI readiness for their organisation, I’d suggest starting with three questions:
+If this resonates, I suggest starting with three questions:
 
 **What are your canonical metrics, and are they pre-calculated?** If your core KPIs are being derived on the fly by different tools with slightly different logic, fix that first. AI can’t give consistent answers if the underlying numbers aren’t consistent.
 
