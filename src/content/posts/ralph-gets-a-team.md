@@ -1,7 +1,7 @@
 ---
 title: Ralph Gets a Team
 date: 2026-02-08T00:00:00.000Z
-description: Sub-agents turn a solo bash loop into a squad that checks its own homework.
+description: Opus 4.6 Sub-agents turn a solo bash loop into a squad.
 draft: true
 tags:
   - AI
