@@ -47,7 +47,7 @@ You can recognise the synthesis bottleneck by its symptoms.
 
 If any of this sounds familiar, you’re experiencing the synthesis bottleneck.
 
-## Why dashboards didn’t solve it
+## Why dashboards don't solve the problem
 
 <img src="/images/posts/when-decisions-stop-scaling/sketch-1770573059.jpg" alt="" class="sketch-illustration">
 
