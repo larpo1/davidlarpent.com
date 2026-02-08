@@ -3,8 +3,13 @@ title: On Ralph Loops
 date: 2026-01-30T00:00:00.000Z
 description: Or how to run Claude Code like a sweatshop
 draft: false
-tags: [AI, automation, tools, development]
+tags:
+  - AI
+  - automation
+  - tools
+  - development
 category: not-work
+featureImage: /images/posts/ralph-loops/sketch-1770516071.jpg
 ---
 This particular rabbit hole might seem ironic, given [the other thing I wrote today](/posts/what-we-lose-when-we-stop-struggling), but here goes.
 
