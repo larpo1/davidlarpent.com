@@ -41,6 +41,7 @@ html {
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background: var(--color-background);
 }
 
 body {
@@ -165,8 +166,8 @@ a:hover {
 }
 
 .theme-logo {
-  width: 2rem;
-  height: 2rem;
+  width: 44px;
+  height: 48px;
   transition: filter 0.3s ease, transform 0.2s ease;
 }
 
@@ -388,6 +389,7 @@ a:hover {
 /* Feature Image */
 .feature-image-wrapper {
   margin-top: 1.5rem;
+  background: var(--color-background);
 }
 
 .feature-image-wrapper:empty {
