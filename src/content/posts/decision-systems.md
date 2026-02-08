@@ -1,5 +1,5 @@
 ---
-title: Decision Systems Beat Dashboards
+title: Decision Systems Not Dashboards
 date: 2026-02-02T00:00:00.000Z
 description: 'Building AI tools that answer ''what should I do?'', not just ''what happened?'''
 draft: true
