@@ -1,6 +1,7 @@
 ---
 import { getCollection } from 'astro:content';
 import Base from '../../layouts/Base.astro';
+import PostListItem from '../../components/PostListItem.astro';
 
 export async function getStaticPaths() {
   const allPosts = await getCollection('posts');
@@ -37,55 +38,33 @@ const displayTag = tag.split('-').map(word =>
 
 <Base
   title={`${displayTag} | David Larpent`}
-  description={`Essays about ${displayTag.toLowerCase()}`}
+  description={`Notes about ${displayTag.toLowerCase()}`}
 >
   <div class="tag-page">
     <header class="tag-header">
       <h1>#{displayTag}</h1>
-      <p class="tag-count">{posts.length} {posts.length === 1 ? 'essay' : 'essays'}</p>
+      <p class="tag-count">{posts.length} {posts.length === 1 ? 'note' : 'notes'}</p>
     </header>
 
     <ul class="post-list">
-      {posts.map(post => {
-        const formattedDate = post.data.date.toLocaleDateString('en-US', {
-          year: 'numeric',
-          month: 'short',
-          day: 'numeric'
-        });
-
-        return (
-          <li class="post-list-item">
-            <h2 class="post-list-title">
-              <a href={`/posts/${post.slug}`}>{post.data.title}</a>
-            </h2>
-            <div class="post-meta">{formattedDate}</div>
-            {post.data.description && (
-              <p class="post-description">{post.data.description}</p>
-            )}
-            {post.data.tags.length > 0 && (
-              <div class="post-tags">
-                {post.data.tags.map(postTag => (
-                  <a href={`/tags/${postTag.toLowerCase()}`} class="tag-link">
-                    #{postTag}
-                  </a>
-                ))}
-              </div>
-            )}
-          </li>
-        );
-      })}
+      {posts.map(post => (
+        <PostListItem
+          slug={post.slug}
+          title={post.data.title}
+          date={post.data.date}
+          description={post.data.description}
+          tags={post.data.tags}
+          draft={post.data.draft}
+          category={post.data.category || 'work'}
+        />
+      ))}
     </ul>
 
-    <a href="/" class="back-link">← Back to all essays</a>
+    <a href="/" class="back-link">← Back to all notes</a>
   </div>
 </Base>
 
 <style>
-  .tag-page {
-    max-width: 60rem;
-    margin: 0 auto;
-  }
-
   .tag-header {
     margin-bottom: 3rem;
     border-bottom: 1px solid var(--color-border);
@@ -104,37 +83,7 @@ const displayTag = tag.split('-').map(word =>
     margin: 0;
   }
 
-  .post-tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    margin-top: 0.75rem;
-  }
-
-  .tag-link {
-    font-size: 0.85rem;
-    color: var(--color-text-muted);
-    text-decoration: none;
-    padding: 0.25rem 0.75rem;
-    background: var(--color-code-bg);
-    border-radius: 1rem;
-    transition: background 0.2s, color 0.2s;
-  }
-
-  .tag-link:hover {
-    background: var(--color-link);
-    color: white;
-  }
-
-  .back-link {
-    display: inline-block;
-    margin-top: 3rem;
-    color: var(--color-text-muted);
-    text-decoration: none;
-    transition: color 0.2s;
-  }
-
-  .back-link:hover {
-    color: var(--color-link);
+  .tag-page :global(.post-list-item) {
+    opacity: 1;
   }
 </style>

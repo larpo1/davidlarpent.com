@@ -41,7 +41,7 @@ description: ""
 draft: true
 ---
 
-Write your essay here.
+Write your note here.
 `;
 
 // Write the file
@@ -58,6 +58,6 @@ try {
 }
 
 console.log('\nNext steps:');
-console.log(`  1. Write your essay in ${slug}.md`);
+console.log(`  1. Write your note in ${slug}.md`);
 console.log(`  2. Preview at http://localhost:4321/drafts (run: npm run dev)`);
 console.log(`  3. Publish when ready: npm run publish ${slug}`);

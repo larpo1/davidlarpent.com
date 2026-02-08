@@ -38,17 +38,15 @@ const tocHeadings = headings.filter(h => h.depth === 2 || h.depth === 3);
         </ul>
       </nav>
 
-      {tags.length > 0 && (
-        <div class="toc-tags">
-          <div class="toc-tags-list">
-            {tags.map(tag => (
-              <a href={`/tags/${tag.toLowerCase()}`} class="toc-tag-link">
-                #{tag}
-              </a>
-            ))}
-          </div>
+      <div class="toc-tags" id="toc-tags">
+        <div class="toc-tags-list" id="toc-tags-list">
+          {tags.map(tag => (
+            <a href={`/tags/${tag.toLowerCase()}`} class="toc-tag-link">
+              #{tag}
+            </a>
+          ))}
         </div>
-      )}
+      </div>
     </aside>
   </>
 )}
@@ -139,4 +137,78 @@ const tocHeadings = headings.filter(h => h.depth === 2 || h.depth === 3);
   document.querySelectorAll('h2[id], h3[id]').forEach(heading => {
     observer.observe(heading);
   });
+
+  // Dev-only: Add tag editing
+  if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
+    const tagsList = document.getElementById('toc-tags-list');
+    const tagsContainer = document.getElementById('toc-tags');
+    if (tagsList && tagsContainer) {
+      // Always show the tags container (even if empty, so "+ Add" is visible)
+      tagsContainer.style.display = '';
+
+      // Create "+ Add" button
+      const addBtn = document.createElement('span');
+      addBtn.className = 'toc-tag-link toc-tag-add';
+      addBtn.textContent = '+ add';
+      addBtn.style.cursor = 'pointer';
+      addBtn.style.opacity = '0.5';
+      tagsList.appendChild(addBtn);
+
+      addBtn.addEventListener('click', () => {
+        // Replace button with inline input
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.className = 'toc-tag-input';
+        input.placeholder = 'tag';
+        addBtn.style.display = 'none';
+        tagsList.insertBefore(input, addBtn);
+        input.focus();
+
+        const commit = async () => {
+          const value = input.value.trim().toLowerCase().replace(/^#/, '');
+          input.remove();
+          addBtn.style.display = '';
+
+          if (!value) return;
+
+          // Check for duplicate
+          const existing = tagsList.querySelectorAll('.toc-tag-link:not(.toc-tag-add)');
+          for (const el of existing) {
+            if (el.textContent?.trim().replace('#', '').toLowerCase() === value) return;
+          }
+
+          // Add tag to DOM
+          const tag = document.createElement('a');
+          tag.href = `/tags/${value}`;
+          tag.className = 'toc-tag-link';
+          tag.textContent = `#${value}`;
+          tagsList.insertBefore(tag, addBtn);
+
+          // Collect all current tags
+          const allTags: string[] = [];
+          tagsList.querySelectorAll('.toc-tag-link:not(.toc-tag-add)').forEach(el => {
+            const t = el.textContent?.trim().replace('#', '');
+            if (t) allTags.push(t);
+          });
+
+          // Save via API
+          const article = document.querySelector('.post-article') as HTMLElement;
+          const slug = article?.dataset.postSlug;
+          if (slug) {
+            await fetch('/api/save-post', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ slug, frontmatter: { tags: allTags } })
+            });
+          }
+        };
+
+        input.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter') { e.preventDefault(); commit(); }
+          if (e.key === 'Escape') { input.remove(); addBtn.style.display = ''; }
+        });
+        input.addEventListener('blur', commit);
+      });
+    }
+  }
 </script>

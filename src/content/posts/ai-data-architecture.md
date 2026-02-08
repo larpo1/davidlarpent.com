@@ -9,6 +9,8 @@ tags:
   - architecture
   - product
   - strategy
+  - realestate
+  - proptech
 category: work
 featureImage: /images/posts/ai-data-architecture/sketch-1770507224.jpg
 ---

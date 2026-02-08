@@ -133,6 +133,7 @@
     // Edit mode state
     var isEditMode = false;
     var editingImage = null; // reference to the DOM <img> being edited
+    var referenceImagePath = ''; // path to existing image for edit context
 
     // Feature image mode state
     var isFeatureMode = false;
@@ -176,6 +177,7 @@
       isEditMode = false;
       isFeatureMode = false;
       editingImage = null;
+      referenceImagePath = '';
 
       // Set title and button text for new image mode
       if (titleEl) titleEl.textContent = 'Generate Sketch';
@@ -213,6 +215,7 @@
       isEditMode = true;
       isFeatureMode = false;
       editingImage = imageElement || null;
+      referenceImagePath = imagePath || '';
       insertAfterEl = null;
 
       // Set title and button text for edit mode
@@ -220,18 +223,27 @@
       insertBtn.textContent = 'Replace';
       if (removeBtn) removeBtn.style.display = '';
 
-      // Left column: show image alt as source text
+      // Left column
       currentStyleKey = STYLE_KEY;
-      sourceText.textContent = imageAlt || '(no alt text)';
+      sourceText.textContent = imageAlt ? '(from previous prompt)' : '(no source text)';
       styleTextarea.value = getSavedStyle(STYLE_KEY, DEFAULT_STYLE);
 
-      // Reset middle column
-      promptTextarea.value = '';
-      promptBtn.textContent = 'Generate Prompt';
-      promptBtn.disabled = false;
-      promptBtn.style.display = '';
-      repromptBtn.style.display = 'none';
-      imageBtn.disabled = true;
+      // Middle column: restore previous prompt from alt text
+      promptTextarea.value = imageAlt || '';
+      if (imageAlt) {
+        // Prompt already exists — show Regenerate, enable Generate Image
+        promptBtn.style.display = 'none';
+        repromptBtn.style.display = '';
+        repromptBtn.disabled = false;
+        hasGeneratedPrompt = true;
+        imageBtn.disabled = false;
+      } else {
+        promptBtn.textContent = 'Generate Prompt';
+        promptBtn.disabled = false;
+        promptBtn.style.display = '';
+        repromptBtn.style.display = 'none';
+        imageBtn.disabled = true;
+      }
 
       // Right column: show current image
       if (imagePath) {
@@ -255,6 +267,7 @@
       isEditMode = false;
       editingImage = null;
       isFeatureMode = true;
+      referenceImagePath = currentImage || '';
       insertAfterEl = null;
 
       // Set title and button text for feature image mode
@@ -269,13 +282,23 @@
       sourceText.textContent = sourceContent || '(no title or description)';
       styleTextarea.value = getSavedStyle(FEATURE_STYLE_KEY, FEATURE_STYLE);
 
-      // Reset middle column
-      promptTextarea.value = '';
-      promptBtn.textContent = 'Generate Prompt';
-      promptBtn.disabled = false;
-      promptBtn.style.display = '';
-      repromptBtn.style.display = 'none';
-      imageBtn.disabled = true;
+      // Middle column: restore saved prompt if available
+      var savedPrompt = '';
+      try { savedPrompt = localStorage.getItem('feature-image-prompt-' + (slug || '')) || ''; } catch(e) {}
+      promptTextarea.value = savedPrompt;
+      if (savedPrompt) {
+        promptBtn.style.display = 'none';
+        repromptBtn.style.display = '';
+        repromptBtn.disabled = false;
+        hasGeneratedPrompt = true;
+        imageBtn.disabled = false;
+      } else {
+        promptBtn.textContent = 'Generate Prompt';
+        promptBtn.disabled = false;
+        promptBtn.style.display = '';
+        repromptBtn.style.display = 'none';
+        imageBtn.disabled = true;
+      }
 
       // Right column: show current image if exists
       if (currentImage) {
@@ -299,6 +322,7 @@
       isEditMode = false;
       isFeatureMode = false;
       editingImage = null;
+      referenceImagePath = '';
       if (galleryEl) galleryEl.style.display = 'none';
     }
 
@@ -364,7 +388,7 @@
         var response = await fetch('/api/generate-image', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ prompt: prompt, slug: currentSlug, stylePrompt: styleTextarea.value.trim() })
+          body: JSON.stringify({ prompt: prompt, slug: currentSlug, stylePrompt: styleTextarea.value.trim(), referenceImagePath: referenceImagePath || undefined })
         });
 
         var result = await response.json();
@@ -400,6 +424,8 @@
 
       // Feature image mode: save to frontmatter and dispatch event
       if (isFeatureMode) {
+        // Persist prompt so it reloads when clicking the feature image again
+        try { localStorage.setItem('feature-image-prompt-' + currentSlug, prompt); } catch(e) {}
         fetch('/api/save-post', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },

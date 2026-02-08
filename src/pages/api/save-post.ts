@@ -127,6 +127,9 @@ export const POST: APIRoute = async ({ request }) => {
       if (frontmatter.featureImage !== undefined) {
         parsed.data.featureImage = frontmatter.featureImage;
       }
+      if (frontmatter.tags !== undefined) {
+        parsed.data.tags = frontmatter.tags;
+      }
     }
 
     // Update content if provided (convert HTML to Markdown using turndown)
@@ -164,16 +167,20 @@ export const POST: APIRoute = async ({ request }) => {
       await fs.unlink(filePath);
     }
 
-    // Auto-commit to prevent data loss
-    const finalSlug = newSlug || slug;
-    const commitFile = `src/content/posts/${finalSlug}.md`;
-    try {
-      await execAsync(`git add "${commitFile}"`);
-      const commitMsg = `Auto-save: ${finalSlug}`;
-      await execAsync(`git commit -m "${commitMsg}"`);
-    } catch (gitError) {
-      // Git commit failed (maybe no changes or not a git repo) - still return success
-      console.log('Git auto-commit skipped:', gitError);
+    // Auto-commit to prevent data loss (skip for frontmatter-only changes
+    // to avoid racing with Astro's content data store file watcher)
+    const isFrontmatterOnly = !title && !description && content === undefined && frontmatter && !newSlug;
+    if (!isFrontmatterOnly) {
+      const finalSlug = newSlug || slug;
+      const commitFile = `src/content/posts/${finalSlug}.md`;
+      try {
+        await execAsync(`git add "${commitFile}"`);
+        const commitMsg = `Auto-save: ${finalSlug}`;
+        await execAsync(`git commit -m "${commitMsg}"`);
+      } catch (gitError) {
+        // Git commit failed (maybe no changes or not a git repo) - still return success
+        console.log('Git auto-commit skipped:', gitError);
+      }
     }
 
     return new Response(

@@ -53,7 +53,7 @@ export const POST: APIRoute = async ({ request }) => {
   }
 
   // Check for API key
-  const apiKey = process.env.ANTHROPIC_API_KEY;
+  const apiKey = import.meta.env.ANTHROPIC_API_KEY || process.env.ANTHROPIC_API_KEY;
   if (!apiKey) {
     return new Response(
       JSON.stringify({ success: false, message: 'ANTHROPIC_API_KEY environment variable not set' }),
@@ -89,7 +89,7 @@ export const POST: APIRoute = async ({ request }) => {
   let userPrompt: string;
 
   if (platform === 'linkedin') {
-    systemPrompt = `You are a ghostwriter for David Larpent. Your job is to write compelling LinkedIn posts that tease an essay and drive clicks to read it.
+    systemPrompt = `You are a ghostwriter for David Larpent. Your job is to write compelling LinkedIn posts that tease an note and drive clicks to read it.
 
 Voice rules:
 - Witty, wry, British humour
@@ -105,7 +105,7 @@ Format rules:
 - First ~210 characters are critical (LinkedIn truncates before "see more")
 - Open with a hook that creates curiosity
 - Tease the key insight without giving it all away
-- End with a natural call-to-action linking to the full essay
+- End with a natural call-to-action linking to the full note
 - The link URL is: https://davidlarpent.com/posts/${slug}
 
 Return your response as JSON with this exact structure:
@@ -113,17 +113,17 @@ Return your response as JSON with this exact structure:
 
 Suggest 3-5 relevant hashtags (without the # prefix). Only return the JSON, no other text.`;
 
-    userPrompt = `Write a LinkedIn post for this essay:
+    userPrompt = `Write a LinkedIn post for this note:
 
 Title: ${title}
 Description: ${description}
 Tags: ${tags.join(', ')}
 
-Full essay:
+Full note:
 ${markdown}`;
   } else {
     // Substack
-    systemPrompt = `You are a ghostwriter for David Larpent. Your job is to write an editorial intro for a Substack newsletter that contextualises the essay for subscribers.
+    systemPrompt = `You are a ghostwriter for David Larpent. Your job is to write an editorial intro for a Substack newsletter that contextualises the note for subscribers.
 
 Voice rules:
 - Witty, wry, British humour
@@ -136,23 +136,23 @@ Voice rules:
 
 Format rules:
 - Write 2-3 paragraphs of editorial intro
-- Add personal framing that gives subscribers context they wouldn't get from the essay alone
-- Transition naturally into the full essay
-- After the intro, include the complete essay text
+- Add personal framing that gives subscribers context they wouldn't get from the note alone
+- Transition naturally into the full note
+- After the intro, include the complete note text
 - End with a canonical footer: "---\\nOriginally published at davidlarpent.com"
 
 Return your response as JSON with this exact structure:
-{ "draft": "the full substack content (intro + essay + footer)", "hashtags": [] }
+{ "draft": "the full substack content (intro + note + footer)", "hashtags": [] }
 
 Only return the JSON, no other text.`;
 
-    userPrompt = `Write a Substack newsletter intro and include the full essay:
+    userPrompt = `Write a Substack newsletter intro and include the full note:
 
 Title: ${title}
 Description: ${description}
 Tags: ${tags.join(', ')}
 
-Full essay:
+Full note:
 ${markdown}`;
   }
 

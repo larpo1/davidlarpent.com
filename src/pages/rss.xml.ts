@@ -34,7 +34,7 @@ export async function GET(context: APIContext) {
 
   return rss({
     title: 'David Larpent',
-    description: 'Essays on philosophy, AI, cognitive science, and more.',
+    description: 'Notes on philosophy, AI, cognitive science, and more.',
     site: context.site!,
     items,
     customData: `<language>en-us</language>

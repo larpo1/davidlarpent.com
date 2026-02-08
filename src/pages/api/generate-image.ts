@@ -17,7 +17,7 @@ export const POST: APIRoute = async ({ request }) => {
   }
 
   // Parse request body
-  let body: { prompt?: string; slug?: string; stylePrompt?: string };
+  let body: { prompt?: string; slug?: string; stylePrompt?: string; referenceImagePath?: string };
   try {
     body = await request.json();
   } catch {
@@ -67,11 +67,48 @@ export const POST: APIRoute = async ({ request }) => {
   const fullPrompt = `${stylePrompt}\n\nSubject: ${prompt.trim()}`;
 
   try {
+    // Load reference image if provided (for edit mode)
+    let referenceImageData: { base64: string; mimeType: string } | null = null;
+    if (body.referenceImagePath && typeof body.referenceImagePath === 'string') {
+      const refPath = body.referenceImagePath;
+      // Validate: must start with /images/ and not contain traversal
+      if (refPath.startsWith('/images/') && !refPath.includes('..')) {
+        const refFilePath = path.join(process.cwd(), 'public', refPath);
+        try {
+          const refBuffer = await fs.readFile(refFilePath);
+          const refExt = path.extname(refFilePath).toLowerCase();
+          const refMime = refExt === '.jpg' || refExt === '.jpeg' ? 'image/jpeg'
+            : refExt === '.webp' ? 'image/webp'
+            : 'image/png';
+          referenceImageData = { base64: refBuffer.toString('base64'), mimeType: refMime };
+        } catch {
+          // Reference image not found — continue without it
+        }
+      }
+    }
+
     // Call Gemini API
     const ai = new GoogleGenAI({ apiKey });
+
+    // Build contents: text prompt + optional reference image
+    let contents: any;
+    if (referenceImageData) {
+      contents = [
+        {
+          role: 'user',
+          parts: [
+            { inlineData: { mimeType: referenceImageData.mimeType, data: referenceImageData.base64 } },
+            { text: `Edit this image according to the following instructions:\n\n${fullPrompt}` },
+          ]
+        }
+      ];
+    } else {
+      contents = fullPrompt;
+    }
+
     const response = await ai.models.generateContent({
       model: 'gemini-3-pro-image-preview',
-      contents: fullPrompt,
+      contents,
     });
 
     // Extract image data from response

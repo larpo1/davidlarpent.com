@@ -1,0 +1,45 @@
+---
+interface Props {
+  slug: string;
+  title: string;
+  date: Date;
+  description?: string;
+  tags?: string[];
+  draft?: boolean;
+  category?: string;
+}
+
+const { slug, title, date, description, tags = [], draft = false, category = 'work' } = Astro.props;
+
+const formattedDate = date.toLocaleDateString('en-US', {
+  year: 'numeric',
+  month: 'short',
+  day: 'numeric'
+});
+---
+
+<li
+  class="post-list-item"
+  data-category={category}
+  data-draft={draft ? 'true' : 'false'}
+>
+  <h2 class="post-list-title">
+    <a href={`/posts/${slug}`}>{title}</a>
+  </h2>
+  <div class="post-meta">
+    {formattedDate}
+    {draft && <span class="draft-badge">Draft</span>}
+  </div>
+  {description && (
+    <p class="post-description">{description}</p>
+  )}
+  {tags.length > 0 && (
+    <div class="post-tags">
+      {tags.map(tag => (
+        <a href={`/tags/${tag.toLowerCase()}`} class="tag-link">
+          #{tag}
+        </a>
+      ))}
+    </div>
+  )}
+</li>
