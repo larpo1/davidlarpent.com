@@ -15,6 +15,12 @@
   --color-border: #2a2a2a;
   --color-code-bg: #1a1a1a;
   --max-width: 700px;
+  /* 6-column grid system */
+  --grid-margin: 24px;
+  --grid-columns: 6;
+  --grid-width: calc(100vw - var(--grid-margin) * 2);
+  --grid-col: calc(var(--grid-width) / var(--grid-columns));
+  --guide-color: rgba(255, 255, 255, 0.19);
 }
 
 /* Light theme override */
@@ -26,6 +32,7 @@
   --color-link-hover: #000;
   --color-border: #e0e0e0;
   --color-code-bg: #f5f5f5;
+  --guide-color: rgba(0, 0, 0, 0.10);
 }
 
 html {
@@ -497,16 +504,17 @@ a:hover {
   mix-blend-mode: multiply;
 }
 
-/* Desktop: when scroll-reveal activates, switch to fixed positioning in right margin */
+/* Desktop: when scroll-reveal activates, switch to fixed positioning in columns 5-6 */
 @media (min-width: 1201px) {
   .sketch-illustration.sketch-reveal-active {
     position: fixed;
     top: 50%;
     /* Vertical centering handled by GSAP yPercent: -50 (CSS transform gets overwritten) */
-    right: 24px;
-    max-width: calc(50vw - var(--max-width) / 2 - 48px);
-    max-height: 70vh;
+    left: calc(var(--grid-margin) + var(--grid-col) * 4);
+    right: var(--grid-margin);
     width: auto;
+    max-width: calc(var(--grid-col) * 2);
+    max-height: 70vh;
     height: auto;
     object-fit: contain;
     z-index: 10;
@@ -789,16 +797,69 @@ a:hover {
   transform: translateX(-50%) translateY(-50%) rotate(-45deg);
 }
 
-/* Desktop: tighter column for readability, no horizontal padding */
+/* Desktop: 6-column grid alignment */
 @media (min-width: 1201px) {
   :root {
-    --max-width: 554px;
+    --max-width: calc(var(--grid-col) * 2);
   }
 
-  .container,
+  /* Grid guide overlay — 7 dashed lines at column boundaries */
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: var(--grid-margin);
+    width: var(--grid-width);
+    z-index: 0;
+    pointer-events: none;
+    background-image:
+      repeating-linear-gradient(180deg, var(--guide-color) 0px, var(--guide-color) 4px, transparent 4px, transparent 8px),
+      repeating-linear-gradient(180deg, var(--guide-color) 0px, var(--guide-color) 4px, transparent 4px, transparent 8px),
+      repeating-linear-gradient(180deg, var(--guide-color) 0px, var(--guide-color) 4px, transparent 4px, transparent 8px),
+      repeating-linear-gradient(180deg, var(--guide-color) 0px, var(--guide-color) 4px, transparent 4px, transparent 8px),
+      repeating-linear-gradient(180deg, var(--guide-color) 0px, var(--guide-color) 4px, transparent 4px, transparent 8px),
+      repeating-linear-gradient(180deg, var(--guide-color) 0px, var(--guide-color) 4px, transparent 4px, transparent 8px),
+      repeating-linear-gradient(180deg, var(--guide-color) 0px, var(--guide-color) 4px, transparent 4px, transparent 8px);
+    background-size: 1px 100%;
+    background-repeat: no-repeat;
+    background-position:
+      0 0,
+      calc(var(--grid-col) * 1) 0,
+      calc(var(--grid-col) * 2) 0,
+      calc(var(--grid-col) * 3) 0,
+      calc(var(--grid-col) * 4) 0,
+      calc(var(--grid-col) * 5) 0,
+      calc(var(--grid-col) * 6) 0;
+  }
+
+  /* Content aligned to columns 3-4 */
+  .container {
+    max-width: calc(var(--grid-col) * 2);
+    margin-left: calc(var(--grid-margin) + var(--grid-col) * 2);
+    margin-right: auto;
+    padding-left: 24px;
+    padding-right: 24px;
+  }
+
+  /* Post layout inherits from container — don't double-constrain */
   .post-layout {
+    max-width: none;
+    margin-left: 0;
+    margin-right: 0;
     padding-left: 0;
     padding-right: 0;
+  }
+
+  /* z-index layering: content above guides */
+  .container {
+    position: relative;
+    z-index: 1;
+  }
+
+  header {
+    position: relative;
+    z-index: 1;
   }
 }
 
@@ -810,6 +871,10 @@ a:hover {
 
   .toc-container {
     display: block !important; /* Always visible */
+    left: var(--grid-margin);
+    width: var(--grid-col);
+    padding-left: 12px;
+    padding-right: 12px;
   }
 
   .toc-container[data-open="false"] {
