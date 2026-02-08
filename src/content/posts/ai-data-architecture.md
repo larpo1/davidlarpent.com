@@ -26,9 +26,7 @@ We find it helpful to think about data readiness for AI in three layers: canonic
 
 **Canonical data** is the structured, pre-calculated, agreed-upon metrics. Revenue. Occupancy. Conversion rates. Whatever the core numbers are that your business argues about in meetings.
 
-<img src="/images/posts/ai-data-architecture/sketch-1770511717.jpg" alt="Square 1:1 aspect ratio. Minimal architectural line drawing on a pure white background. Absolutely no border, or background shade, texture or effect, just a pure white background. Fine black ink lines only. Clean, precise but hand drawn, spare linework. No shading, no cross-hatching, no fills, no gradients. Just lines on white. Think Dieter Rams sketch meets architectural blueprint. Abstract where possible. Include 3 or 5 (odd number only) minimal handwritten labels in a loose architect's hand — like notes on a draft, not typeset text. Elegant negative space. The drawing should feel like a diagram that became art.
-
-Subject: a geometric plane on which is depicted a solid, well founded but architectural structure, and interconnected nodes from which 5 straight lines 3 of which are labeled &quot;Revenue&quot;, &quot;Occupancy&quot;, &quot;Conversion rates&quot; emerge towards an unlabelled convergence point. No curving lines." class="sketch-illustration">
+<img src="/images/posts/ai-data-architecture/sketch-1770511717.jpg" alt="" class="sketch-illustration">
 
 The key word is pre-calculated. You do not want a language model writing SQL on the fly to answer “what’s our occupancy rate?” You’ll get a slightly different answer every time, depending on how the model interprets the question, which filters it applies, how it handles edge cases. That’s a recipe for eroding trust in the system. 
 
@@ -51,6 +49,8 @@ Keeping semantic data fuzzy isn’t laziness. It’s a deliberate architectural 
 ### Correlation data
 
 **Correlation data** is the mapping layer. It connects your internal data to external context.
+
+<img src="/images/posts/ai-data-architecture/sketch-1770512801.jpg" alt="A geometric plane with an architectural surrounded above and around the plane by external flowing nodes and lines that connect loosely to points on the structure. Labels for some lines include &quot;Market Forces&quot;, &quot;UCAS data&quot;, &quot;New developments&quot;, &quot;International events&quot;. No black border" class="sketch-illustration">
 
 Which properties serve which university catchments? How does your pricing compare to local competitors? What’s the demand signal from the broader market, and how does it relate to your specific assets?
 
