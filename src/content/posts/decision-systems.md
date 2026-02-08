@@ -11,7 +11,7 @@ tags:
   - strategy
 category: work
 ---
-In a [previous piece](/posts/when-decisions-stop-scaling), I described the synthesis bottleneck: organisations have plenty of data but struggle to turn it into decisions at scale. The constraint isn’t visibility. It’s the cognitive work of combining multiple sources into actionable recommendations.
+In a [previous note](/posts/when-decisions-stop-scaling), I described the synthesis bottleneck: organisations have plenty of data but struggle to turn it into decisions at scale. The constraint isn’t visibility. It’s the cognitive work of combining multiple sources into actionable recommendations.
 
 This piece is about a different kind of tool. Not a better dashboard. Something that starts from a different premise entirely.
 
