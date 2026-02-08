@@ -13,7 +13,7 @@ featureImage: /images/posts/ralph-loops/sketch-1770516071.jpg
 ---
 This particular rabbit hole might seem ironic, given [the other thing I wrote today](/posts/what-we-lose-when-we-stop-struggling), but here goes.
 
-There's a technique doing the rounds called "Ralph Wiggum loops."[^1] Named after the Simpsons character who keeps trying despite overwhelming evidence that he should stop.
+There’s a technique doing the rounds called “Ralph Wiggum loops.” Named after the Simpsons character who keeps trying despite overwhelming evidence that he should stop.
 
 The idea is that you spin up one Claude Code instance as your PM to work on tasks, todos, docs and tests and limit it to iteratively update only a CLAUDE.md file. You then spin up a second Claude Code instance (Ralph) which you run in a bash loop, picking tasks, executing, going again. 
 
@@ -77,7 +77,7 @@ The `--max-iterations` is important unless you enjoy explaining large API bills 
 
 Chris MDP has a [whole system](https://github.com/chrismdp/ralph) with work queues, separate PM sessions, git worktrees for parallel execution…
 
-At this point you're building infrastructure to manage your AI that's building infrastructure for you. It's loops all the way down.[^2]
+At this point you’re building infrastructure to manage your AI that’s building infrastructure for you. It’s loops all the way down.
 
 ## When This Works
 
@@ -99,7 +99,7 @@ The fix is a `PM.md` file that repeatedly insists it stay in its lane. Even then
 
 ## Honest Caveats
 
-**This burns money.** Running Claude in a loop for hours is not cheap.[^3] Budget accordingly.
+**This burns money.** Running Claude in a loop for hours is not cheap. Budget accordingly.
 
 **The code needs review.** It works, in the sense that the tests pass. Whether it’s _good_ code is a separate question.
 
@@ -107,7 +107,7 @@ The fix is a `PM.md` file that repeatedly insists it stay in its lane. Even then
 
 ## So Why Bother?
 
-Because it’s an entertaining way to do things you don't care that much about.
+Because it’s an entertaining way to do things you don’t care that much about.
 
 Because there’s something delightful about waking up to a feature that didn’t exist when you went to sleep.
 
