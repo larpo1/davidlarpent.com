@@ -1,7 +1,7 @@
 ---
 title: When Decisions Stop Scaling
 date: 2026-02-02T00:00:00.000Z
-description: The synthesis bottleneck that dashboards won't solve
+description: 'The synthesis bottleneck that dashboards won''t solve'
 draft: true
 tags:
   - AI
@@ -9,6 +9,7 @@ tags:
   - organisations
   - strategy
 category: work
+featureImage: /images/posts/when-decisions-stop-scaling/sketch-1770566012.jpg
 ---
 Every organisation hits a ceiling on how many good decisions it can make in a given period. Not because people aren’t smart. Not because data doesn’t exist. But because the work of turning data into decisions doesn’t scale the way other things do.
 
