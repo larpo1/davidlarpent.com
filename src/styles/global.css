@@ -20,7 +20,7 @@
   --grid-columns: 6;
   --grid-width: calc(100vw - var(--grid-margin) * 2);
   --grid-col: calc(var(--grid-width) / var(--grid-columns));
-  --guide-color: rgba(255, 255, 255, 0.19);
+  --guide-color: rgba(255, 255, 255, 0.15);
 }
 
 /* Light theme override */
@@ -49,6 +49,7 @@ body {
   padding: 0;
   margin: 0;
   transition: background-color 0.3s ease, color 0.3s ease;
+  isolation: isolate;
 }
 
 /* Layout */
@@ -495,7 +496,7 @@ a:hover {
 [data-theme="dark"] .sketch-illustration,
 :root:not([data-theme="light"]) .sketch-illustration {
   filter: invert(1) blur(var(--sketch-blur, 0px));
-  mix-blend-mode: screen;
+  mix-blend-mode: lighten;
 }
 
 /* Light mode: multiply blend makes white paper transparent */
@@ -811,7 +812,7 @@ a:hover {
     bottom: 0;
     left: var(--grid-margin);
     width: var(--grid-width);
-    z-index: 0;
+    z-index: -1;
     pointer-events: none;
     background-image:
       repeating-linear-gradient(180deg, var(--guide-color) 0px, var(--guide-color) 4px, transparent 4px, transparent 8px),
@@ -857,16 +858,6 @@ a:hover {
     margin-right: -25px;
   }
 
-  /* z-index layering: content above guides */
-  .container {
-    position: relative;
-    z-index: 1;
-  }
-
-  header {
-    position: relative;
-    z-index: 1;
-  }
 }
 
 /* Desktop: TOC always visible, toggle always hidden (not needed) */
