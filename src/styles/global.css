@@ -838,7 +838,7 @@ a:hover {
     max-width: calc(var(--grid-col) * 2);
     margin-left: calc(var(--grid-margin) + var(--grid-col) * 2);
     margin-right: auto;
-    padding-left: 24px;
+    padding-left: 0;
     padding-right: 24px;
   }
 
