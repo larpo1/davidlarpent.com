@@ -1,7 +1,7 @@
 ---
 title: Ralph 2.0
 date: 2026-02-06T00:00:00.000Z
-description: Claude Opus 4.6 makes Ralph Loops reliable.
+description: Teamwork makes the dream work in Claude Opus 4.6
 draft: true
 tags:
   - AI
@@ -17,4 +17,4 @@ Anthropic released Claude Opus 4.6 yesterday, and with it, sub-agents: multiple 
 
 In the old setup, the PM wouldn’t stay in its lane because you were asking it nicely not to code. Now the PM literally cannot run code. No Bash access. “Please don’t” became “you can’t.” 
 
-I'm sure there are many engineers who would love to play that card on their vibe happy PM!
+I’m sure there are many engineers who would love to play that card on their vibe happy PM!
