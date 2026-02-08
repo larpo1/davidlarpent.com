@@ -1,8 +1,8 @@
 ---
 title: When Decisions Stop Scaling
-date: 2026-02-02T00:00:00.000Z
+date: 2026-02-08T00:00:00.000Z
 description: 'Decision Systems, part 2 of 3: The Synthesis Bottleneck'
-draft: true
+draft: false
 tags:
   - AI
   - decisions
