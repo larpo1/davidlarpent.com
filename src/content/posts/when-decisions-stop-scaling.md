@@ -19,7 +19,7 @@ Every organisation hits a ceiling on how many good decisions it can make in a gi
 
 Consider how a reasonably complex business decision happens today.
 
-Someone notices a problem or opportunity. They request data. An analyst pulls a report, maybe several. The data arrives, but it doesn’t quite answer the question, so there’s back-and-forth. Eventually, enough context is assembled that a "decision maker" can weigh the trade-offs and make a call.
+Someone notices a problem or opportunity. They request data. An analyst pulls a report, maybe several. The data arrives, but it doesn’t quite answer the question, so there’s back-and-forth. Eventually, enough context is assembled that a “decision maker” can weigh the trade-offs and make a call.
 
 This process works. It’s how most organisations operate. But notice where the constraints are.
 
@@ -75,7 +75,7 @@ These costs are largely invisible because they’re opportunity costs. You don�
 
 ## The question
 
-This is the problem I keep coming back to. Organisations have more data than ever, better tools for storing and visualising it, and yet decisions still feel slow. The bottleneck moved, but it didn’t disappear.
+Organisations have more data than ever, better tools for storing and visualising it, and yet decisions still feel slow. The bottleneck moved, but it didn’t disappear.
 
 The question is whether there’s a different approach. Not better dashboards. Not more analysts. Something that changes the scaling dynamics of synthesis itself.
 
