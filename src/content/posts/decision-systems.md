@@ -25,7 +25,7 @@ This sounds like a semantic distinction. It isn’t.
 
 When you ask a dashboard “what’s our occupancy?”, you get a number. You then have to figure out what that number means and what to do about it.
 
-When you ask a decision system “where should I be more aggressive on pricing?”, you get a recommendation with evidence. The system has already done the synthesis work: combined booking pace with demand signals, checked competitor movements, considered your review trajectory, and identified where you have headroom.
+When you ask a decision system “where should I be more aggressive on pricing?”, you get a recommendation with evidence. The system has already done the synthesis work. A living sector worked example could to combine booking pace with demand signals, check competitor movements, considered your review trajectory, and identified where you have headroom.
 
 The output isn’t a number. It’s a judgment-ready brief.
 
