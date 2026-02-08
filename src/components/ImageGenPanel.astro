@@ -149,6 +149,13 @@
       }
     }
 
+    // Extract just the subject from a full synthesized prompt (after "Subject: ")
+    function extractSubject(prompt) {
+      var idx = prompt.indexOf('Subject:');
+      if (idx !== -1) return prompt.substring(idx + 8).trim();
+      return prompt;
+    }
+
     function showPreviewImage(src, alt) {
       generatedPath = src;
       imageEl.src = src + (src.indexOf('?') === -1 ? '?t=' + Date.now() : '');
@@ -225,12 +232,14 @@
 
       // Left column
       currentStyleKey = STYLE_KEY;
-      sourceText.textContent = imageAlt ? '(from previous prompt)' : '(no source text)';
+      sourceText.textContent = imageAlt || '(no source text)';
       styleTextarea.value = getSavedStyle(STYLE_KEY, DEFAULT_STYLE);
 
-      // Middle column: restore previous prompt from alt text
-      promptTextarea.value = imageAlt || '';
-      if (imageAlt) {
+      // Middle column: restore full prompt from localStorage, fall back to alt text
+      var savedFullPrompt = '';
+      try { savedFullPrompt = localStorage.getItem('image-prompt-' + (imagePath || '')) || ''; } catch(e) {}
+      promptTextarea.value = savedFullPrompt || imageAlt || '';
+      if (savedFullPrompt || imageAlt) {
         // Prompt already exists — show Regenerate, enable Generate Image
         promptBtn.style.display = 'none';
         repromptBtn.style.display = '';
@@ -396,7 +405,7 @@
         if (result.success && result.path) {
           generatedPath = result.path;
           imageEl.src = result.dataUrl || (result.path + '?t=' + Date.now());
-          imageEl.alt = prompt;
+          imageEl.alt = extractSubject(prompt);
           imageEl.style.display = 'block';
           insertBtn.disabled = false;
         } else {
@@ -451,10 +460,15 @@
 
       if (!contentEditable) { console.error('ImageGen: no contentEditable element found'); return; }
 
+      // Persist full prompt so clicking the image reloads it
+      if (prompt) {
+        try { localStorage.setItem('image-prompt-' + generatedPath, prompt); } catch(e) {}
+      }
+
       if (isEditMode && editingImage) {
         // Replace mode: update existing image src and alt
         editingImage.src = generatedPath;
-        if (prompt) editingImage.alt = prompt;
+        if (prompt) editingImage.alt = extractSubject(prompt);
         closeModal();
         window.dispatchEvent(new CustomEvent('sketch-reveal-refresh'));
         return;
@@ -463,7 +477,7 @@
       // Insert mode: create new image
       var img = document.createElement('img');
       img.src = generatedPath;
-      img.alt = prompt;
+      img.alt = extractSubject(prompt);
       img.className = 'sketch-illustration';
 
       var wrapper = document.createElement('p');

@@ -48,22 +48,23 @@
       prevImages = Array.from(images);
     }
 
-    // Find the next heading (h2/h3) after a given element in the post content
-    function findNextHeading(el: Element): HTMLElement | null {
+    // Find the next heading or sketch marker after a given element in the post content.
+    // This determines when the current image should fade out — either at the next
+    // section boundary (any heading) or at the next image's scroll marker.
+    function findNextTrigger(el: Element): HTMLElement | null {
       // Walk up to find the direct child of .post-content that contains el
       let anchor: Element | null = el;
       while (anchor && anchor.parentElement !== postContent) {
         anchor = anchor.parentElement;
       }
-      // If el IS a direct child of postContent, anchor is el itself
-      // If el is not inside postContent at all, anchor is null
       if (!anchor) return null;
 
-      // Walk forward through siblings looking for a heading
+      // Walk forward through siblings looking for a heading or another scroll marker
       let next = anchor.nextElementSibling;
       while (next) {
         const tag = next.tagName;
-        if (tag === 'H1' || tag === 'H2' || tag === 'H3') return next as HTMLElement;
+        if (tag === 'H1' || tag === 'H2' || tag === 'H3' || tag === 'H4' || tag === 'H5' || tag === 'H6') return next as HTMLElement;
+        if (next.classList.contains('sketch-scroll-marker')) return next as HTMLElement;
         next = next.nextElementSibling;
       }
       return null;
@@ -88,17 +89,17 @@
         img.style.setProperty('--sketch-blur', '8px');
         gsap.set(img, { opacity: 0, y: 20, yPercent: -50 });
 
-        // Find the next section heading after this image
-        const nextHeading = findNextHeading(marker);
+        // Find the next heading or image marker after this image
+        const nextHeading = findNextTrigger(marker);
 
         requestAnimationFrame(() => {
-          // FADE IN: as the image's section text hits the fold (scrolling down)
-          // Starts when marker reaches bottom of viewport, fully visible by 30% from top
+          // FADE IN: quick — completes by the time marker reaches 60% from top
+          // (only 40% of viewport height of scrolling)
           gsap.timeline({
             scrollTrigger: {
               trigger: marker,
               start: 'top bottom',
-              end: 'top 30%',
+              end: 'top 60%',
               scrub: true,
             }
           }).fromTo(img,
@@ -106,13 +107,14 @@
             { '--sketch-blur': '0px', opacity: 1, y: 0, yPercent: -50, ease: 'none' }
           );
 
-          // FADE OUT: when the next section heading approaches the fold
+          // FADE OUT: stays sharp for longer, then fades quickly.
+          // Starts late (trigger at 70% — well into viewport) and ends fast (at 30%).
           if (nextHeading) {
             gsap.timeline({
               scrollTrigger: {
                 trigger: nextHeading,
-                start: 'top 120%',
-                end: 'top 50%',
+                start: 'top 70%',
+                end: 'top 30%',
                 scrub: true,
               }
             }).to(img, {

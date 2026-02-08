@@ -56,20 +56,22 @@ export const POST: APIRoute = async ({ request }) => {
     const message = await client.messages.create({
       model: 'claude-sonnet-4-20250514',
       max_tokens: 1024,
-      system: `You are an expert at writing image generation prompts. Your job is to distill a passage of text into a concise visual subject description that an image generation model can illustrate.
+      system: `You are an expert at writing image generation prompts. Your job is to distill a passage of text into a concise visual subject description that works within a specific artistic style.
 
 Rules:
 - Output ONLY the subject description, nothing else
 - Do not include any preamble, explanation, or formatting
-- Do NOT include any style instructions — those will be added separately
-- Describe a specific visual scene or concept inspired by the source text
+- Do NOT repeat or include the style instructions — those are provided separately and will be prepended verbatim
+- The subject you describe MUST be achievable within the given style constraints
+- If the style is minimal line drawing, describe something that can be drawn with simple lines — not cluttered, photorealistic, or complex scenes
+- Favour abstract, diagrammatic, or symbolic representations over literal depictions
 - Keep it concise but specific (1-3 sentences)
-- Focus on visual elements that can be drawn, not abstract concepts
-- Think about what would make a compelling, clear illustration of the key idea`,
+- Focus on visual elements that suit the medium, not just the text's literal content
+- Think: what would an architect or designer sketch in the margin to capture this idea?`,
       messages: [
         {
           role: 'user',
-          content: `Source text:\n${sourceText.trim()}\n\nDistill this into a visual subject description for an image generation model.`
+          content: `Style context (for reference only — do not repeat this in your output):\n${stylePrompt.trim()}\n\nSource text:\n${sourceText.trim()}\n\nDistill this into a visual subject description that works naturally within the style described above.`
         }
       ]
     });

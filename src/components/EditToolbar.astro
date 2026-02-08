@@ -304,9 +304,31 @@
     }
 
     // Click handler for existing sketch illustrations - opens modal in edit mode
+    // On desktop, fixed-position scroll-reveal images all stack at the same
+    // position (only one visible at a time via opacity). The browser routes
+    // clicks to the topmost element in DOM order regardless of opacity, so
+    // we find the actually-visible image among all .sketch-reveal-active ones.
     contentEditable.addEventListener('click', function(e) {
-      var img = e.target.closest('.sketch-illustration');
-      if (!img) return;
+      var clicked = e.target.closest('.sketch-illustration');
+      if (!clicked) return;
+
+      var img = clicked;
+      // If this image has scroll-reveal active class, find the visible one instead
+      if (clicked.classList.contains('sketch-reveal-active')) {
+        var allActive = contentEditable.querySelectorAll('.sketch-illustration.sketch-reveal-active');
+        var bestImg = null;
+        var bestOpacity = 0;
+        for (var i = 0; i < allActive.length; i++) {
+          var op = parseFloat(window.getComputedStyle(allActive[i]).opacity);
+          if (op > bestOpacity) {
+            bestOpacity = op;
+            bestImg = allActive[i];
+          }
+        }
+        if (!bestImg || bestOpacity < 0.1) return;
+        img = bestImg;
+      }
+
       e.preventDefault();
       e.stopPropagation();
       var article = document.querySelector('.post-article');

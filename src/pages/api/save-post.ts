@@ -167,21 +167,20 @@ export const POST: APIRoute = async ({ request }) => {
       await fs.unlink(filePath);
     }
 
-    // Auto-commit to prevent data loss (skip for frontmatter-only changes
-    // to avoid racing with Astro's content data store file watcher)
-    const isFrontmatterOnly = !title && !description && content === undefined && frontmatter && !newSlug;
-    if (!isFrontmatterOnly) {
-      const finalSlug = newSlug || slug;
-      const commitFile = `src/content/posts/${finalSlug}.md`;
+    // Auto-commit to prevent data loss.
+    // Delay git operations so Astro's file watcher and data store can settle
+    // before git add/commit touches the file again (avoids ENOENT race on data-store.json).
+    const finalSlug = newSlug || slug;
+    const commitFile = `src/content/posts/${finalSlug}.md`;
+    setTimeout(async () => {
       try {
         await execAsync(`git add "${commitFile}"`);
         const commitMsg = `Auto-save: ${finalSlug}`;
         await execAsync(`git commit -m "${commitMsg}"`);
       } catch (gitError) {
-        // Git commit failed (maybe no changes or not a git repo) - still return success
         console.log('Git auto-commit skipped:', gitError);
       }
-    }
+    }, 1000);
 
     return new Response(
       JSON.stringify({ success: true, message: 'Post saved and committed' }),

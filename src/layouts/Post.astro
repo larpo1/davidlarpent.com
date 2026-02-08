@@ -92,6 +92,20 @@ const articleSchema = {
 
     <article class="post-article" data-post-slug={slug} data-post-description={description} data-post-tags={JSON.stringify(tags)} data-post-category={tags.length > 0 ? 'work' : 'work'}>
       <header class="post-header">
+        <h1 class="post-title" contenteditable={isDev} data-field="title">{title}</h1>
+        <p class="post-description" contenteditable={isDev} data-field="description">{description}</p>
+        <div class="post-meta">
+          <time datetime={date.toISOString()}>{formattedDate}</time>
+          <span> · {readingTime} min read</span>
+          {draft && <span class="draft-badge">Draft</span>}
+          {isDev && (
+            <label class="publish-toggle" data-slug={slug}>
+              <input type="checkbox" checked={!draft} />
+              <span class="publish-toggle-slider"></span>
+              <span class="publish-toggle-text">{draft ? 'Publish' : 'Published'}</span>
+            </label>
+          )}
+        </div>
         <div class="feature-image-wrapper" data-slug={slug} data-title={title} data-description={description}>
           {featureImage ? (
             <img src={featureImage} alt={title} class="feature-image sketch-illustration" />
@@ -109,20 +123,6 @@ const articleSchema = {
               </svg>
             </div>
           ) : null}
-        </div>
-        <h1 class="post-title" contenteditable={isDev} data-field="title">{title}</h1>
-        <p class="post-description" contenteditable={isDev} data-field="description">{description}</p>
-        <div class="post-meta">
-          <time datetime={date.toISOString()}>{formattedDate}</time>
-          <span> · {readingTime} min read</span>
-          {draft && <span class="draft-badge">Draft</span>}
-          {isDev && (
-            <label class="publish-toggle" data-slug={slug}>
-              <input type="checkbox" checked={!draft} />
-              <span class="publish-toggle-slider"></span>
-              <span class="publish-toggle-text">{draft ? 'Publish' : 'Published'}</span>
-            </label>
-          )}
         </div>
       </header>
       <div class="post-content" contenteditable={isDev} data-field="content">
