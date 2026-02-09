@@ -13,6 +13,7 @@
     "test:headed": "playwright test --headed",
     "test:ui": "playwright test --ui",
     "test:update": "playwright test --update-snapshots",
+    "postinstall": "bash scripts/patch-astro-datastore.sh",
     "og": "node scripts/generate-og-image.mjs"
   },
   "dependencies": {
