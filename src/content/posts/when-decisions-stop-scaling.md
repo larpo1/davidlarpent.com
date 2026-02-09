@@ -8,6 +8,7 @@ tags:
   - decisions
   - organisations
   - strategy
+  - decisionsystems
 category: work
 featureImage: /images/posts/when-decisions-stop-scaling/sketch-1770574101.jpg
 ---
