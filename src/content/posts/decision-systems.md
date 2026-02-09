@@ -18,7 +18,7 @@ This piece is about a different kind of tool. Not a better dashboard. Something 
 
 ## Question-first, not data-first
 
-<img src="/images/posts/decision-systems/sketch-1770671462.jpg" alt="" class="sketch-illustration">
+<img src="/images/posts/decision-systems/sketch-1770674931.jpg" alt="A simple bauhaus style drawing of two questions leading to different responses divided by a simple horizontal line with the word &quot;becomes&quot; implying the first becomes the second . The first states &quot;What is occupancy?&quot; and leads to an simple chat answer &quot;87%&quot;. The second question is &quot;What will increase NOI?&quot; and leads to a &quot;hypothesis&quot; response answer supported by three nodes implying &quot;verifiable data&quot;. No other labels." class="sketch-illustration" data-prompt="Style: Square 1:1 aspect ratio. Minimal architectural line drawing on a pure white background. Fine black ink lines only. Clean, precise, spare linework. No shading, no cross-hatching, no fills, no gradients.  Absolutely no borders, no background textures nor paper mounting effects. Just architectural hand drawn lines on solid, pure white #ffffff background. Think Bauhaus drawing meets Dieter Rams sketch meets architectural blueprint. Abstract where possible. Include minimal handwritten labels in a loose architect's hand — like notes on a draft, not typeset text. Elegant negative space. The drawing should feel like a diagram that became art. Subject: A simple bauhaus style drawing of two questions leading to different responses divided by a simple horizontal line with the word &quot;becomes&quot; implying the first becomes the second . The first states &quot;What is occupancy?&quot; and leads to an simple chat answer &quot;87%&quot;. The second question is &quot;What will increase NOI?&quot; and leads to a &quot;hypothesis&quot; response answer supported by three nodes implying &quot;verifiable data&quot;. No other labels.">
 
 A dashboard starts with data and asks: “What do you want to see?”
 
@@ -30,10 +30,10 @@ When you ask a dashboard “what’s our occupancy?”, you get a number. You th
 
 When you ask a decision system “where should I be more aggressive on pricing?”, you get a recommendation with evidence. The system has already done the synthesis work: 
 
-*   combine booking pace with demand signals, 
-*   check competitor movements, 
-*   consider your review trajectory, and 
-*   identify where you have headroom.
+*   combined booking pace with demand signals, 
+*   checked competitor movements, 
+*   considered your review trajectory, and 
+*   identified where you have headroom.
 
 The output isn’t a number. It’s a _judgment_\-ready brief. Note the emphasis. This is not about outsourcing judgement to a model. It is about supporting judgement with a reasonable argument. 
 
