@@ -66,7 +66,7 @@ Each sub-query pulls from a different part of your data architecture. Structured
 
 The output might be: “Building X has cleanliness scores 1.2 points below market, correlating with a 6% occupancy gap worth approximately £180k annually. Competitor properties that addressed common area cleanliness saw average review improvements of 0.8 points within two cycles.”
 
-That’s not a dashboard. It’s decision support.
+That’s decision support.
 
 ## What makes this possible
 
