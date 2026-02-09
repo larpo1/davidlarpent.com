@@ -11,6 +11,7 @@ tags:
   - strategy
   - decisionsystems
   - proptech
+  - pbsa
 category: work
 featureImage: /images/posts/decision-systems/sketch-1770653132.jpg
 ---
