@@ -27,9 +27,9 @@ Sometimes speed is the game. A trader has milliseconds. A pilot in an emergency 
 
 But most decisions aren’t like that.
 
-Most decisions benefit from sitting with them. Turning them over. Feeling the friction of competing considerations. A product manager deciding what to build next. A leader choosing who to promote. A parent figuring out how to handle a difficult conversation with a teenager.
+Most decisions benefit from sitting with them. Turning them over. Feeling the friction of competing considerations. 
 
-These decisions don’t need speed. They need the slow work of judgment forming. And judgment doesn’t form when you skip to the answer.
+Often decisions don’t need blistering speed. What they really need is the slow work of judgment forming. Judgment doesn’t form when you skip to the answer.
 
 ## The Formation Problem
 
