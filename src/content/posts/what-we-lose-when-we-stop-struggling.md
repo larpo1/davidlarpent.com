@@ -49,9 +49,9 @@ We’re not just risking a less capable workforce. We’re risking less capable 
 
 ## For the love of it.
 
-I paint. Oils, mostly. I also make music, badly, for my own amusement.  
+I paint. Not very well. Oils, mostly. I like the smell of turps. I also make music, badly, for my own amusement.  
 
-I don’t paint to have paintings. I paint because of what happens when I paint.  The engrossing frustration when the colour isn’t right. The weird satisfaction when something starts to work. The way hyper focus kicks in and time disappears. The moment where the hand does something the conscious mind didn’t plan and it’s somehow feels right. 
+I don’t paint to have paintings. I paint because of what happens when I paint.  The engrossing frustration when the colour isn’t right. The weird satisfaction when something starts to work. The way hyper focus kicks in and time disappears. The moment where your hand does something unplanned and it just feels right. 
 
 That stuff doesn’t happen when you type a prompt. The output might look similar. The experience is nothing alike.
 
