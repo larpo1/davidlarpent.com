@@ -10,6 +10,7 @@ tags:
   - strategy
   - decisionsystems
   - proptech
+  - pbsa
 category: work
 featureImage: /images/posts/when-decisions-stop-scaling/sketch-1770574101.jpg
 ---
