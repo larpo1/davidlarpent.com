@@ -47,7 +47,7 @@ A person who’s always had the answer handed to them …well, isn’t. They can
 
 We’re not just risking a less capable workforce. We’re risking less capable and interesting people. Less useful collaborators. Less able to hold a surprising opinion because they’ve never had to form one.
 
-## The Joy Problem
+## For the love of it.
 
 I paint. Oils, mostly. I also make music, badly, for my own amusement.  
 
