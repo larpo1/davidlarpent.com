@@ -70,8 +70,6 @@ That’s not a dashboard. It’s decision support.
 
 ## What makes this possible
 
-<img src="/images/posts/decision-systems/sketch-1770670236.jpg" alt="" class="sketch-illustration">
-
 Two things have changed that make decision systems viable now.
 
 **First, large language models are good at synthesis.** Given multiple pieces of information, they can combine them, reason across them, and produce a coherent recommendation. This is what they’re trained to do. The synthesis work that used to require a skilled analyst can now be partially automated.
