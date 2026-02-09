@@ -9,6 +9,7 @@ tags:
   - organisations
   - strategy
   - decisionsystems
+  - proptech
 category: work
 featureImage: /images/posts/when-decisions-stop-scaling/sketch-1770574101.jpg
 ---
