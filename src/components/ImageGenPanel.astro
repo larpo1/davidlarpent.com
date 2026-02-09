@@ -158,7 +158,7 @@
 
     function showPreviewImage(src, alt) {
       generatedPath = src;
-      imageEl.src = src + (src.indexOf('?') === -1 ? '?t=' + Date.now() : '');
+      imageEl.src = src.indexOf('data:') === 0 ? src : src + (src.indexOf('?') === -1 ? '?t=' + Date.now() : '');
       imageEl.alt = alt || '';
       imageEl.style.display = 'block';
       loadingEl.style.display = 'none';
