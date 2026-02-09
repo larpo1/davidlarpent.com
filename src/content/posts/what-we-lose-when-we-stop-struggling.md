@@ -29,7 +29,7 @@ But most decisions aren’t like that.
 
 Most decisions benefit from sitting with them. Turning them over. Feeling the friction of competing considerations. 
 
-Often decisions don’t need blistering speed. What they really need is the slow work of judgment forming. Judgment doesn’t form when you skip to the answer.
+Often what good decisions really need isn't speed, but the slow work of judgment forming. Judgment doesn’t form when you skip to the answer.
 
 ## The Formation Problem
 
