@@ -18,6 +18,8 @@ This piece is about a different kind of tool. Not a better dashboard. Something 
 
 ## Question-first, not data-first
 
+<img src="/images/posts/decision-systems/sketch-1770671462.jpg" alt="" class="sketch-illustration">
+
 A dashboard starts with data and asks: “What do you want to see?”
 
 A decision system starts with a question and asks: “What decision are you trying to make?”
@@ -36,6 +38,8 @@ When you ask a decision system “where should I be more aggressive on pricing?�
 The output isn’t a number. It’s a _judgment_\-ready brief. Note the emphasis. This is not about outsourcing judgement to a model. It is about supporting judgement with a reasonable argument. 
 
 ## The anatomy of a decision-first query
+
+<img src="/images/posts/decision-systems/sketch-1770670802.jpg" alt="" class="sketch-illustration">
 
 Every decision-first question follows a pattern. It starts with an action and a scope:
 
@@ -63,11 +67,17 @@ That’s not a dashboard. It’s decision support.
 
 ## What makes this possible
 
+<img src="/images/posts/decision-systems/sketch-1770670236.jpg" alt="" class="sketch-illustration">
+
 Two things have changed that make decision systems viable now.
 
 **First, large language models are good at synthesis.** Given multiple pieces of information, they can combine them, reason across them, and produce a coherent recommendation. This is what they’re trained to do. The synthesis work that used to require a skilled analyst can now be partially automated.
 
 **Second, embedding models make unstructured data queryable.** Reviews, feedback, support tickets, free-text survey responses. This data used to sit in databases doing nothing because it didn’t fit into structured reports. Now you can embed it, search it semantically, and include it in synthesis alongside your structured metrics.
+
+<img src="/images/posts/decision-systems/sketch-1770670950.jpg" alt="a diagram representing multiple vector embeddings on a graph" class="sketch-illustration" data-prompt="Square 1:1 aspect ratio. Minimal architectural line drawing on a pure white background. Fine black ink lines only. Clean, precise, spare linework. No shading, no cross-hatching, no fills, no gradients.  Absolutely no borders, no background textures or effects. Just architectural hand drawn lines on white. Think Dieter Rams sketch meets architectural blueprint. Abstract where possible. Include minimal handwritten labels in a loose architect's hand — like notes on a draft, not typeset text. Elegant negative space. The drawing should feel like a diagram that became art.
+
+Subject: a diagram representing multiple vector embeddings on a graph">
 
 But these capabilities only work if the underlying data architecture supports them. Point a language model at messy, inconsistent data and you’ll get confident-sounding nonsense.
 
@@ -81,6 +91,10 @@ If you’re thinking about building something like this, here’s how I’d stru
 
 **Natural language decomposition.** The user’s question has to be parsed into sub-queries that map to your data structure. This is where an LLM interprets intent and breaks it into evidence requirements.
 
+<img src="/images/posts/decision-systems/sketch-1770670131.jpg" alt="A branching diagram showing one input line splitting into three output branches, with minimal handwritten labels &quot;query&quot; at the input, &quot;sub-query&quot; along each of the three branches, and &quot;canonical&quot;, &quot;semantic&quot; and &quot;correlation&quot; at each of the three clusters of terminal points, rendered as clean geometric lines suggesting information flow and decomposition." class="sketch-illustration" data-prompt="Square 1:1 aspect ratio. Minimal architectural line drawing on a pure white background. Fine black ink lines only. Clean, precise, spare linework. No shading, no cross-hatching, no fills, no gradients.  Absolutely no borders, no background textures or effects. Just architectural hand drawn lines on white. Think Dieter Rams sketch meets architectural blueprint. Abstract where possible. Include minimal handwritten labels in a loose architect's hand — like notes on a draft, not typeset text. Elegant negative space. The drawing should feel like a diagram that became art.
+
+Subject: A branching diagram showing one input line splitting into three output branches, with minimal handwritten labels &quot;query&quot; at the input, &quot;sub-query&quot; along each of the three branches, and &quot;canonical&quot;, &quot;semantic&quot; and &quot;correlation&quot; at each of the three clusters of terminal points, rendered as clean geometric lines suggesting information flow and decomposition.">
+
 **Reliable structured retrieval.** Canonical metrics should return fast and consistent. You don’t want the system writing complex SQL on the fly for core KPIs. Pre-calculate them. Version them. Treat them as the source of truth.
 
 **Semantic search over unstructured data.** Embeddings, vector databases, similarity search. When the question requires understanding “what people are saying about X”, the system needs to surface relevant passages from thousands of documents without manual tagging.
@@ -91,6 +105,8 @@ If you’re thinking about building something like this, here’s how I’d stru
 
 ## The confidence problem
 
+<img src="/images/posts/decision-systems/sketch-1770672908.jpg" alt="" class="sketch-illustration">
+
 One risk with decision systems is false confidence. A well-constructed sentence with numbers in it can feel authoritative even when the underlying evidence is thin.
 
 Good decision systems make evidence quality visible. They show sources. They flag data freshness. They express uncertainty when it exists.
@@ -99,7 +115,7 @@ Good decision systems make evidence quality visible. They show sources. They fla
 
 This is a design choice. The interface can either hide uncertainty behind polish or surface it clearly. The second approach builds more trust over time.
 
-## What this replaces, and what it doesn’t
+## No substitute for human judgement. 
 
 Decision systems replace the manual synthesis work that currently bottlenecks on key people. The analyst who spends two days pulling data for a quarterly review. The spreadsheet that triangulates three reports. The meeting where everyone argues about what the numbers mean.
 
