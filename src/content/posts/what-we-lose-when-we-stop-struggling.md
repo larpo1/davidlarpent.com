@@ -33,7 +33,7 @@ These decisions don’t need speed. They need the slow work of judgment forming.
 
 ## The Formation Problem
 
-Neural pathways are formed by reps and struggle. You don’t learn to write and articulate thought by reading. You learn by writing badly, repeatedly, until you write less badly. You don’t learn to diagnose problems by watching someone else diagnose them. You learn by being wrong, often, and slowly getting less wrong.
+Neural pathways are formed by reps and struggle. You don’t learn to write and articulate thought by reading. You learn by writing badly, repeatedly, until you write less badly. You don’t learn to diagnose problems by watching someone else diagnose them. You learn by being wrong, in painful, memorable ways.
 
 We don’t intuitively always feel good about this struggle - it feels like hard work. We’d prefer to skip the part where we’re bad at things. AI offers that skip. And the skip feels great, right up until you need the skill you never built.
 
