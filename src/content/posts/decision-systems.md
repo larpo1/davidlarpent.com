@@ -133,4 +133,4 @@ The organisations that build this capability will make better decisions, faster,
 
 * * *
 
-_This is part of a series on AI and decision-making. See also: [AI Data Readiness](/posts/ai-data-architecture) and [When Decisions Stop Scaling](/posts/when-decisions-stop-scaling)._
+_This is part of a series on AI supported decision-making. See also: [AI Data Readiness](/posts/ai-data-architecture) and [When Decisions Stop Scaling](/posts/when-decisions-stop-scaling)._
