@@ -29,7 +29,9 @@ turndown.addRule('sketchIllustration', {
   replacement: function (_content: string, node: any) {
     const src = node.getAttribute('src') || '';
     const alt = (node.getAttribute('alt') || '').replace(/"/g, '&quot;');
-    return `\n\n<img src="${src}" alt="${alt}" class="sketch-illustration">\n\n`;
+    const prompt = (node.getAttribute('data-prompt') || '').replace(/"/g, '&quot;');
+    const promptAttr = prompt ? ` data-prompt="${prompt}"` : '';
+    return `\n\n<img src="${src}" alt="${alt}" class="sketch-illustration"${promptAttr}>\n\n`;
   }
 });
 
@@ -156,11 +158,35 @@ export const POST: APIRoute = async ({ request }) => {
       newContent = convertedContent;
     }
 
-    // Stringify back to markdown with frontmatter
-    const output = matter.stringify(newContent, parsed.data);
+    // Build frontmatter YAML manually to avoid gray-matter/js-yaml
+    // corrupting titles with special characters (e.g. quotes → \" and \_)
+    const needsQuoting = /[:"'#{}[\]&*?|>!%@`\n]/;
+    function yamlVal(v: string): string {
+      if (!needsQuoting.test(v)) return v;
+      // Single-quote, escaping internal single quotes by doubling them
+      return `'${v.replace(/'/g, "''")}'`;
+    }
+    const fm = parsed.data;
+    const yamlLines: string[] = ['---'];
+    if (fm.title != null) yamlLines.push(`title: ${yamlVal(String(fm.title))}`);
+    if (fm.date != null) yamlLines.push(`date: ${fm.date instanceof Date ? fm.date.toISOString() : fm.date}`);
+    if (fm.description != null) yamlLines.push(`description: ${yamlVal(String(fm.description))}`);
+    if (fm.draft != null) yamlLines.push(`draft: ${fm.draft}`);
+    if (fm.tags && Array.isArray(fm.tags) && fm.tags.length > 0) {
+      yamlLines.push('tags:');
+      for (const tag of fm.tags) yamlLines.push(`  - ${tag}`);
+    }
+    if (fm.category != null) yamlLines.push(`category: ${fm.category}`);
+    if (fm.featureImage != null) yamlLines.push(`featureImage: ${fm.featureImage}`);
+    yamlLines.push('---');
+    const output = yamlLines.join('\n') + '\n' + newContent;
 
-    // Write file (to new path if renaming)
-    await fs.writeFile(newFilePath, output, 'utf-8');
+    // Atomic write: write to temp file then rename.
+    // This produces a single filesystem event (rename) instead of multiple
+    // events from writeFile, preventing Astro's data-store double-write race.
+    const tmpPath = newFilePath + '.tmp';
+    await fs.writeFile(tmpPath, output, 'utf-8');
+    await fs.rename(tmpPath, newFilePath);
 
     // Delete old file if renaming
     if (newSlug && newSlug !== slug) {
@@ -172,15 +198,19 @@ export const POST: APIRoute = async ({ request }) => {
     // before git add/commit touches the file again (avoids ENOENT race on data-store.json).
     const finalSlug = newSlug || slug;
     const commitFile = `src/content/posts/${finalSlug}.md`;
+    const isPublished = !parsed.data.draft;
     setTimeout(async () => {
       try {
         await execAsync(`git add "${commitFile}"`);
         const commitMsg = `Auto-save: ${finalSlug}`;
         await execAsync(`git commit -m "${commitMsg}"`);
+        if (isPublished) {
+          await execAsync('git push');
+        }
       } catch (gitError) {
         console.log('Git auto-commit skipped:', gitError);
       }
-    }, 1000);
+    }, 3000);
 
     return new Response(
       JSON.stringify({ success: true, message: 'Post saved and committed' }),

@@ -235,9 +235,14 @@
       sourceText.textContent = imageAlt || '(no source text)';
       styleTextarea.value = getSavedStyle(STYLE_KEY, DEFAULT_STYLE);
 
-      // Middle column: restore full prompt from localStorage, fall back to alt text
+      // Middle column: restore prompt from data-prompt attr, then localStorage, then alt text
       var savedFullPrompt = '';
-      try { savedFullPrompt = localStorage.getItem('image-prompt-' + (imagePath || '')) || ''; } catch(e) {}
+      if (imageElement && imageElement.getAttribute('data-prompt')) {
+        savedFullPrompt = imageElement.getAttribute('data-prompt');
+      }
+      if (!savedFullPrompt) {
+        try { savedFullPrompt = localStorage.getItem('image-prompt-' + (imagePath || '')) || ''; } catch(e) {}
+      }
       promptTextarea.value = savedFullPrompt || imageAlt || '';
       if (savedFullPrompt || imageAlt) {
         // Prompt already exists — show Regenerate, enable Generate Image
@@ -469,6 +474,7 @@
         // Replace mode: update existing image src and alt
         editingImage.src = generatedPath;
         if (prompt) editingImage.alt = extractSubject(prompt);
+        if (prompt) editingImage.setAttribute('data-prompt', prompt);
         closeModal();
         window.dispatchEvent(new CustomEvent('sketch-reveal-refresh'));
         return;
@@ -479,6 +485,7 @@
       img.src = generatedPath;
       img.alt = extractSubject(prompt);
       img.className = 'sketch-illustration';
+      if (prompt) img.setAttribute('data-prompt', prompt);
 
       var wrapper = document.createElement('p');
       wrapper.appendChild(img);
