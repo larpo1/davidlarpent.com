@@ -65,6 +65,8 @@ I’ve heard the same feedback from operators in different industries: “They b
 
 ## The cost
 
+<img src="/images/posts/when-decisions-stop-scaling/sketch-1770635122.jpg" alt="Speed - those who can evaluate opportunities faster will capture them first. Depict two abstract flows, one above the other. The first one is crippled by complexity and slowness and labelled &quot;disorganised synthesis&quot;. The second flow is freed to move quickly by something representing an well organised decision system, labelled &quot;organised decision support&quot;" class="sketch-illustration">
+
 The synthesis bottleneck has real costs, even if they don’t show up on a balance sheet.
 
 **Speed.** Competitors who can evaluate opportunities faster will capture them first. The time between “we should look into this” and “here’s what we’re doing” is a competitive variable.
