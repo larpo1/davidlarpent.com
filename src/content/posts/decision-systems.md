@@ -26,14 +26,14 @@ This is not a semantic distinction.
 
 When you ask a dashboard “what’s our occupancy?”, you get a number. You then have to figure out what that number means and what to do about it.
 
-When you ask a decision system “where should I be more aggressive on pricing?”, you get a recommendation with evidence. The system has already done the synthesis work. A living sector worked example could be to: 
+When you ask a decision system “where should I be more aggressive on pricing?”, you get a recommendation with evidence. The system has already done the synthesis work: 
 
 *   combine booking pace with demand signals, 
 *   check competitor movements, 
 *   consider your review trajectory, and 
 *   identify where you have headroom.
 
-The output isn’t a number. It’s a judgment-ready brief.
+The output isn’t a number. It’s a _judgment_\-ready brief. Note the emphasis. This is not about outsourcing judgement to a model. It is about supporting judgement with a reasonable argument. 
 
 ## The anatomy of a decision-first query
 
