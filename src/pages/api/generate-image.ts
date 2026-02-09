@@ -1,7 +1,11 @@
 import type { APIRoute } from 'astro';
 import * as fs from 'fs/promises';
 import * as path from 'path';
+import { exec } from 'child_process';
+import { promisify } from 'util';
 import { GoogleGenAI } from '@google/genai';
+
+const execAsync = promisify(exec);
 
 export const prerender = false;
 
@@ -98,7 +102,7 @@ export const POST: APIRoute = async ({ request }) => {
           role: 'user',
           parts: [
             { inlineData: { mimeType: referenceImageData.mimeType, data: referenceImageData.base64 } },
-            { text: `Edit this image according to the following instructions:\n\n${fullPrompt}` },
+            { text: `Use this reference image as visual inspiration for the following:\n\n${fullPrompt}` },
           ]
         }
       ];
@@ -144,6 +148,24 @@ export const POST: APIRoute = async ({ request }) => {
     await fs.writeFile(imagePath, imageBuffer);
 
     const publicPath = `/images/posts/${slug}/${filename}`;
+
+    // Auto-commit and push image so it's available in production
+    setTimeout(async () => {
+      try {
+        const commitFile = `public/images/posts/${slug}/${filename}`;
+        await execAsync(`git add "${commitFile}"`);
+        await execAsync(`git commit -m "Auto-save: image for ${slug}"`);
+        // Check if post is published before pushing
+        const postPath = path.join(process.cwd(), 'src', 'content', 'posts', `${slug}.md`);
+        const postContent = await fs.readFile(postPath, 'utf-8').catch(() => '');
+        const isPublished = postContent.includes('draft: false');
+        if (isPublished) {
+          await execAsync('git push');
+        }
+      } catch (gitError) {
+        console.log('Git auto-commit for image skipped:', gitError);
+      }
+    }, 3000);
 
     return new Response(
       JSON.stringify({ success: true, path: publicPath, dataUrl: `data:${mimeType};base64,${imagePart.inlineData.data}` }),

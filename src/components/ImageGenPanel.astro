@@ -33,6 +33,16 @@
           <button id="image-gen-save-style-btn" class="image-gen-secondary-btn" type="button">Save Style</button>
           <button id="image-gen-prompt-btn" class="image-gen-secondary-btn" type="button">Generate Prompt</button>
         </div>
+
+        <label class="image-gen-column-label" style="margin-top: 1rem;">Reference image</label>
+        <div id="image-gen-ref-area" class="image-gen-ref-area">
+          <input type="file" id="image-gen-ref-input" accept="image/png,image/jpeg,image/webp,image/gif" style="display: none;" />
+          <button id="image-gen-ref-upload-btn" class="image-gen-secondary-btn image-gen-ref-upload-btn" type="button">Add reference image</button>
+          <div id="image-gen-ref-preview" class="image-gen-ref-preview" style="display: none;">
+            <img id="image-gen-ref-thumb" class="image-gen-ref-thumb" alt="Reference" />
+            <button id="image-gen-ref-clear" class="image-gen-ref-clear" type="button" title="Remove reference">&times;</button>
+          </div>
+        </div>
       </div>
 
       <!-- Middle column: Synthesized prompt -->
@@ -55,10 +65,13 @@
           <div id="image-gen-placeholder" class="image-gen-preview-placeholder">Image will appear here</div>
         </div>
 
-        <!-- Gallery overlay (hidden by default) -->
+        <!-- Gallery (hidden by default, replaces preview when shown) -->
         <div id="image-gen-gallery" class="image-gen-gallery" style="display: none;">
           <div class="image-gen-gallery-header">
-            <span class="image-gen-column-label">Gallery</span>
+            <div class="image-gen-gallery-toggle">
+              <button id="image-gen-gallery-this-post" class="active" type="button">This post</button>
+              <button id="image-gen-gallery-all-posts" type="button">All posts</button>
+            </div>
             <button id="image-gen-gallery-close" class="image-gen-secondary-btn" type="button" style="padding: 0.2rem 0.5rem; font-size: 0.75rem;">Close</button>
           </div>
           <div id="image-gen-gallery-grid" class="image-gen-gallery-grid"></div>
@@ -104,6 +117,13 @@
     var galleryGrid = document.getElementById('image-gen-gallery-grid');
     var galleryCloseBtn = document.getElementById('image-gen-gallery-close');
     var removeBtn = document.getElementById('image-gen-remove-btn');
+
+    // Reference image elements
+    var refInput = document.getElementById('image-gen-ref-input');
+    var refUploadBtn = document.getElementById('image-gen-ref-upload-btn');
+    var refPreview = document.getElementById('image-gen-ref-preview');
+    var refThumb = document.getElementById('image-gen-ref-thumb');
+    var refClear = document.getElementById('image-gen-ref-clear');
 
     if (!modal || !sourceText || !styleTextarea || !promptTextarea || !promptBtn || !imageBtn || !insertBtn) return;
 
@@ -204,11 +224,14 @@
       repromptBtn.style.display = 'none';
       imageBtn.disabled = true;
 
+      // Reset reference image
+      clearRefPreview();
+
       // Reset right column
       resetPreview();
 
       // Hide gallery
-      if (galleryEl) galleryEl.style.display = 'none';
+      hideGallery();
 
       // Open modal
       modal.setAttribute('data-open', 'true');
@@ -229,6 +252,13 @@
       if (titleEl) titleEl.textContent = 'Edit Sketch';
       insertBtn.textContent = 'Replace';
       if (removeBtn) removeBtn.style.display = '';
+
+      // Show reference image in left column (the image being edited)
+      if (imagePath) {
+        showRefPreview(imagePath);
+      } else {
+        clearRefPreview();
+      }
 
       // Left column
       currentStyleKey = STYLE_KEY;
@@ -267,7 +297,7 @@
       }
 
       // Hide gallery
-      if (galleryEl) galleryEl.style.display = 'none';
+      hideGallery();
 
       // Open modal
       modal.setAttribute('data-open', 'true');
@@ -288,6 +318,13 @@
       if (titleEl) titleEl.textContent = 'Feature Image';
       insertBtn.textContent = 'Set as Feature Image';
       if (removeBtn) removeBtn.style.display = 'none';
+
+      // Show reference image if current feature image exists
+      if (currentImage) {
+        showRefPreview(currentImage);
+      } else {
+        clearRefPreview();
+      }
 
       // Left column: title + description as source text
       var sourceContent = postTitle || '';
@@ -322,7 +359,7 @@
       }
 
       // Hide gallery
-      if (galleryEl) galleryEl.style.display = 'none';
+      hideGallery();
 
       // Open modal
       modal.setAttribute('data-open', 'true');
@@ -337,7 +374,7 @@
       isFeatureMode = false;
       editingImage = null;
       referenceImagePath = '';
-      if (galleryEl) galleryEl.style.display = 'none';
+      hideGallery();
     }
 
     // Enable Generate Image when prompt textarea has content
@@ -549,29 +586,76 @@
       }
     }
 
+    // Gallery state
+    var galleryMode = 'this-post'; // 'this-post' or 'all-posts'
+    var galleryThisPostBtn = document.getElementById('image-gen-gallery-this-post');
+    var galleryAllPostsBtn = document.getElementById('image-gen-gallery-all-posts');
+
+    function showGallery() {
+      if (!galleryEl || !previewEl) return;
+      previewEl.style.display = 'none';
+      galleryEl.style.display = '';
+    }
+
+    function hideGallery() {
+      if (!galleryEl || !previewEl) return;
+      galleryEl.style.display = 'none';
+      previewEl.style.display = '';
+    }
+
+    function renderGalleryThumbs(images, container) {
+      images.forEach(function(img) {
+        var thumb = document.createElement('div');
+        thumb.className = 'image-gen-gallery-thumb';
+        thumb.innerHTML = '<img src="' + img.path + '?t=' + Date.now() + '" alt="' + img.filename + '" />';
+        thumb.addEventListener('click', function() {
+          showPreviewImage(img.path, img.filename);
+          hideGallery();
+        });
+        container.appendChild(thumb);
+      });
+    }
+
     // Gallery: load and display images
-    async function loadGallery() {
-      if (!currentSlug || !galleryGrid || !galleryEl) return;
+    async function loadGallery(mode) {
+      if (!galleryGrid || !galleryEl) return;
+      mode = mode || 'this-post';
+      galleryMode = mode;
+
+      // Update toggle buttons
+      if (galleryThisPostBtn && galleryAllPostsBtn) {
+        galleryThisPostBtn.className = mode === 'this-post' ? 'active' : '';
+        galleryAllPostsBtn.className = mode === 'all-posts' ? 'active' : '';
+      }
 
       galleryGrid.innerHTML = '<div class="image-gen-loading">Loading...</div>';
-      galleryEl.style.display = '';
+      showGallery();
 
       try {
-        var response = await fetch('/api/list-post-images?slug=' + encodeURIComponent(currentSlug));
+        var url = mode === 'all-posts'
+          ? '/api/list-post-images?all=true&currentSlug=' + encodeURIComponent(currentSlug)
+          : '/api/list-post-images?slug=' + encodeURIComponent(currentSlug);
+        var response = await fetch(url);
         var result = await response.json();
 
-        if (result.success && result.images && result.images.length > 0) {
-          galleryGrid.innerHTML = '';
-          result.images.forEach(function(img) {
-            var thumb = document.createElement('div');
-            thumb.className = 'image-gen-gallery-thumb';
-            thumb.innerHTML = '<img src="' + img.path + '?t=' + Date.now() + '" alt="' + img.filename + '" />';
-            thumb.addEventListener('click', function() {
-              showPreviewImage(img.path, img.filename);
-              galleryEl.style.display = 'none';
-            });
-            galleryGrid.appendChild(thumb);
+        galleryGrid.innerHTML = '';
+
+        if (mode === 'all-posts' && result.success && result.groups) {
+          var hasAny = false;
+          result.groups.forEach(function(group) {
+            if (!group.images || group.images.length === 0) return;
+            hasAny = true;
+            var heading = document.createElement('div');
+            heading.className = 'image-gen-gallery-group-title';
+            heading.textContent = group.title || group.slug;
+            galleryGrid.appendChild(heading);
+            renderGalleryThumbs(group.images, galleryGrid);
           });
+          if (!hasAny) {
+            galleryGrid.innerHTML = '<div class="image-gen-preview-placeholder">No images found</div>';
+          }
+        } else if (result.success && result.images && result.images.length > 0) {
+          renderGalleryThumbs(result.images, galleryGrid);
         } else {
           galleryGrid.innerHTML = '<div class="image-gen-preview-placeholder">No images found</div>';
         }
@@ -639,13 +723,19 @@
     }
 
     if (galleryBtn) {
-      galleryBtn.addEventListener('click', loadGallery);
+      galleryBtn.addEventListener('click', function() { loadGallery('this-post'); });
     }
 
-    if (galleryCloseBtn && galleryEl) {
-      galleryCloseBtn.addEventListener('click', function() {
-        galleryEl.style.display = 'none';
-      });
+    if (galleryCloseBtn) {
+      galleryCloseBtn.addEventListener('click', hideGallery);
+    }
+
+    if (galleryThisPostBtn) {
+      galleryThisPostBtn.addEventListener('click', function() { loadGallery('this-post'); });
+    }
+
+    if (galleryAllPostsBtn) {
+      galleryAllPostsBtn.addEventListener('click', function() { loadGallery('all-posts'); });
     }
 
     // Backdrop click to close
@@ -656,12 +746,75 @@
       if (e.key === 'Escape' && modal.getAttribute('data-open') === 'true') {
         // Close gallery first if open, then close modal
         if (galleryEl && galleryEl.style.display !== 'none') {
-          galleryEl.style.display = 'none';
+          hideGallery();
           return;
         }
         closeModal();
       }
     });
+
+    // Reference image upload
+    function showRefPreview(path, localPreviewUrl) {
+      referenceImagePath = path;
+      if (refThumb) refThumb.src = localPreviewUrl || (path + '?t=' + Date.now());
+      if (refPreview) refPreview.style.display = '';
+      if (refUploadBtn) refUploadBtn.style.display = 'none';
+    }
+
+    function clearRefPreview() {
+      // Revoke any object URL to free memory
+      if (refThumb && refThumb.src && refThumb.src.startsWith('blob:')) {
+        URL.revokeObjectURL(refThumb.src);
+      }
+      referenceImagePath = '';
+      if (refThumb) refThumb.src = '';
+      if (refPreview) refPreview.style.display = 'none';
+      if (refUploadBtn) refUploadBtn.style.display = '';
+    }
+
+    if (refUploadBtn && refInput) {
+      refUploadBtn.addEventListener('click', function() {
+        refInput.click();
+      });
+      refInput.addEventListener('change', async function() {
+        if (!refInput.files || !refInput.files[0]) return;
+        var file = refInput.files[0];
+        if (!file.type.match(/^image\/(png|jpeg|webp|gif)$/)) return;
+        if (!currentSlug) return;
+
+        // Show local preview immediately (no server round-trip needed for thumbnail)
+        var localUrl = URL.createObjectURL(file);
+        showRefPreview('', localUrl); // path set after upload completes
+
+        refUploadBtn.textContent = 'Uploading...';
+        refUploadBtn.disabled = true;
+
+        try {
+          var formData = new FormData();
+          formData.append('file', file);
+          formData.append('slug', currentSlug);
+          var response = await fetch('/api/upload-image', {
+            method: 'POST',
+            body: formData
+          });
+          var result = await response.json();
+          if (result.success && result.path) {
+            referenceImagePath = result.path;
+          } else {
+            clearRefPreview();
+          }
+        } catch (err) {
+          clearRefPreview();
+        }
+        refUploadBtn.textContent = 'Add reference image';
+        refUploadBtn.disabled = false;
+        refInput.value = '';
+      });
+    }
+
+    if (refClear) {
+      refClear.addEventListener('click', clearRefPreview);
+    }
 
     // Drag-and-drop on preview area
     if (previewEl) {

@@ -151,6 +151,23 @@
       return null;
     }
 
+    function hasPrecedingImage(el: Element): boolean {
+      let anchor: Element | null = el;
+      while (anchor && anchor.parentElement !== postContent) {
+        anchor = anchor.parentElement;
+      }
+      if (!anchor) return false;
+
+      let prev = anchor.previousElementSibling;
+      while (prev) {
+        const tag = prev.tagName;
+        if (tag === 'H1' || tag === 'H2' || tag === 'H3' || tag === 'H4' || tag === 'H5' || tag === 'H6') return false;
+        if (prev.classList.contains('sketch-scroll-marker')) return true;
+        prev = prev.previousElementSibling;
+      }
+      return false;
+    }
+
     function setupDesktop() {
       const imageArray = Array.from(images);
 
@@ -167,13 +184,16 @@
         gsap.set(wrapper, { opacity: 0, y: 20, yPercent: -50 });
 
         const nextHeading = findNextTrigger(marker);
+        const hasPrec = hasPrecedingImage(marker);
 
         requestAnimationFrame(() => {
+          // If preceded by another image (no heading between), delay fade-in
+          // so the previous image fully fades out first (sequential, no overlap)
           gsap.timeline({
             scrollTrigger: {
               trigger: marker,
-              start: 'top bottom',
-              end: 'top 60%',
+              start: hasPrec ? 'top 70%' : 'top bottom',
+              end: hasPrec ? 'top 45%' : 'top 60%',
               scrub: true,
             }
           })
@@ -189,11 +209,14 @@
           );
 
           if (nextHeading) {
+            const isNextImage = nextHeading.classList.contains('sketch-scroll-marker');
+            // If next trigger is another image: fade out early so it completes
+            // before the next image starts fading in (sequential transitions)
             gsap.timeline({
               scrollTrigger: {
                 trigger: nextHeading,
-                start: 'top 70%',
-                end: 'top 30%',
+                start: isNextImage ? 'top bottom' : 'top 70%',
+                end: isNextImage ? 'top 70%' : 'top 30%',
                 scrub: true,
               }
             })

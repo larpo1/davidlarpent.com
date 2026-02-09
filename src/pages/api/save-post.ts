@@ -28,8 +28,8 @@ turndown.addRule('sketchIllustration', {
   },
   replacement: function (_content: string, node: any) {
     const src = node.getAttribute('src') || '';
-    const alt = (node.getAttribute('alt') || '').replace(/"/g, '&quot;');
-    const prompt = (node.getAttribute('data-prompt') || '').replace(/"/g, '&quot;');
+    const alt = (node.getAttribute('alt') || '').replace(/"/g, '&quot;').replace(/[\r\n]+/g, ' ');
+    const prompt = (node.getAttribute('data-prompt') || '').replace(/"/g, '&quot;').replace(/[\r\n]+/g, ' ');
     const promptAttr = prompt ? ` data-prompt="${prompt}"` : '';
     return `\n\n<img src="${src}" alt="${alt}" class="sketch-illustration"${promptAttr}>\n\n`;
   }
