@@ -29,13 +29,13 @@ But most decisions aren’t like that.
 
 Most decisions benefit from sitting with them. Turning them over. Feeling the friction of competing considerations. 
 
-Often what good decisions really need isn't speed, but the slow work of judgment forming. Judgment doesn’t form when you skip to the answer.
+Often what good decisions really need isn’t speed, but the slow work of judgment forming. Judgment doesn’t form when you skip to the answer.
 
 ## The Formation Problem
 
 Neural pathways are formed by reps and struggle. You don’t learn to write and articulate thought by reading. You learn by writing badly, repeatedly, until you write less badly. You don’t learn to diagnose problems by watching someone else diagnose them. You learn by being wrong, in painful, memorable ways.
 
-We don’t intuitively always feel good about this struggle - it feels like hard work. We’d prefer to skip the part where we’re bad at things. AI offers that skip. And the skip feels great, right up until you need the skill you never built.
+We don’t intuitively always feel good about this struggle - it feels like hard work. We’d prefer to skip the part where we’re bad at things. AI offers that skip. And the skip feels great, right up until you need some skill you never built.
 
 The pilots who hand-fly the least are the worst at hand-flying when the automation fails. The doctors most reliant on diagnostic algorithms are slowest to catch what the algorithm misses. The engineers who outsource debugging to AI can’t debug when the AI is confused. We’ve known this pattern for decades. Lisanne Bainbridge called it the “ironies of automation” back in 1983: the more advanced the system, the more crucial the human contribution when things go sideways, and the less capable the human is of making it.
 
@@ -81,8 +81,6 @@ This might sound like an individual choice, a matter of personal discipline. But
 
 If you run a company, you’re making decisions every day about which cognitive work your people do themselves and which they outsource. Get this wrong and you’ll have a team that executes fast and thinks slow. That can ship but can’t adapt. That looks productive right up until the world changes and nobody knows what to do.
 
-If you’re building AI products (and I am), you’re deciding whether to replace human judgment or augment it. Whether to give people answers or help them find answers. Whether to make users faster or make them better. These aren’t the same thing. Sometimes they’re opposites.
-
 If you’re raising kids, you’re deciding what struggles to protect. Your child can use ChatGPT to write their essay. The essay might be good. But if they never learn to structure an argument, to sit with the discomfort of not knowing what to say, to push through the part where writing is hard… what have you taught them?
 
 That the point of writing is to have written?
@@ -95,11 +93,9 @@ For me it is something like this:
 
 **Offer unto AI:** Research, summarisation, first drafts I’m going to heavily rewrite, scheduling, formatting, the mechanical parts of coding, anything where I already know what I think and just need it executed.
 
-**Take from AI:** challenge, dialectic, thought partnership, different perspectives.
+**Take from AI:** challenge, thought partnership, different perspectives.
 
 **Keep for myself:** Arriving at the answer. Critical thinking. The creative work I do for joy. The writing where I’m trying to figure out what I believe. The reps that build the skills I want to have.
-
-**Protect for my team:** The struggles that make them grow. The decisions that build their judgment. The friction that turns juniors into seniors.
 
 **Protect for my kids:** The experience of not knowing something and having to figure it out. The satisfaction of making something through hard work. The understanding that difficulty is often the texture of meaning, not an obstacle to it.
 
