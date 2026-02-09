@@ -1,7 +1,7 @@
 ---
 title: Decision Systems
 date: 2026-02-09T00:00:00.000Z
-description: 'Decision Systems, part 3 of 3: a practical framework for becoming ''decision first'' with the support of AI'
+description: 'Decision Systems, part 3 of 3: a practical framework for becoming ''decision first'' with the help of AI'
 draft: false
 tags:
   - AI
