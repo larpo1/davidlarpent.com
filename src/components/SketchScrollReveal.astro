@@ -1,12 +1,13 @@
 ---
 // SketchScrollReveal.astro
 // Scroll-driven materialisation for .sketch-illustration images.
-// Desktop (>1200px): image goes position:fixed in right margin, scrub with GSAP ScrollTrigger.
+// Desktop (>1200px): image wrapped in a fixed-position div in right margin, scrub with GSAP ScrollTrigger.
+//   - Canvas processing removes white background → true transparency
+//   - Wrapper with semi-transparent bg controls how much grid guides show through
 //   - Fades in when the image's section text hits the fold
 //   - Stays visible while reading that section
 //   - Fades out when the next section heading reaches the bottom of the fold
-// Mobile (<=1200px): image stays inline, animates in via IntersectionObserver.
-// No cloning -- same element, different positioning via CSS media queries.
+// Mobile (<=1200px): image wrapped inline, animates in via IntersectionObserver.
 // This is reader-facing (production), NOT dev-only.
 ---
 
@@ -17,14 +18,66 @@
 
   // Track state at module level so refresh can clean up previous run
   let markers: HTMLElement[] = [];
+  let wrappers: HTMLElement[] = [];
   let observers: IntersectionObserver[] = [];
   let tweens: gsap.core.Tween[] = [];
   let prevImages: HTMLImageElement[] = [];
   let desktopMQListener: (() => void) | null = null;
 
-  function init() {
-    const images = document.querySelectorAll<HTMLImageElement>('.post-content .sketch-illustration');
+  /**
+   * Process a sketch image to make its white/near-white background transparent.
+   * After processing, CSS filter: invert(1) handles colour inversion and the
+   * wrapper's semi-transparent background controls how much grid guides bleed through.
+   */
+  async function processImageBackground(img: HTMLImageElement): Promise<void> {
+    try {
+      // Wait for the image to load if it hasn't already
+      if (!img.complete || img.naturalWidth === 0) {
+        await new Promise<void>((resolve, reject) => {
+          img.addEventListener('load', () => resolve(), { once: true });
+          img.addEventListener('error', () => reject(), { once: true });
+        });
+      }
 
+      const canvas = document.createElement('canvas');
+      canvas.width = img.naturalWidth;
+      canvas.height = img.naturalHeight;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+
+      ctx.drawImage(img, 0, 0);
+      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      const data = imageData.data;
+
+      for (let i = 0; i < data.length; i += 4) {
+        const r = data[i], g = data[i + 1], b = data[i + 2];
+        const brightness = (r + g + b) / 3;
+
+        if (brightness > 240) {
+          // Near-white (paper background): fully transparent
+          data[i + 3] = 0;
+        } else if (brightness > 180) {
+          // Anti-aliased edges: gradual transparency
+          const t = (brightness - 180) / 60; // 0 at 180, 1 at 240
+          data[i + 3] = Math.round(255 * (1 - t));
+        }
+        // Dark pixels (ink lines): stay fully opaque
+      }
+
+      ctx.putImageData(imageData, 0, 0);
+      img.src = canvas.toDataURL('image/png');
+      img.classList.add('sketch-bg-processed');
+    } catch {
+      // Canvas processing failed (CORS, etc.) — fall back to mix-blend-mode
+    }
+  }
+
+  async function init() {
+    // Process ALL sketch images (including feature image outside .post-content)
+    const allSketchImages = document.querySelectorAll<HTMLImageElement>('.sketch-illustration');
+    await Promise.all(Array.from(allSketchImages).map(processImageBackground));
+
+    const images = document.querySelectorAll<HTMLImageElement>('.post-content .sketch-illustration');
     const postContent = document.querySelector('.post-content') as HTMLElement;
     if (!postContent) return;
 
@@ -38,28 +91,44 @@
       observers = [];
       tweens.forEach(t => t.kill());
       tweens = [];
+
+      // Unwrap images from wrappers
+      wrappers.forEach(wrapper => {
+        const img = wrapper.querySelector('.sketch-illustration') as HTMLImageElement;
+        if (img && wrapper.parentElement) {
+          wrapper.parentElement.insertBefore(img, wrapper);
+          wrapper.remove();
+        }
+      });
+      wrappers = [];
+
       // Clean up both previous and current images (handles removed images)
       const allImages = new Set([...prevImages, ...Array.from(images)]);
       allImages.forEach(img => {
         gsap.set(img, { clearProps: 'all' });
         img.classList.remove('sketch-reveal-pending');
-        img.classList.remove('sketch-reveal-active');
       });
       prevImages = Array.from(images);
     }
 
+    // Create a wrapper div around an image for blend-mode isolation
+    function wrapImage(img: HTMLImageElement): HTMLElement {
+      const wrapper = document.createElement('div');
+      wrapper.className = 'sketch-reveal-wrapper';
+      img.parentElement!.insertBefore(wrapper, img);
+      wrapper.appendChild(img);
+      wrappers.push(wrapper);
+      return wrapper;
+    }
+
     // Find the next heading or sketch marker after a given element in the post content.
-    // This determines when the current image should fade out — either at the next
-    // section boundary (any heading) or at the next image's scroll marker.
     function findNextTrigger(el: Element): HTMLElement | null {
-      // Walk up to find the direct child of .post-content that contains el
       let anchor: Element | null = el;
       while (anchor && anchor.parentElement !== postContent) {
         anchor = anchor.parentElement;
       }
       if (!anchor) return null;
 
-      // Walk forward through siblings looking for a heading or another scroll marker
       let next = anchor.nextElementSibling;
       while (next) {
         const tag = next.tagName;
@@ -74,27 +143,24 @@
       const imageArray = Array.from(images);
 
       imageArray.forEach((img) => {
-        img.classList.add('sketch-reveal-active');
-
         // Insert a zero-height marker where the image sits in the DOM.
-        // ScrollTrigger uses this marker to know when to animate,
-        // since the image itself is position:fixed and has no scroll position.
         const marker = document.createElement('span');
         marker.className = 'sketch-scroll-marker';
         marker.setAttribute('aria-hidden', 'true');
         img.parentElement!.insertBefore(marker, img);
         markers.push(marker);
 
-        // Set initial state (yPercent: -50 keeps image vertically centered with top: 50%)
-        img.style.setProperty('--sketch-blur', '8px');
-        gsap.set(img, { opacity: 0, y: 20, yPercent: -50 });
+        // Wrap the image for background isolation
+        const wrapper = wrapImage(img);
 
-        // Find the next heading or image marker after this image
+        // Set initial state on wrapper (positioning + visibility)
+        img.style.setProperty('--sketch-blur', '8px');
+        gsap.set(wrapper, { opacity: 0, y: 20, yPercent: -50 });
+
         const nextHeading = findNextTrigger(marker);
 
         requestAnimationFrame(() => {
-          // FADE IN: quick — completes by the time marker reaches 60% from top
-          // (only 40% of viewport height of scrolling)
+          // FADE IN
           gsap.timeline({
             scrollTrigger: {
               trigger: marker,
@@ -102,13 +168,19 @@
               end: 'top 60%',
               scrub: true,
             }
-          }).fromTo(img,
-            { '--sketch-blur': '8px', opacity: 0, y: 20, yPercent: -50 },
-            { '--sketch-blur': '0px', opacity: 1, y: 0, yPercent: -50, ease: 'none' }
+          })
+          .fromTo(wrapper,
+            { opacity: 0, y: 20, yPercent: -50 },
+            { opacity: 1, y: 0, yPercent: -50, ease: 'none' },
+            0
+          )
+          .fromTo(img,
+            { '--sketch-blur': '8px' },
+            { '--sketch-blur': '0px', ease: 'none' },
+            0
           );
 
-          // FADE OUT: stays sharp for longer, then fades quickly.
-          // Starts late (trigger at 70% — well into viewport) and ends fast (at 30%).
+          // FADE OUT
           if (nextHeading) {
             gsap.timeline({
               scrollTrigger: {
@@ -117,15 +189,10 @@
                 end: 'top 30%',
                 scrub: true,
               }
-            }).to(img, {
-              '--sketch-blur': '8px',
-              opacity: 0,
-              y: -20,
-              yPercent: -50,
-              ease: 'none',
-            });
+            })
+            .to(wrapper, { opacity: 0, y: -20, yPercent: -50, ease: 'none' }, 0)
+            .to(img, { '--sketch-blur': '8px', ease: 'none' }, 0);
           } else {
-            // Last section: fade out near end of article
             gsap.timeline({
               scrollTrigger: {
                 trigger: postContent,
@@ -133,13 +200,9 @@
                 end: 'bottom 30%',
                 scrub: true,
               }
-            }).to(img, {
-              '--sketch-blur': '8px',
-              opacity: 0,
-              y: -20,
-              yPercent: -50,
-              ease: 'none',
-            });
+            })
+            .to(wrapper, { opacity: 0, y: -20, yPercent: -50, ease: 'none' }, 0)
+            .to(img, { '--sketch-blur': '8px', ease: 'none' }, 0);
           }
         });
       });
@@ -147,6 +210,9 @@
 
     function setupMobile() {
       images.forEach(img => {
+        // Wrap for background isolation
+        const wrapper = wrapImage(img);
+
         img.classList.add('sketch-reveal-pending');
         gsap.set(img, { opacity: 0, y: 20, '--sketch-blur': '8px' });
 
@@ -179,7 +245,7 @@
           { threshold: 0.3 }
         );
 
-        observer.observe(img);
+        observer.observe(wrapper);
         observers.push(observer);
       });
     }
@@ -193,7 +259,6 @@
       }
     }
 
-    // Remove previous matchMedia listener if re-running init
     if (desktopMQListener) {
       desktopMQ.removeEventListener('change', desktopMQListener);
     }
@@ -204,12 +269,11 @@
   }
 
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', init);
+    document.addEventListener('DOMContentLoaded', () => init());
   } else {
     init();
   }
 
-  // Allow re-initialisation when images are added/removed/replaced
   window.addEventListener('sketch-reveal-refresh', () => {
     init();
   });

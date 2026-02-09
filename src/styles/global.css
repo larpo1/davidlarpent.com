@@ -389,7 +389,8 @@ a:hover {
 /* Feature Image */
 .feature-image-wrapper {
   margin-top: 1.5rem;
-  background: var(--color-background);
+  background: color-mix(in srgb, var(--color-background) 55%, transparent);
+  isolation: isolate;
 }
 
 .feature-image-wrapper:empty {
@@ -507,25 +508,63 @@ a:hover {
   mix-blend-mode: multiply;
 }
 
-/* Desktop: when scroll-reveal activates, switch to fixed positioning in columns 5-6 */
+/* After canvas processing removes white background, blend mode is no longer needed */
+[data-theme="dark"] .sketch-illustration.sketch-bg-processed,
+:root:not([data-theme="light"]) .sketch-illustration.sketch-bg-processed {
+  mix-blend-mode: normal;
+}
+[data-theme="light"] .sketch-illustration.sketch-bg-processed {
+  mix-blend-mode: normal;
+}
+
+/* Wrapper isolates mix-blend-mode from grid guides, semi-transparent to let guides hint through */
+.sketch-reveal-wrapper {
+  isolation: isolate;
+  background: color-mix(in srgb, var(--color-background) 55%, transparent);
+  overflow: hidden;
+}
+
+/* Desktop: wrapper is fixed in right margin (columns 5-6) */
 @media (min-width: 1201px) {
-  .sketch-illustration.sketch-reveal-active {
+  .sketch-reveal-wrapper {
     position: fixed;
     top: 50%;
-    /* Vertical centering handled by GSAP yPercent: -50 (CSS transform gets overwritten) */
     left: calc(var(--grid-margin) + var(--grid-col) * 4);
     right: var(--grid-margin);
-    width: auto;
     max-width: calc(var(--grid-col) * 2);
+    max-height: 70vh;
+    z-index: 10;
+    pointer-events: none;
+    opacity: 0;
+    will-change: opacity, transform;
+  }
+
+  /* Image fills wrapper, wrapper handles positioning */
+  .sketch-reveal-wrapper .sketch-illustration {
+    display: block;
+    width: auto;
+    max-width: 100%;
     max-height: 70vh;
     height: auto;
     object-fit: contain;
-    z-index: 10;
-    pointer-events: none;
     margin: 0;
-    opacity: 0;
-    will-change: opacity, filter, transform;
+    border-radius: 0;
     --sketch-blur: 8px;
+  }
+}
+
+/* Mobile: wrapper is inline block */
+@media (max-width: 1200px) {
+  .sketch-reveal-wrapper {
+    display: block;
+    margin: 1.5rem auto;
+    max-width: 100%;
+    border-radius: 4px;
+  }
+
+  .sketch-reveal-wrapper .sketch-illustration {
+    margin: 0;
+    border-radius: 0;
   }
 }
 

@@ -45,7 +45,7 @@ test.describe('Sketch Scroll Reveal', () => {
     await expect(sketchImage).toHaveClass(/sketch-illustration/);
   });
 
-  // Test 2: desktop: sketch images get sketch-reveal-active class
+  // Test 2: desktop: sketch images are wrapped in a fixed-position wrapper
   test('desktop: inline sketch images are hidden', async ({ page, browserName }, testInfo) => {
     // This test only makes sense at desktop width (>1200px)
     const isDesktop = testInfo.project.name === 'Desktop Chrome' || testInfo.project.name === 'Desktop Firefox';
@@ -59,18 +59,18 @@ test.describe('Sketch Scroll Reveal', () => {
     // Wait for JS to run
     await page.waitForTimeout(500);
 
-    // The .sketch-illustration should have .sketch-reveal-active class on desktop
-    const sketchImage = page.locator('.post-content .sketch-illustration');
-    await expect(sketchImage).toHaveClass(/sketch-reveal-active/);
+    // The .sketch-illustration should be inside a .sketch-reveal-wrapper on desktop
+    const wrapper = page.locator('.sketch-reveal-wrapper');
+    await expect(wrapper).toHaveCount(1);
 
-    // It should be position: fixed (moved to right margin)
-    const position = await sketchImage.evaluate((el: Element) => {
+    // The wrapper should be position: fixed (moved to right margin)
+    const position = await wrapper.evaluate((el: Element) => {
       return window.getComputedStyle(el).position;
     });
     expect(position).toBe('fixed');
   });
 
-  // Test 3: desktop: sketch-reveal-active element exists in right margin
+  // Test 3: desktop: sketch-reveal-wrapper exists in right margin
   test('desktop: fixed clone exists in right margin', async ({ page }, testInfo) => {
     const isDesktop = testInfo.project.name === 'Desktop Chrome' || testInfo.project.name === 'Desktop Firefox';
     test.skip(!isDesktop, 'Desktop-only test');
@@ -83,11 +83,11 @@ test.describe('Sketch Scroll Reveal', () => {
     // Wait for JS to set up
     await page.waitForTimeout(500);
 
-    const fixedImage = page.locator('.sketch-reveal-active');
-    await expect(fixedImage).toHaveCount(1);
+    const wrapper = page.locator('.sketch-reveal-wrapper');
+    await expect(wrapper).toHaveCount(1);
   });
 
-  // Test 4: desktop: sketch-reveal-active is positioned to the right of content
+  // Test 4: desktop: wrapper is positioned to the right of content
   test('desktop: fixed clone is positioned to the right of content', async ({ page }, testInfo) => {
     const isDesktop = testInfo.project.name === 'Desktop Chrome' || testInfo.project.name === 'Desktop Firefox';
     test.skip(!isDesktop, 'Desktop-only test');
@@ -100,28 +100,28 @@ test.describe('Sketch Scroll Reveal', () => {
     // Wait for JS to set up
     await page.waitForTimeout(500);
 
-    const fixedImage = page.locator('.sketch-reveal-active');
-    await expect(fixedImage).toHaveCount(1);
+    const wrapper = page.locator('.sketch-reveal-wrapper');
+    await expect(wrapper).toHaveCount(1);
 
     // Get bounding rects and computed styles
     const positions = await page.evaluate(() => {
       const content = document.querySelector('.post-content');
-      const img = document.querySelector('.sketch-reveal-active') as HTMLElement;
-      if (!content || !img) return null;
+      const el = document.querySelector('.sketch-reveal-wrapper') as HTMLElement;
+      if (!content || !el) return null;
       const contentRect = content.getBoundingClientRect();
-      const imgStyle = window.getComputedStyle(img);
+      const elStyle = window.getComputedStyle(el);
       return {
         contentRight: contentRect.right,
-        imgPosition: imgStyle.position,
-        imgRight: imgStyle.right,
+        imgPosition: elStyle.position,
+        imgRight: elStyle.right,
         viewportWidth: window.innerWidth,
       };
     });
 
     expect(positions).not.toBeNull();
-    // Verify the image has fixed positioning in the right margin
+    // Verify the wrapper has fixed positioning in the right margin
     expect(positions!.imgPosition).toBe('fixed');
-    // The image should have a right offset that places it in the right margin
+    // The wrapper should have a right offset that places it in the right margin
     const rightValue = parseFloat(positions!.imgRight);
     expect(rightValue).toBeGreaterThan(0);
   });
@@ -149,7 +149,7 @@ test.describe('Sketch Scroll Reveal', () => {
     expect(display).not.toBe('none');
   });
 
-  // Test 6: mobile: no fixed-position images exist
+  // Test 6: mobile: no fixed-position wrappers exist
   test('mobile: no fixed clones exist', async ({ page }, testInfo) => {
     const isMobile = testInfo.project.name === 'Mobile' || testInfo.project.name === 'Tablet';
     test.skip(!isMobile, 'Mobile/tablet-only test');
@@ -161,9 +161,15 @@ test.describe('Sketch Scroll Reveal', () => {
     // Wait for JS
     await page.waitForTimeout(500);
 
-    // On mobile, images should NOT have sketch-reveal-active (that's desktop only)
-    const activeImages = page.locator('.sketch-reveal-active');
-    await expect(activeImages).toHaveCount(0);
+    // On mobile, wrappers should not be position: fixed
+    const wrappers = page.locator('.sketch-reveal-wrapper');
+    const count = await wrappers.count();
+    if (count > 0) {
+      const position = await wrappers.first().evaluate((el: Element) => {
+        return window.getComputedStyle(el).position;
+      });
+      expect(position).not.toBe('fixed');
+    }
   });
 
   // Test 7: sketch images invert in dark mode

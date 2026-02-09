@@ -304,25 +304,27 @@
     }
 
     // Click handler for existing sketch illustrations - opens modal in edit mode
-    // On desktop, fixed-position scroll-reveal images all stack at the same
-    // position (only one visible at a time via opacity). The browser routes
-    // clicks to the topmost element in DOM order regardless of opacity, so
-    // we find the actually-visible image among all .sketch-reveal-active ones.
+    // On desktop, fixed-position scroll-reveal images are inside .sketch-reveal-wrapper
+    // divs that all stack at the same position (only one visible at a time via opacity).
+    // The browser routes clicks to the topmost element in DOM order regardless of opacity,
+    // so we find the actually-visible image by checking wrapper opacity.
     contentEditable.addEventListener('click', function(e) {
       var clicked = e.target.closest('.sketch-illustration');
       if (!clicked) return;
 
       var img = clicked;
-      // If this image has scroll-reveal active class, find the visible one instead
-      if (clicked.classList.contains('sketch-reveal-active')) {
-        var allActive = contentEditable.querySelectorAll('.sketch-illustration.sketch-reveal-active');
+      // If this image is inside a scroll-reveal wrapper, find the visible one instead
+      var wrapper = clicked.closest('.sketch-reveal-wrapper');
+      if (wrapper) {
+        var allWrappers = contentEditable.querySelectorAll('.sketch-reveal-wrapper');
         var bestImg = null;
         var bestOpacity = 0;
-        for (var i = 0; i < allActive.length; i++) {
-          var op = parseFloat(window.getComputedStyle(allActive[i]).opacity);
-          if (op > bestOpacity) {
+        for (var i = 0; i < allWrappers.length; i++) {
+          var op = parseFloat(window.getComputedStyle(allWrappers[i]).opacity);
+          var wrapperImg = allWrappers[i].querySelector('.sketch-illustration');
+          if (op > bestOpacity && wrapperImg) {
             bestOpacity = op;
-            bestImg = allActive[i];
+            bestImg = wrapperImg;
           }
         }
         if (!bestImg || bestOpacity < 0.1) return;
