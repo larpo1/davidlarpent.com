@@ -39,6 +39,11 @@ export async function GET(context: APIContext) {
     items,
     customData: `<language>en-us</language>
 <managingEditor>david@davidlarpent.com (David Larpent)</managingEditor>
-<webMaster>david@davidlarpent.com (David Larpent)</webMaster>`,
+<webMaster>david@davidlarpent.com (David Larpent)</webMaster>
+<image>
+  <url>https://davidlarpent.com/og-default.jpg</url>
+  <title>David Larpent</title>
+  <link>https://davidlarpent.com/</link>
+</image>`,
   });
 }

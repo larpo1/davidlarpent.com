@@ -31,8 +31,10 @@ const websiteSchema = {
 };
 ---
 
-<Base title="David Larpent">
+<Base title="David Larpent" keywords={["AI", "philosophy", "cognitive science", "product strategy", "essays"]}>
   <script slot="head" type="application/ld+json" set:html={JSON.stringify(websiteSchema)} />
+
+  <h1 class="sr-only">David Larpent — Notes on AI, Philosophy, and Product</h1>
 
   <div class="tab-navigation">
     <button

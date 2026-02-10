@@ -123,6 +123,12 @@ const imageURL = new URL(image, Astro.site);
       <main>
         <slot />
       </main>
+      <footer class="site-footer">
+        <nav class="footer-nav">
+          <a href="/about">About</a>
+          <a href="/rss.xml">RSS</a>
+        </nav>
+      </footer>
     </div>
 
     <script>

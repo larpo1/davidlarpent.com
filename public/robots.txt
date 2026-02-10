@@ -60,5 +60,5 @@ Allow: /
 User-agent: LinkedInBot
 Allow: /
 
-# Be respectful to servers
+# Crawl-delay for non-search-engine bots (Googlebot/Bingbot ignore this directive)
 Crawl-delay: 1
