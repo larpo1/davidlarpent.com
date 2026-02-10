@@ -68,15 +68,15 @@ The output might be: “Building X has cleanliness scores 1.2 points below marke
 
 That’s decision support.
 
-## What makes this possible
+## What makes this possible?
+
+<img src="/images/posts/decision-systems/sketch-1770670950.jpg" alt="" class="sketch-illustration">
 
 Two things have changed that make decision systems viable now.
 
 **First, large language models are good at synthesis.** Given multiple pieces of information, they can combine them, reason across them, and produce a coherent recommendation. This is what they’re trained to do. The synthesis work that used to require a skilled analyst can now be partially automated.
 
 **Second, embedding models make unstructured data queryable.** Reviews, feedback, support tickets, free-text survey responses. This data used to sit in databases doing nothing because it didn’t fit into structured reports. Now you can embed it, search it semantically, and include it in synthesis alongside your structured metrics.
-
-<img src="/images/posts/decision-systems/sketch-1770670950.jpg" alt="a diagram representing multiple vector embeddings on a graph" class="sketch-illustration" data-prompt="Square 1:1 aspect ratio. Minimal architectural line drawing on a pure white background. Fine black ink lines only. Clean, precise, spare linework. No shading, no cross-hatching, no fills, no gradients. Absolutely no borders, no background textures or effects. Just architectural hand drawn lines on white. Think Dieter Rams sketch meets architectural blueprint. Abstract where possible. Include minimal handwritten labels in a loose architect's hand — like notes on a draft, not typeset text. Elegant negative space. The drawing should feel like a diagram that became art. Subject: a diagram representing multiple vector embeddings on a graph">
 
 But these capabilities only work if the underlying data architecture supports them. Point a language model at messy, inconsistent data and you’ll get confident-sounding nonsense.
 
