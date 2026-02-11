@@ -1,7 +1,7 @@
 ---
 title: Ralph Loops
 date: 2026-01-30T00:00:00.000Z
-description: How to run Claude Code like your Charles Montgomery Burns
+description: 'How to run Claude Code like you''re Charles Montgomery Burns'
 draft: false
 tags:
   - AI
