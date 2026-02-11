@@ -6,7 +6,6 @@ import EditToolbar from '../components/EditToolbar.astro';
 import SyndicationModal from '../components/SyndicationModal.astro';
 import ImageGenPanel from '../components/ImageGenPanel.astro';
 import SketchScrollReveal from '../components/SketchScrollReveal.astro';
-import NewsletterSignup from '../components/NewsletterSignup.astro';
 
 interface Props {
   title: string;
@@ -524,12 +523,9 @@ const breadcrumbSchema = {
     if (!url) return;
     try {
       await navigator.clipboard.writeText(url);
-      const span = copyBtn.querySelector('span');
-      if (span) {
-        const original = span.textContent;
-        span.textContent = 'Copied!';
-        setTimeout(() => { span.textContent = original; }, 2000);
-      }
+      const originalSVG = copyBtn.innerHTML;
+      copyBtn.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>';
+      setTimeout(() => { copyBtn.innerHTML = originalSVG; }, 2000);
     } catch (e) {
       // Fallback for older browsers
       const input = document.createElement('input');
