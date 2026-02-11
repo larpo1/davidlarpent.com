@@ -83,7 +83,7 @@ The sweet spot is narrower than the hype suggests.
 
 ## The Two-Terminal Problem
 
-If you run a separate Claude instance as “PM” to plan work while Ralph builds, you’ll discover something amusing: the PM will immediately try to do the work itself.
+If you run a separate Claude instance as “PM” to plan work while Ralph builds, you’ll discover the PM will often get over excited and try to do the work itself.
 
 Thirty seconds into its planning role, mine was already writing React components. Couldn’t help itself. Watching work exist without doing it is apparently as hard for AI as it is for that guy in every standup who can’t stop volunteering.
 
