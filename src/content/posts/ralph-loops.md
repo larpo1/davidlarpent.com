@@ -99,11 +99,9 @@ The fix is a `PM.md` file that repeatedly insists it stay in its lane. Even then
 
 ## So Why Bother?
 
-Because it’s an entertaining way to do things you don’t care that much about.
-
 Because there’s something delightful about waking up to a feature that didn’t exist when you went to sleep.
 
-Because it forces you to think clearly about what you actually want, which turns out to be useful even when humans are writing the code.
+Because it forces you to think clearly about what you actually want, which is always useful.
 
 And because I suspect this is a preview of something.
 
