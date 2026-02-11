@@ -1,0 +1,151 @@
+---
+interface Props {
+  variant?: 'card' | 'inline' | 'icon';
+}
+
+const { variant = 'card' } = Astro.props;
+---
+
+{variant === 'card' ? (
+  <div class="newsletter-signup" data-newsletter-wrapper>
+    <h3>Get new essays by email</h3>
+    <form class="newsletter-form" data-newsletter-form>
+      <input
+        type="email"
+        class="newsletter-input"
+        placeholder="your@email.com"
+        required
+        autocomplete="email"
+        data-newsletter-email
+      />
+      <button type="submit" class="newsletter-button" data-newsletter-submit>
+        Subscribe
+      </button>
+    </form>
+    <div class="newsletter-status" data-newsletter-status></div>
+  </div>
+) : variant === 'icon' ? (
+  <div class="share-newsletter-wrapper" data-newsletter-wrapper>
+    <button class="share-control-btn share-newsletter-toggle" type="button" title="Subscribe by email">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 4L12 13 2 4"/></svg>
+    </button>
+    <div class="share-newsletter-popover" data-open="false">
+      <form class="share-newsletter-form" data-newsletter-form>
+        <input
+          type="email"
+          class="share-newsletter-input"
+          placeholder="your@email.com"
+          required
+          autocomplete="email"
+          data-newsletter-email
+        />
+        <button type="submit" class="share-newsletter-submit" data-newsletter-submit>
+          Go
+        </button>
+      </form>
+      <div class="newsletter-status" data-newsletter-status></div>
+    </div>
+  </div>
+) : (
+  <div class="footer-newsletter-wrapper" data-newsletter-wrapper>
+    <div class="footer-newsletter">
+      <form class="newsletter-form" data-newsletter-form>
+        <input
+          type="email"
+          class="newsletter-input"
+          placeholder="your@email.com"
+          required
+          autocomplete="email"
+          data-newsletter-email
+        />
+        <button type="submit" class="newsletter-button" data-newsletter-submit>
+          Subscribe
+        </button>
+      </form>
+    </div>
+    <div class="newsletter-status" data-newsletter-status style="text-align: center;"></div>
+  </div>
+)}
+
+<script>
+  // Newsletter form submission (all variants)
+  document.querySelectorAll('[data-newsletter-form]').forEach(form => {
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const wrapper = form.closest('[data-newsletter-wrapper]');
+      const emailInput = form.querySelector('[data-newsletter-email]') as HTMLInputElement;
+      const submitBtn = form.querySelector('[data-newsletter-submit]') as HTMLButtonElement;
+      const statusEl = wrapper?.querySelector('[data-newsletter-status]') as HTMLElement | null;
+
+      const email = emailInput.value.trim();
+      if (!email) return;
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = submitBtn.textContent === 'Go' ? '...' : 'Subscribing...';
+      if (statusEl) {
+        statusEl.textContent = '';
+        statusEl.className = 'newsletter-status';
+      }
+
+      try {
+        const response = await fetch('/api/subscribe', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email }),
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          if (statusEl) {
+            statusEl.textContent = 'Check your email to confirm.';
+            statusEl.className = 'newsletter-status success';
+          }
+          emailInput.value = '';
+        } else {
+          if (statusEl) {
+            statusEl.textContent = data.message || 'Something went wrong.';
+            statusEl.className = 'newsletter-status error';
+          }
+        }
+      } catch {
+        if (statusEl) {
+          statusEl.textContent = 'Something went wrong. Try again.';
+          statusEl.className = 'newsletter-status error';
+        }
+      } finally {
+        submitBtn.disabled = false;
+        const isIconVariant = form.classList.contains('share-newsletter-form');
+        submitBtn.textContent = isIconVariant ? 'Go' : 'Subscribe';
+      }
+    });
+  });
+
+  // Icon variant: toggle popover
+  document.querySelectorAll('.share-newsletter-toggle').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const wrapper = btn.closest('.share-newsletter-wrapper');
+      const popover = wrapper?.querySelector('.share-newsletter-popover') as HTMLElement;
+      if (!popover) return;
+
+      const isOpen = popover.getAttribute('data-open') === 'true';
+      popover.setAttribute('data-open', isOpen ? 'false' : 'true');
+
+      if (!isOpen) {
+        const input = popover.querySelector('.share-newsletter-input') as HTMLInputElement;
+        input?.focus();
+      }
+    });
+  });
+
+  // Close popover on click outside
+  document.addEventListener('click', (e) => {
+    document.querySelectorAll('.share-newsletter-wrapper').forEach(wrapper => {
+      if (!wrapper.contains(e.target as Node)) {
+        const popover = wrapper.querySelector('.share-newsletter-popover') as HTMLElement;
+        popover?.setAttribute('data-open', 'false');
+      }
+    });
+  });
+</script>

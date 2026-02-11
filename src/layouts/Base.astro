@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css';
+import NewsletterSignup from '../components/NewsletterSignup.astro';
 
 interface Props {
   title: string;
@@ -128,6 +129,7 @@ const imageURL = new URL(image, Astro.site);
           <a href="/about">About</a>
           <a href="/rss.xml">RSS</a>
         </nav>
+        <NewsletterSignup variant="inline" />
       </footer>
     </div>
 
