@@ -1,7 +1,7 @@
 ---
-title: On Ralph Loops
+title: Ralph Loops
 date: 2026-01-30T00:00:00.000Z
-description: Or how to run Claude Code like a sweatshop
+description: How to run Claude Code like your Charles Montgomery Burns
 draft: false
 tags:
   - AI
@@ -17,7 +17,7 @@ There’s a technique doing the rounds called “Ralph Wiggum loops.” Named af
 
 The idea is that you spin up one Claude Code instance as your PM to work on tasks, todos, docs and tests and limit it to iteratively update only a CLAUDE.md file. You then spin up a second Claude Code instance (Ralph) which you run in a bash loop, picking tasks, executing, going again. 
 
-I’ve been playing with this. It’s amusing.
+I’ve been playing with this. It works! Sort of.
 
 ## The basic setup
 
