@@ -33,15 +33,7 @@ It picks up where it left off because the codebase has changed. The tests that w
 
 Someone made a plugin for this. Because of course they did.
 
-## ”Pretengineering”
-
-You heard it here first. OK fine. “Vibe Coding”. Whatever. 
-
-You’re asking an AI to do work. It does some work. Then it tries to leave. You don’t let it leave. It sighs and does more work. This continues until either success or you run out of money.
-
-This is how you train a puppy, or solve a Rubik’s cube by randomly turning bits ‘til the colours line up.
-
-## How to start
+## The Setup
 
 ### Option 1: Artisanal Hand-Crafted Loop
 
