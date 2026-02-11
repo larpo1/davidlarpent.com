@@ -126,6 +126,10 @@
     }
 
     function wrapImage(img: HTMLImageElement): HTMLElement {
+      // Remove loading="lazy" — it prevents images from loading inside
+      // opacity:0 fixed-position wrappers (browser thinks they're off-screen)
+      img.removeAttribute('loading');
+
       const wrapper = document.createElement('div');
       wrapper.className = 'sketch-reveal-wrapper';
       img.parentElement!.insertBefore(wrapper, img);

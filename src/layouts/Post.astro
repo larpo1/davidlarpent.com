@@ -6,6 +6,7 @@ import EditToolbar from '../components/EditToolbar.astro';
 import SyndicationModal from '../components/SyndicationModal.astro';
 import ImageGenPanel from '../components/ImageGenPanel.astro';
 import SketchScrollReveal from '../components/SketchScrollReveal.astro';
+import NewsletterSignup from '../components/NewsletterSignup.astro';
 
 interface Props {
   title: string;
@@ -132,7 +133,7 @@ const breadcrumbSchema = {
         </div>
         <div class="feature-image-wrapper" data-slug={slug} data-title={title} data-description={description}>
           {featureImage ? (
-            <img src={featureImage} alt={title} class="feature-image sketch-illustration" loading="lazy" />
+            <img src={featureImage} alt={title} class="feature-image sketch-illustration" />
           ) : isDev ? (
             <div class="feature-image-placeholder" title="Click to generate feature image">
               <svg width="120" height="120" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -175,6 +176,24 @@ const breadcrumbSchema = {
           </ul>
         </aside>
       )}
+
+      <div class="share-links">
+        <a href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(`https://davidlarpent.com/posts/${slug}`)}&text=${encodeURIComponent(title)}`} target="_blank" rel="noopener" class="share-link" title="Share on X">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+        </a>
+        <a href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(`https://davidlarpent.com/posts/${slug}`)}`} target="_blank" rel="noopener" class="share-link" title="Share on LinkedIn">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
+        </a>
+        <a href={`https://substack.com/note?body=${encodeURIComponent(title + ' ' + `https://davidlarpent.com/posts/${slug}`)}`} target="_blank" rel="noopener" class="share-link" title="Share on Substack">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M22.539 8.242H1.46V5.406h21.08v2.836zM1.46 10.812V24L12 18.11 22.54 24V10.812H1.46zM22.54 0H1.46v2.836h21.08V0z"/></svg>
+        </a>
+        <a href={`mailto:?subject=${encodeURIComponent(title)}&body=${encodeURIComponent(`https://davidlarpent.com/posts/${slug}`)}`} class="share-link" title="Email this">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 4L12 13 2 4"/></svg>
+        </a>
+        <button class="share-link copy-link-button" data-url={`https://davidlarpent.com/posts/${slug}`} title="Copy link">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+        </button>
+      </div>
 
       <a href="/" class="back-link">← Back to notes</a>
     </article>
@@ -496,3 +515,29 @@ const breadcrumbSchema = {
     });
   </script>
 )}
+
+<script>
+  // Copy link button (works in production too)
+  const copyBtn = document.querySelector('.copy-link-button') as HTMLButtonElement;
+  copyBtn?.addEventListener('click', async () => {
+    const url = copyBtn.dataset.url;
+    if (!url) return;
+    try {
+      await navigator.clipboard.writeText(url);
+      const span = copyBtn.querySelector('span');
+      if (span) {
+        const original = span.textContent;
+        span.textContent = 'Copied!';
+        setTimeout(() => { span.textContent = original; }, 2000);
+      }
+    } catch (e) {
+      // Fallback for older browsers
+      const input = document.createElement('input');
+      input.value = url;
+      document.body.appendChild(input);
+      input.select();
+      document.execCommand('copy');
+      document.body.removeChild(input);
+    }
+  });
+</script>
