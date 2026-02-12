@@ -55,7 +55,7 @@ We’re not just risking a less capable workforce. We’re risking less capable 
 
 I paint. Not very well. Oils, mostly. I like the smell of turps. I also make music, badly, for my own amusement.  
 
-I have noticed that since Suno came out I lost some motivation to make music and stopped doing it. Not because I started using Suno. I hate the whole idea of Suno and would never use it, that's not the point. The point is Suno cheapened the creative process to close to zero and that had the effect of making the effort of music creation feel a little pointless. 
+I have noticed that since Suno came out I lost some motivation to make music - I all but stopped doing it. Not because I started using Suno. I hate the whole idea of Suno and would never use it, that’s not the point. The point is Suno cheapened the creative process to close to zero and that had the effect of making the effort of music creation feel a little pointless. 
 
 I don’t paint to have paintings. I paint because the process in engrossing.  The frustration when the colour isn’t right. The moment where you do something unplanned and it looks much better than you intended. The way hyper-focus kicks in and time disappears. 
 
