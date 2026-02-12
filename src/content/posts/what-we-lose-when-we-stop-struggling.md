@@ -53,7 +53,7 @@ We’re not just risking a less capable workforce. We’re risking less capable 
 
 I paint. Not very well. Oils, mostly. I like the smell of turps. I also make music, badly, for my own amusement.  
 
-I don’t paint to have paintings. I paint because of what happens when I paint.  The engrossing frustration when the colour isn’t right. The moment where your hand does something unplanned and it looks way cooler than you intended. The way hyper focus kicks in and time disappears. 
+I don’t paint to have paintings. I paint because the process in engrossing.  The frustration when the colour isn’t right. The moment where you do something unplanned and it looks much better than you intended. The way hyper-focus kicks in and time disappears. 
 
 That stuff doesn’t happen when you type a prompt. The output might look similar. The experience is nothing alike.
 
