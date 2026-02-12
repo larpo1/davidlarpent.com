@@ -75,7 +75,7 @@ I’m not worried about AI putting creative people out of work. I’m worried ab
 
 ## It _is_ a Choice
 
-None of this is an argument against AI. I use it constantly. I’m running an AI assistant right now that helps me think, research, write, and manage my work. It makes me better at my job in ways I wouldn’t want to give up.
+None of this is an argument against AI. I use it constantly. I’m running an AI assistant right now that helps me think, research, and manage my work. It makes me better at my job in ways I wouldn’t want to give up.
 
 But we be deliberate about _which_ parts of our work we hand over.
 
