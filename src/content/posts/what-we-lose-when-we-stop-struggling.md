@@ -21,7 +21,7 @@ The Anthropic study is not the first to make this point. A study in Nature last 
 
 This is not a small thing. 
 
-## The Speed Trap
+## The Need for Speed?
 
 Sometimes speed is the game. A trader has milliseconds. A pilot in an emergency has seconds. An A&E doctor triaging patients needs answers now. In these contexts, AI supported decision making is already proving invaluable. Faster is better.
 
