@@ -55,6 +55,8 @@ We’re not just risking a less capable workforce. We’re risking less capable 
 
 I paint. Not very well. Oils, mostly. I like the smell of turps. I also make music, badly, for my own amusement.  
 
+I have noticed that since Suno came out I lost some motivation to make music and stopped doing it. Not because I started using Suno. I hate the whole idea of Suno and would never use it, that's not the point. The point is Suno cheapened the creative process to close to zero and that had the effect of making the effort of music creation feel a little pointless. 
+
 I don’t paint to have paintings. I paint because the process in engrossing.  The frustration when the colour isn’t right. The moment where you do something unplanned and it looks much better than you intended. The way hyper-focus kicks in and time disappears. 
 
 That stuff doesn’t happen when you type a prompt. The output might look similar. The experience is nothing alike.
@@ -67,7 +69,7 @@ Not difficulty for its own sake. Difficulty as the texture of engagement. The th
 
 What happens when we commoditise the output?
 
-When the thing you can make in 30 seconds with a prompt is indistinguishable from the thing I sweated over for 30 hours, something strange happens to the value of both. Not the market value. The felt value. The meaning.
+When the thing you can make in 30 seconds with a prompt is indistinguishable from the thing I sweated over for 30 hours, something negative happens to the value of both. Not the market value. The felt value. The meaning.
 
 I’m not worried about AI putting creative people out of work. I’m worried about AI putting creative people out of the _experience_ of being creative. Making the struggle feel pointless. 
 
