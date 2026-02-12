@@ -23,11 +23,11 @@ This is not a small thing. 
 
 ## The Speed Trap
 
-Sometimes speed is the game. A trader has milliseconds. A pilot in an emergency has seconds. An A&E doctor triaging patients needs answers now. In these contexts, give people all the AI support you can. Faster is better because the clock is the constraint.
+Sometimes speed is the game. A trader has milliseconds. A pilot in an emergency has seconds. An A&E doctor triaging patients needs answers now. In these contexts, AI supported decision making is already proving invaluable. Faster is better.
 
-But most decisions aren’t like that.
+But many decisions aren’t like that.
 
-Most decisions benefit from sitting with them. Turning them over. Feeling the friction of competing considerations. 
+Arguably most decisions benefit from sitting with them. Turning them over. Feeling the friction of competing considerations. 
 
 Often what good decisions really need isn’t speed, but the slow work of judgment forming. Judgment doesn’t form when you skip to the answer.
 
