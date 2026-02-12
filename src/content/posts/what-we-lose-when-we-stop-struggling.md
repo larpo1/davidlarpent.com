@@ -15,7 +15,7 @@ I wrote this the old fashioned way. Partly to conjure some new neural pathways i
 
 [Anthropic researchers just published a study](https://www.anthropic.com/research/AI-assistance-coding-skills) showing that developers who use AI assistance score 17% lower on understanding the code they just wrote. They finished the task slightly faster. They apparently learned almost nothing.
 
-The researchers watched how people worked. Some handed everything to the AI and breezed through. Others asked the AI questions, then wrote the code themselves. The first group was quickest, but only the second group understood what they’d built.
+Researchers watched how people worked. Some handed everything to the AI and breezed through. Others asked the AI questions, then wrote the code themselves. The first group was quickest, but only the second group understood what they’d built.
 
 The Anthropic study is not the first to make this point. A study in Nature last year concluded: “[Human-generative AI collaboration enhances task performance but undermines human’s intrinsic motivation](https://www.nature.com/articles/s41598-025-98385-2)”.
 
