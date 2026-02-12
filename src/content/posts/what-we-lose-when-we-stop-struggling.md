@@ -13,7 +13,7 @@ featureImage: /images/posts/what-we-lose-when-we-stop-struggling/sketch-17705081
 ---
 I wrote this the old fashioned way. Partly to conjure some new neural pathways into being. Partly so I can get my lines right with my kids.  
 
-[Anthropic just published a study](https://www.anthropic.com/research/AI-assistance-coding-skills) showing that developers who use AI assistance score 17% lower on understanding the code they just wrote. They finished the task slightly faster. They apparently learned almost nothing.
+[Anthropic researchers just published a study](https://www.anthropic.com/research/AI-assistance-coding-skills) showing that developers who use AI assistance score 17% lower on understanding the code they just wrote. They finished the task slightly faster. They apparently learned almost nothing.
 
 The researchers watched how people worked. Some handed everything to the AI and breezed through. Others asked the AI questions, then wrote the code themselves. The first group was quickest, but only the second group understood what they’d built.
 
