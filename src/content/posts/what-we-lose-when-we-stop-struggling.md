@@ -77,7 +77,7 @@ I’m not worried about AI putting creative people out of work. I’m worried ab
 
 None of this is an argument against AI. I use it constantly. I’m running an AI assistant right now that helps me think, research, and manage my work. It makes me better at my job in ways I wouldn’t want to give up.
 
-But we be deliberate about _which_ parts of our work we hand over.
+But we can choose to be deliberate about _which_ parts of our work we hand over.
 
 The stuff that’s mechanical, repetitive, or where speed genuinely matters? Take it. The stuff where the struggle is the learning? Use it as a thought partner a trainer, a coach. Use it in every way that helps you learn, just don’t let give you the answer.
 
