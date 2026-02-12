@@ -69,7 +69,7 @@ When the thing you can make in 30 seconds with a prompt is indistinguishable fro
 
 I’m not worried about AI putting creative people out of work. I’m worried about AI putting creative people out of the _experience_ of being creative. Making the struggle feel pointless. 
 
-The Choice
+## It _is_ a Choice
 
 None of this is an argument against AI. I use it constantly. I’m running an AI assistant right now that helps me think, research, write, and manage my work. It makes me better at my job in ways I wouldn’t want to give up.
 
