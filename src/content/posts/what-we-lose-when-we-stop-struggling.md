@@ -55,11 +55,11 @@ We’re not just risking a less capable workforce. We’re risking less capable 
 
 I paint. Not very well. Oils, mostly. I like the smell of turps. I also make music, badly, for my own amusement.  
 
-I have noticed that since Suno came out I lost some motivation to make music - in fact I all but stopped doing it. Not because I started using Suno. I hate the whole idea of Suno and would never use it, that’s not the point. The point is Suno cheapened the creative process to close to zero and that had the effect of making the effort of music creation feel a little pointless. It isn't pointless and I need to talk myself back into again (just never with Suno). 
+I have noticed that since Suno came out I lost some motivation to make music - in fact I all but stopped doing it. Not because I started using Suno. I hate the whole idea of Suno and would never use it, that’s not the point. The point is Suno cheapened the creative process to close to zero and that had the effect of making the effort of music creation feel a little pointless. It isn’t pointless and I need to talk myself back into again (just never with Suno). 
 
 Someone is probably working on Suno for oil painting. Please stop if you are and go do something else. But actually here it is clearer for me. I don’t paint to have paintings. I paint because the process in engrossing.  The frustration when the colour isn’t right. The moment where you do something unplanned and it looks much better than you intended. The way hyper-focus kicks in and time disappears. I used to get the same feeling from making crappy electronic music, but somehow the physical tactile reality of an oil painting is more resilient (for now) to the cheapening process of gen AI. 
 
-The point it: none of this good struggle happens when you type a prompt. The output might look similar. The experience is nothing alike.
+The point is: none of this good struggle happens when you type a prompt. The output might look similar. The experience is nothing alike.
 
 Humans have made art since we had hands and walls. Cave paintings from 36,000 years ago. Not because our ancestors needed interior decorating. Because there’s something in us that wants to make things. Wants to struggle with materials. Wants to leave a mark that says _I was here, and I made this, it was hard_.
 
