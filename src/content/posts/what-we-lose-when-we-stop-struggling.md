@@ -57,7 +57,7 @@ I don’t paint to have paintings. I paint because the process in engrossing.  
 
 That stuff doesn’t happen when you type a prompt. The output might look similar. The experience is nothing alike.
 
-Humans have made art since we had hands and walls. Cave paintings from 36,000 years ago. Not because our ancestors needed interior decorating. Because there’s something in us that wants to make things. Wants to struggle with materials. Wants to leave a mark that says _I was here, and I made this, and it was hard_.
+Humans have made art since we had hands and walls. Cave paintings from 36,000 years ago. Not because our ancestors needed interior decorating. Because there’s something in us that wants to make things. Wants to struggle with materials. Wants to leave a mark that says _I was here, and I made this, look at it_.
 
 The difficulty is the point.
 
