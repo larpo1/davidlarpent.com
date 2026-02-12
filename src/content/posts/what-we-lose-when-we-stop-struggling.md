@@ -97,7 +97,7 @@ For me it is something like this:
 
 **Offer to AI:** Research, summarisation, first drafts I’m going to heavily rewrite, scheduling, formatting, the mechanical parts of coding, anything where I already know what I think and just need it executed.
 
-**Take from AI:** challenge, thought partnership, different perspectives.
+**Take from AI:** challenge, thought partnership, different perspectives. 
 
 **Keep for myself:** Arriving at the answer. Critical thinking. The creative work I do for joy. The writing where I’m trying to figure out what I believe. The reps that build the skills I want to have.
 
