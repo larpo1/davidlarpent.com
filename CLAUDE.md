@@ -798,7 +798,9 @@ Before marking ANY test task [x] complete, you MUST:
 - Google Analytics (production only)
 - About page (editable in dev mode)
 - Git-push API endpoint (dev-only)
-- 214+ Playwright tests across 6 test files
+- Source notes system (Input tab, source detail pages, note parsing, add/delete/publish notes)
+- Source inline editing (metadata + note content, archive toggle, save-source API)
+- 288+ Playwright tests across 8 test files
 
 ---
 
@@ -866,10 +868,11 @@ npm run test:update   # Update baseline screenshots
 - **Content editing:** Title/description editable inline in dev. Content editable but footnotes locked (non-editable) to prevent corruption. Draft/published status toggled via pill on post detail view.
 - **Draft management:** Pill toggle on post detail view (dev only). Publishing sets date to today and git pushes. No separate /drafts page.
 - **TOC:** Always visible on desktop (>1200px). Toggle overlay on mobile/tablet.
-- **Tabs:** Homepage splits posts into "Work" (default) and "Not work" categories.
+- **Tabs:** Homepage splits content into Output (posts) and Input (sources) tabs.
 - **Syndication:** Full-screen modal with side-by-side LinkedIn/Substack columns. Dev-mode only. Both AI drafts generated in parallel on open. Editable preview with hashtag pills, compact link preview card (LinkedIn only), blue Copy button. Falls back to naive template if AI unavailable. Columns stack vertically on mobile.
 - **Image Generation:** Uses @google/genai with gemini-3-pro-image-preview (Nano Banana Pro) for inline sketch illustrations. Dev-mode only. Requires GOOGLE_AI_API_KEY.
 - **Scroll Reveal:** Uses GSAP + ScrollTrigger for scroll-scrubbed sketch illustration materialisation. Production dependency. Desktop uses scrub, mobile uses IntersectionObserver with timed animation.
+- **Source editing:** Source metadata (title, author, type, link, date, tags) editable inline in dev mode. Note content editable with blur-to-save. Archive toggle hides sources from production listings. API endpoint: `/api/save-source` (metadata, note content, and archive toggle modes). `/api/update-note` handles note publish toggle and delete.
 
 ---
 
@@ -894,6 +897,7 @@ npm run test:update   # Update baseline screenshots
 | 2026-02-06 | Syndication modal replaces direct clipboard copy | Editable preview, link card, hashtag pills, AI drafts |
 | 2026-02-06 | Two-phase syndication rollout | Phase 1 modal UX, Phase 2 AI generation |
 | 2026-02-07 | GSAP for scroll-scrubbed image reveal | Production reader-facing effect, scrub on desktop, IntersectionObserver on mobile |
+| 2026-02-26 | Inline editing for sources | Metadata + note content editable in dev, archived field for hiding from prod |
 
 ---
 
@@ -921,9 +925,11 @@ When ALL tasks are complete and build passes:
 ```
 src/
   content/posts/    # Markdown essays
-  pages/            # Astro pages (index, about, drafts)
+  content/sources/  # Source notes (books, articles, papers, podcasts)
+  pages/            # Astro pages (index, about, sources)
   layouts/          # Base.astro, Post.astro
   styles/           # global.css
+  lib/              # Shared utilities (parse-notes.ts)
 public/             # Static assets
 scripts/            # Publish/new-post tooling
 tests/              # Playwright tests
@@ -932,7 +938,7 @@ tests/              # Playwright tests
 ### Key Files
 - `src/styles/global.css` - All styling lives here
 - `src/layouts/Base.astro` - Site shell, header, theme toggle
-- `src/content/config.ts` - Post schema definition
+- `src/content/config.ts` - Post and source schema definitions
 - `astro.config.mjs` - Astro config, Vercel adapter
 - `playwright.config.ts` - Test configuration
 

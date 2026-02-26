@@ -34,31 +34,78 @@ const formattedDate = source.data.date.toLocaleDateString('en-US', {
   month: 'short',
   day: 'numeric'
 });
+
+const isoDate = source.data.date.toISOString().split('T')[0];
+const isArchived = source.data.archived ?? false;
+const sourceTypes = ['book', 'article', 'paper', 'podcast'];
 ---
 
 <Base
   title={`${source.data.title} | David Larpent`}
   description={`Notes on ${source.data.title} by ${source.data.author}`}
 >
-  <div class="source-detail">
+  <div class:list={['source-detail', { 'source-archived': isArchived }]}>
     <header class="source-header">
-      <span class="source-type-badge">{source.data.type}</span>
-      <h1 class="source-title">{source.data.title}</h1>
-      <p class="source-author-line">
-        {source.data.author} &middot; {formattedDate}
-      </p>
-      {source.data.link && (
-        <a href={source.data.link} class="source-link" target="_blank" rel="noopener noreferrer">
-          View source &rarr;
-        </a>
-      )}
-      {source.data.tags.length > 0 && (
-        <div class="post-tags" style="margin-top: 0.75rem;">
-          {source.data.tags.map(tag => (
-            <a href={`/tags/${tag.toLowerCase()}`} class="tag-link">
-              #{tag}
-            </a>
+      {isDev ? (
+        <select class="source-type-select" id="source-type">
+          {sourceTypes.map(t => (
+            <option value={t} selected={t === source.data.type}>{t}</option>
           ))}
+        </select>
+      ) : (
+        <span class="source-type-badge">{source.data.type}</span>
+      )}
+
+      <h1 class="source-title" contenteditable={isDev ? 'true' : undefined} id="source-title">{source.data.title}</h1>
+
+      <p class="source-author-line">
+        {isDev ? (
+          <span contenteditable="true" id="source-author">{source.data.author}</span>
+        ) : (
+          <Fragment>{source.data.author}</Fragment>
+        )}
+        &middot;
+        {isDev ? (
+          <input type="date" class="source-date-input" id="source-date" value={isoDate} />
+        ) : (
+          <Fragment>{formattedDate}</Fragment>
+        )}
+      </p>
+
+      {isDev ? (
+        <div class="source-link-edit">
+          <span class="source-link-label">Link:</span>
+          <input type="url" class="source-link-input" id="source-link" value={source.data.link || ''} placeholder="https://..." />
+        </div>
+      ) : (
+        source.data.link && (
+          <a href={source.data.link} class="source-link" target="_blank" rel="noopener noreferrer">
+            View source &rarr;
+          </a>
+        )
+      )}
+
+      <div class="post-tags source-tags-container" style="margin-top: 0.75rem;">
+        {source.data.tags.map(tag => (
+          <span class="tag-link source-tag-pill">
+            #{tag}
+            {isDev && <button class="source-tag-remove" data-tag={tag}>&times;</button>}
+          </span>
+        ))}
+        {isDev && (
+          <input class="source-tag-input" id="source-tag-input" placeholder="Add tag..." />
+        )}
+      </div>
+
+      {isDev && (
+        <div class="source-save-controls">
+          <label class="publish-toggle source-archive-toggle">
+            <input type="checkbox" id="source-archived" checked={!isArchived} />
+            <span class="publish-toggle-slider"></span>
+            <span class="publish-toggle-text">{isArchived ? 'archived' : 'active'}</span>
+          </label>
+          <button class="source-save-btn" id="source-save-btn">Save</button>
+          <span class="source-save-status" id="source-save-status"></span>
         </div>
       )}
     </header>
@@ -71,13 +118,18 @@ const formattedDate = source.data.date.toLocaleDateString('en-US', {
       )}
 
       {notes.map(note => (
-        <div class:list={['note-card', { 'note-draft': !note.published }]}>
+        <div class:list={['note-card', { 'note-draft': !note.published }]} data-timestamp={note.timestamp}>
           <div class="note-meta">
             <time>{new Date(note.timestamp).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</time>
             {isDev && (
-              <span class:list={['note-status-badge', { 'note-published': note.published }]}>
-                {note.published ? 'published' : 'private'}
-              </span>
+              <label class="publish-toggle">
+                <input type="checkbox" class="note-publish-checkbox" checked={note.published} />
+                <span class="publish-toggle-slider"></span>
+                <span class="publish-toggle-text">{note.published ? 'published' : 'private'}</span>
+              </label>
+            )}
+            {isDev && (
+              <button class="note-delete-btn">Delete</button>
             )}
             {note.spotify && (
               <a href={note.spotify} class="spotify-link" target="_blank" rel="noopener noreferrer">
@@ -95,7 +147,7 @@ const formattedDate = source.data.date.toLocaleDateString('en-US', {
             </div>
           )}
           <div class="note-content">
-            <p>{note.content}</p>
+            <p contenteditable={isDev ? 'true' : undefined} class={isDev ? 'note-editable' : ''}>{note.content}</p>
           </div>
         </div>
       ))}
@@ -109,11 +161,210 @@ const formattedDate = source.data.date.toLocaleDateString('en-US', {
 
     <a href="/?tab=input" class="back-link">&larr; Back to sources</a>
   </div>
+
+  {isDev && (
+    <script define:vars={{ sourceSlug: source.slug, initialTags: source.data.tags }}>
+      // --- Tag management ---
+      let currentTags = [...initialTags];
+
+      function renderTags() {
+        const container = document.querySelector('.source-tags-container');
+        const input = document.getElementById('source-tag-input');
+        // Remove existing tag pills (but keep the input)
+        container.querySelectorAll('.source-tag-pill').forEach(el => el.remove());
+        // Insert pills before the input using safe DOM methods
+        currentTags.forEach(tag => {
+          const pill = document.createElement('span');
+          pill.className = 'tag-link source-tag-pill';
+          pill.textContent = '#' + tag;
+
+          const removeBtn = document.createElement('button');
+          removeBtn.className = 'source-tag-remove';
+          removeBtn.dataset.tag = tag;
+          removeBtn.textContent = '\u00d7';
+          pill.appendChild(removeBtn);
+
+          container.insertBefore(pill, input);
+        });
+      }
+
+      document.querySelector('.source-tags-container')?.addEventListener('click', (e) => {
+        const btn = e.target.closest('.source-tag-remove');
+        if (!btn) return;
+        const tag = btn.dataset.tag;
+        currentTags = currentTags.filter(t => t !== tag);
+        renderTags();
+      });
+
+      document.getElementById('source-tag-input')?.addEventListener('keydown', (e) => {
+        if (e.key !== 'Enter') return;
+        e.preventDefault();
+        const val = e.target.value.trim().toLowerCase().replace(/^#/, '');
+        if (val && !currentTags.includes(val)) {
+          currentTags.push(val);
+          renderTags();
+        }
+        e.target.value = '';
+      });
+
+      // --- Archive toggle ---
+      document.getElementById('source-archived')?.addEventListener('change', async (e) => {
+        const isActive = e.target.checked;
+        const label = e.target.closest('.publish-toggle').querySelector('.publish-toggle-text');
+        try {
+          const res = await fetch('/api/save-source', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ slug: sourceSlug, archived: !isActive }),
+          });
+          const data = await res.json();
+          if (data.success) {
+            label.textContent = isActive ? 'active' : 'archived';
+            document.querySelector('.source-detail').classList.toggle('source-archived', !isActive);
+          } else {
+            e.target.checked = !e.target.checked;
+          }
+        } catch {
+          e.target.checked = !e.target.checked;
+        }
+      });
+
+      // --- Metadata save (button + Cmd+S) ---
+      async function saveMetadata() {
+        const statusEl = document.getElementById('source-save-status');
+        const btn = document.getElementById('source-save-btn');
+        btn.disabled = true;
+        statusEl.textContent = 'Saving...';
+
+        const title = document.getElementById('source-title').textContent.trim();
+        const author = document.getElementById('source-author').textContent.trim();
+        const type = document.getElementById('source-type').value;
+        const link = document.getElementById('source-link').value.trim();
+        const date = document.getElementById('source-date').value;
+
+        try {
+          const res = await fetch('/api/save-source', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              slug: sourceSlug,
+              title,
+              author,
+              type,
+              link: link || undefined,
+              date,
+              tags: currentTags,
+            }),
+          });
+          const data = await res.json();
+          statusEl.textContent = data.success ? 'Saved' : data.message;
+          if (data.success) {
+            setTimeout(() => { statusEl.textContent = ''; }, 2000);
+          }
+        } catch (err) {
+          statusEl.textContent = 'Error saving';
+        }
+        btn.disabled = false;
+      }
+
+      document.getElementById('source-save-btn')?.addEventListener('click', saveMetadata);
+
+      document.addEventListener('keydown', (e) => {
+        if ((e.metaKey || e.ctrlKey) && e.key === 's') {
+          e.preventDefault();
+          saveMetadata();
+        }
+      });
+
+      // --- Note content editing (blur-to-save) ---
+      document.querySelectorAll('.note-editable').forEach(el => {
+        const original = el.textContent;
+        el.addEventListener('blur', async () => {
+          const newContent = el.textContent.trim();
+          if (newContent === original.trim()) return;
+
+          const card = el.closest('.note-card');
+          const timestamp = card.dataset.timestamp;
+
+          try {
+            const res = await fetch('/api/save-source', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ slug: sourceSlug, timestamp, content: newContent }),
+            });
+            const data = await res.json();
+            if (!data.success) {
+              console.error('Failed to save note:', data.message);
+            }
+          } catch (err) {
+            console.error('Failed to save note:', err);
+          }
+        });
+      });
+
+      // --- Note publish toggle ---
+      document.querySelector('.notes-list')?.addEventListener('change', async (e) => {
+        const checkbox = e.target;
+        if (!checkbox.classList.contains('note-publish-checkbox')) return;
+
+        const card = checkbox.closest('.note-card');
+        const timestamp = card.dataset.timestamp;
+        const label = checkbox.closest('.publish-toggle').querySelector('.publish-toggle-text');
+
+        try {
+          const res = await fetch('/api/update-note', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ slug: sourceSlug, timestamp, action: 'toggle-published' }),
+          });
+          const data = await res.json();
+          if (data.success) {
+            const isPublished = checkbox.checked;
+            label.textContent = isPublished ? 'published' : 'private';
+            card.classList.toggle('note-draft', !isPublished);
+          } else {
+            checkbox.checked = !checkbox.checked;
+          }
+        } catch {
+          checkbox.checked = !checkbox.checked;
+        }
+      });
+
+      // --- Note delete ---
+      document.querySelector('.notes-list')?.addEventListener('click', async (e) => {
+        const btn = e.target;
+        if (!btn.classList.contains('note-delete-btn')) return;
+
+        if (!window.confirm('Delete this note?')) return;
+
+        const card = btn.closest('.note-card');
+        const timestamp = card.dataset.timestamp;
+
+        try {
+          const res = await fetch('/api/update-note', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ slug: sourceSlug, timestamp, action: 'delete' }),
+          });
+          const data = await res.json();
+          if (data.success) {
+            card.remove();
+          }
+        } catch (err) {
+          console.error('Failed to delete note:', err);
+        }
+      });
+    </script>
+  )}
 </Base>
 
 <style>
   .source-detail {
     max-width: var(--max-width);
+  }
+
+  .source-archived {
+    opacity: 0.5;
   }
 
   .source-header {
@@ -128,10 +379,87 @@ const formattedDate = source.data.date.toLocaleDateString('en-US', {
     line-height: 1.3;
   }
 
+  .source-title[contenteditable="true"] {
+    outline: none;
+    border-bottom: 1px dashed var(--color-border);
+  }
+
+  .source-title[contenteditable="true"]:focus {
+    border-bottom-color: var(--color-link);
+  }
+
   .source-author-line {
     color: var(--color-text-light);
     font-style: italic;
     margin: 0;
+  }
+
+  #source-author[contenteditable="true"] {
+    outline: none;
+    border-bottom: 1px dashed var(--color-border);
+  }
+
+  #source-author[contenteditable="true"]:focus {
+    border-bottom-color: var(--color-link);
+  }
+
+  .source-type-select {
+    font-family: inherit;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    background: var(--color-code-bg);
+    color: var(--color-text-light);
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    padding: 0.15em 0.5em;
+    cursor: pointer;
+  }
+
+  .source-date-input {
+    font-family: inherit;
+    font-size: inherit;
+    font-style: italic;
+    background: none;
+    color: var(--color-text-light);
+    border: none;
+    border-bottom: 1px dashed var(--color-border);
+    padding: 0;
+    cursor: pointer;
+  }
+
+  .source-date-input:focus {
+    outline: none;
+    border-bottom-color: var(--color-link);
+  }
+
+  .source-link-edit {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+  }
+
+  .source-link-label {
+    font-size: 0.85rem;
+    color: var(--color-text-light);
+  }
+
+  .source-link-input {
+    font-family: inherit;
+    font-size: 0.85rem;
+    background: none;
+    color: var(--color-text-light);
+    border: none;
+    border-bottom: 1px dashed var(--color-border);
+    padding: 0;
+    flex: 1;
+  }
+
+  .source-link-input:focus {
+    outline: none;
+    border-bottom-color: var(--color-link);
   }
 
   .source-link {
@@ -144,6 +472,87 @@ const formattedDate = source.data.date.toLocaleDateString('en-US', {
 
   .source-link:hover {
     color: var(--color-link-hover);
+  }
+
+  .source-tags-container {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .source-tag-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+
+  .source-tag-remove {
+    background: none;
+    border: none;
+    color: var(--color-text-light);
+    cursor: pointer;
+    font-size: 0.9rem;
+    padding: 0;
+    line-height: 1;
+    opacity: 0.5;
+  }
+
+  .source-tag-remove:hover {
+    color: #f87171;
+    opacity: 1;
+  }
+
+  .source-tag-input {
+    font-family: inherit;
+    font-size: 0.8rem;
+    background: none;
+    color: var(--color-text-light);
+    border: 1px dashed var(--color-border);
+    border-radius: 2rem;
+    padding: 0.2em 0.6em;
+    width: 100px;
+  }
+
+  .source-tag-input:focus {
+    outline: none;
+    border-color: var(--color-link);
+  }
+
+  .source-save-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-top: 1rem;
+  }
+
+  .source-save-btn {
+    font-family: inherit;
+    font-size: 0.8rem;
+    padding: 0.3em 1em;
+    background: var(--color-link);
+    color: var(--color-background);
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+  .source-save-btn:hover {
+    opacity: 0.85;
+  }
+
+  .source-save-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .source-save-status {
+    font-size: 0.8rem;
+    color: var(--color-text-light);
+  }
+
+  .source-archive-toggle {
+    font-size: 0.75rem;
   }
 
   .notes-list {
@@ -168,19 +577,20 @@ const formattedDate = source.data.date.toLocaleDateString('en-US', {
     margin-bottom: 0.5rem;
   }
 
-  .note-status-badge {
-    font-size: 0.6rem;
-    padding: 0.1em 0.4em;
-    border-radius: 3px;
-    text-transform: uppercase;
-    font-weight: 600;
-    border: 1px solid var(--color-border);
+  .note-delete-btn {
+    background: none;
+    border: none;
     color: var(--color-text-light);
+    font-size: 0.7rem;
+    cursor: pointer;
+    padding: 0;
+    font-family: inherit;
+    opacity: 0.5;
   }
 
-  .note-status-badge.note-published {
-    border-color: var(--color-link);
-    color: var(--color-link);
+  .note-delete-btn:hover {
+    color: #f87171;
+    opacity: 1;
   }
 
   .note-tags {
@@ -190,6 +600,16 @@ const formattedDate = source.data.date.toLocaleDateString('en-US', {
   .note-content p {
     margin: 0;
     line-height: 1.6;
+  }
+
+  .note-editable {
+    outline: none;
+    border-bottom: 1px dashed transparent;
+    transition: border-color 0.2s;
+  }
+
+  .note-editable:focus {
+    border-bottom-color: var(--color-link);
   }
 
   .spotify-link {

@@ -16,7 +16,11 @@ const posts = isDev
 
 // Get all sources and sort by date (newest first)
 const allSources = await getCollection('sources');
-const sources = allSources.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+const sources = isDev
+  ? allSources.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
+  : allSources
+      .filter(source => !source.data.archived)
+      .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 
 // JSON-LD WebSite Schema
 const websiteSchema = {

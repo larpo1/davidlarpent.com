@@ -22,6 +22,7 @@ const sources = defineCollection({
     link: z.string().url().optional(),
     date: z.date(),
     tags: z.array(z.string()).default([]),
+    archived: z.boolean().default(false),
   }),
 });
 

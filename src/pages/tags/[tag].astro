@@ -13,11 +13,16 @@ export async function getStaticPaths() {
     ? allPosts
     : allPosts.filter(post => !post.data.draft);
 
+  // In dev: show all sources. In prod: only non-archived.
+  const visibleSources = import.meta.env.DEV
+    ? allSources
+    : allSources.filter(source => !source.data.archived);
+
   // Collect tags from both collections
   const postTags = visiblePosts.flatMap(post =>
     post.data.tags.map(tag => tag.toLowerCase())
   );
-  const sourceTags = allSources.flatMap(source =>
+  const sourceTags = visibleSources.flatMap(source =>
     source.data.tags.map(tag => tag.toLowerCase())
   );
   const allTags = [...new Set([...postTags, ...sourceTags])];
@@ -28,7 +33,7 @@ export async function getStaticPaths() {
       posts: visiblePosts
         .filter(post => post.data.tags.map(t => t.toLowerCase()).includes(tag))
         .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf()),
-      sources: allSources
+      sources: visibleSources
         .filter(source => source.data.tags.map(t => t.toLowerCase()).includes(tag))
         .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf()),
     }
