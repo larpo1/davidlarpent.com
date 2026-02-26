@@ -28,3 +28,6 @@ pnpm-debug.log*
 # playwright
 playwright-report/
 test-results/
+
+# worktrees
+.worktrees/
