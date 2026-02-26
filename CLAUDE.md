@@ -800,6 +800,8 @@ Before marking ANY test task [x] complete, you MUST:
 - Git-push API endpoint (dev-only)
 - Source notes system (Input tab, source detail pages, note parsing, add/delete/publish notes)
 - Source inline editing (metadata + note content, archive toggle, save-source API)
+- Newsletter subscription (Buttondown API, inline footer + icon variant in post share controls)
+- Podcast bookmark (iOS Shortcut → production API, Spotify + GitHub integration)
 - 288+ Playwright tests across 8 test files
 
 ---
@@ -873,6 +875,40 @@ npm run test:update   # Update baseline screenshots
 - **Image Generation:** Uses @google/genai with gemini-3-pro-image-preview (Nano Banana Pro) for inline sketch illustrations. Dev-mode only. Requires GOOGLE_AI_API_KEY.
 - **Scroll Reveal:** Uses GSAP + ScrollTrigger for scroll-scrubbed sketch illustration materialisation. Production dependency. Desktop uses scrub, mobile uses IntersectionObserver with timed animation.
 - **Source editing:** Source metadata (title, author, type, link, date, tags) editable inline in dev mode. Note content editable with blur-to-save. Archive toggle hides sources from production listings. API endpoint: `/api/save-source` (metadata, note content, and archive toggle modes). `/api/update-note` handles note publish toggle and delete.
+- **Newsletter:** Buttondown API for email subscriptions. `NewsletterSignup.astro` component (3 variants: card, inline, icon). API endpoint: `/api/subscribe` with rate limiting. Requires `BUTTONDOWN_API_KEY` env var. Inline variant in site footer (Base.astro), icon variant in post share controls (Post.astro).
+- **Podcast Bookmarking:** iOS Shortcut → POST /api/bookmark-podcast (production, Bearer token auth). Spotify Web API gets currently-playing episode. GitHub REST API creates/updates source files (Vercel has no persistent filesystem). Requires SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET, SPOTIFY_REFRESH_TOKEN, GITHUB_TOKEN, GITHUB_REPO, BOOKMARK_SECRET.
+
+---
+
+## iOS Shortcut: Bookmark Podcast
+
+Setup steps for the single-tap iOS Shortcut that bookmarks the currently-playing Spotify podcast episode.
+
+### Prerequisites
+1. Run `npm run spotify:auth` to get a Spotify refresh token
+2. Set all env vars in Vercel: `BOOKMARK_SECRET`, `SPOTIFY_CLIENT_ID`, `SPOTIFY_CLIENT_SECRET`, `SPOTIFY_REFRESH_TOKEN`, `GITHUB_TOKEN`, `GITHUB_REPO`
+
+### Shortcut Steps
+1. **Ask for Input** (optional) — type: Text, prompt: "Quick note? (leave blank to skip)"
+2. **Get Contents of URL** — method: POST, URL: `https://davidlarpent.com/api/bookmark-podcast`
+   - Header: `Authorization: Bearer {your BOOKMARK_SECRET value}`
+   - Header: `Content-Type: application/json`
+   - Request Body (JSON): `{ "note": "{input from step 1}" }`
+3. **Get Dictionary Value** — key: `episode` from step 2 result
+4. **If** `episode` has any value:
+   - **Show Notification** — title: "Bookmarked", body: `{episode}`
+5. **Otherwise:**
+   - **Get Dictionary Value** — key: `message` from step 2 result
+   - **Show Notification** — title: "Bookmark failed", body: `{message}`
+
+### Testing Locally
+```bash
+# Play a podcast on Spotify, then:
+curl -X POST http://localhost:4321/api/bookmark-podcast \
+  -H "Authorization: Bearer {your BOOKMARK_SECRET}" \
+  -H "Content-Type: application/json" \
+  -d '{"note":"test bookmark"}'
+```
 
 ---
 
@@ -898,6 +934,7 @@ npm run test:update   # Update baseline screenshots
 | 2026-02-06 | Two-phase syndication rollout | Phase 1 modal UX, Phase 2 AI generation |
 | 2026-02-07 | GSAP for scroll-scrubbed image reveal | Production reader-facing effect, scrub on desktop, IntersectionObserver on mobile |
 | 2026-02-26 | Inline editing for sources | Metadata + note content editable in dev, archived field for hiding from prod |
+| 2026-02-26 | Podcast bookmark via iOS Shortcut | Production endpoint, Spotify + GitHub APIs, Bearer token auth |
 
 ---
 
@@ -926,6 +963,7 @@ When ALL tasks are complete and build passes:
 src/
   content/posts/    # Markdown essays
   content/sources/  # Source notes (books, articles, papers, podcasts)
+  components/       # Astro components (NewsletterSignup, SyndicationModal, etc.)
   pages/            # Astro pages (index, about, sources)
   layouts/          # Base.astro, Post.astro
   styles/           # global.css
