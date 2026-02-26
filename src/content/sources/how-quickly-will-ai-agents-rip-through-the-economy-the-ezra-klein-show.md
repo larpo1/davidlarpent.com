@@ -8,16 +8,16 @@ tags: []
 ---
 
 <!-- note: 2026-02-26T21:54 -->
-<!-- published: false -->
+<!-- published: true -->
 <!-- spotify: https://open.spotify.com/episode/6aeTJQPEXYHITci8d0wfdp?t=1779 -->
 Testing the bookmark feature
 
 <!-- note: 2026-02-26T22:48 -->
-<!-- published: false -->
+<!-- published: true -->
 <!-- spotify: https://open.spotify.com/episode/6aeTJQPEXYHITci8d0wfdp?t=2010 -->
 Bookmarked at 33:30
 
 <!-- note: 2026-02-26T22:52 -->
-<!-- published: false -->
+<!-- published: true -->
 <!-- spotify: https://open.spotify.com/episode/6aeTJQPEXYHITci8d0wfdp?t=2239 -->
 Bookmarked at 37:19
