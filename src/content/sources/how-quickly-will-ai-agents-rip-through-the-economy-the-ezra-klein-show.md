@@ -7,11 +7,6 @@ date: 2026-02-26T00:00:00.000Z
 tags: []
 ---
 
-<!-- note: 2026-02-26T22:52 -->
-<!-- published: true -->
-<!-- spotify: https://open.spotify.com/episode/6aeTJQPEXYHITci8d0wfdp?t=2239 -->
-Bookmarked at 37:19
-
 <!-- note: 2026-02-26T23:14 -->
 <!-- published: true -->
 <!-- spotify: https://open.spotify.com/episode/6aeTJQPEXYHITci8d0wfdp?t=1303 -->
