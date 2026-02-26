@@ -46,15 +46,11 @@ const sourceTypes = ['book', 'article', 'paper', 'podcast'];
 >
   <div class:list={['source-detail', { 'source-archived': isArchived }]}>
     <header class="source-header">
-      {isDev ? (
-        <select class="source-type-select" id="source-type">
-          {sourceTypes.map(t => (
-            <option value={t} selected={t === source.data.type}>{t}</option>
-          ))}
-        </select>
-      ) : (
-        <span class="source-type-badge">{source.data.type}</span>
-      )}
+      <span
+        class:list={['source-type-badge', { 'source-type-editable': isDev }]}
+        id="source-type"
+        data-types={JSON.stringify(sourceTypes)}
+      >{source.data.type}</span>
 
       <h1 class="source-title" contenteditable={isDev ? 'true' : undefined} id="source-title">{source.data.title}</h1>
 
@@ -65,24 +61,19 @@ const sourceTypes = ['book', 'article', 'paper', 'podcast'];
           <Fragment>{source.data.author}</Fragment>
         )}
         &middot;
-        {isDev ? (
-          <input type="date" class="source-date-input" id="source-date" value={isoDate} />
-        ) : (
-          <Fragment>{formattedDate}</Fragment>
-        )}
+        <span class:list={['source-date-display', { 'source-date-editable': isDev }]} id="source-date-display">{formattedDate}</span>
+        {isDev && <input type="date" class="source-date-hidden" id="source-date" value={isoDate} />}
       </p>
 
-      {isDev ? (
-        <div class="source-link-edit">
-          <span class="source-link-label">Link:</span>
-          <input type="url" class="source-link-input" id="source-link" value={source.data.link || ''} placeholder="https://..." />
-        </div>
-      ) : (
-        source.data.link && (
-          <a href={source.data.link} class="source-link" target="_blank" rel="noopener noreferrer">
+      {(source.data.link || isDev) && (
+        <div class="source-link-wrapper">
+          <a href={source.data.link || '#'} class="source-link" id="source-link-anchor" target="_blank" rel="noopener noreferrer">
             View source &rarr;
           </a>
-        )
+          {isDev && (
+            <span contenteditable="true" class="source-link-url" id="source-link">{source.data.link || ''}</span>
+          )}
+        </div>
       )}
 
       <div class="post-tags source-tags-container" style="margin-top: 0.75rem;">
@@ -98,7 +89,7 @@ const sourceTypes = ['book', 'article', 'paper', 'podcast'];
       </div>
 
       {isDev && (
-        <div class="source-save-controls">
+        <div class="source-save-controls source-save-subtle">
           <label class="publish-toggle source-archive-toggle">
             <input type="checkbox" id="source-archived" checked={!isArchived} />
             <span class="publish-toggle-slider"></span>
@@ -164,6 +155,47 @@ const sourceTypes = ['book', 'article', 'paper', 'podcast'];
 
   {isDev && (
     <script define:vars={{ sourceSlug: source.slug, initialTags: source.data.tags }}>
+      // --- Type badge click-to-cycle ---
+      const typeBadge = document.getElementById('source-type');
+      if (typeBadge) {
+        const types = JSON.parse(typeBadge.dataset.types);
+        typeBadge.addEventListener('click', () => {
+          const current = typeBadge.textContent.trim();
+          const idx = types.indexOf(current);
+          const next = types[(idx + 1) % types.length];
+          typeBadge.textContent = next;
+        });
+      }
+
+      // --- Date display click-to-pick ---
+      const dateDisplay = document.getElementById('source-date-display');
+      const dateInput = document.getElementById('source-date');
+      if (dateDisplay && dateInput) {
+        dateDisplay.addEventListener('click', () => {
+          dateInput.showPicker();
+        });
+        dateInput.addEventListener('change', () => {
+          const [y, m, d] = dateInput.value.split('-');
+          const dt = new Date(Number(y), Number(m) - 1, Number(d));
+          dateDisplay.textContent = dt.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+        });
+      }
+
+      // --- Link URL sync ---
+      const linkUrl = document.getElementById('source-link');
+      const linkAnchor = document.getElementById('source-link-anchor');
+      if (linkUrl && linkAnchor) {
+        linkUrl.addEventListener('blur', () => {
+          const url = linkUrl.textContent.trim();
+          if (url) {
+            linkAnchor.href = url;
+            linkAnchor.style.display = '';
+          } else {
+            linkAnchor.style.display = 'none';
+          }
+        });
+      }
+
       // --- Tag management ---
       let currentTags = [...initialTags];
 
@@ -238,8 +270,8 @@ const sourceTypes = ['book', 'article', 'paper', 'podcast'];
 
         const title = document.getElementById('source-title').textContent.trim();
         const author = document.getElementById('source-author').textContent.trim();
-        const type = document.getElementById('source-type').value;
-        const link = document.getElementById('source-link').value.trim();
+        const type = document.getElementById('source-type').textContent.trim();
+        const link = document.getElementById('source-link')?.textContent.trim() || '';
         const date = document.getElementById('source-date').value;
 
         try {
@@ -403,68 +435,41 @@ const sourceTypes = ['book', 'article', 'paper', 'podcast'];
     border-bottom-color: var(--color-link);
   }
 
-  .source-type-select {
-    font-family: inherit;
-    font-size: 0.75rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    background: var(--color-code-bg);
-    color: var(--color-text-light);
-    border: 1px solid var(--color-border);
-    border-radius: 4px;
-    padding: 0.15em 0.5em;
+  .source-type-editable {
     cursor: pointer;
   }
 
-  .source-date-input {
-    font-family: inherit;
-    font-size: inherit;
-    font-style: italic;
-    background: none;
-    color: var(--color-text-light);
-    border: none;
-    border-bottom: 1px dashed var(--color-border);
-    padding: 0;
+  .source-type-editable:hover {
+    border-color: var(--color-link);
+  }
+
+  .source-date-display {
+    /* matches italic author line */
+  }
+
+  .source-date-editable {
     cursor: pointer;
+    border-bottom: 1px dashed transparent;
   }
 
-  .source-date-input:focus {
-    outline: none;
-    border-bottom-color: var(--color-link);
+  .source-date-editable:hover {
+    border-bottom-color: var(--color-border);
   }
 
-  .source-link-edit {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
+  .source-date-hidden {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+    pointer-events: none;
+  }
+
+  .source-link-wrapper {
     margin-top: 0.5rem;
-  }
-
-  .source-link-label {
-    font-size: 0.85rem;
-    color: var(--color-text-light);
-  }
-
-  .source-link-input {
-    font-family: inherit;
-    font-size: 0.85rem;
-    background: none;
-    color: var(--color-text-light);
-    border: none;
-    border-bottom: 1px dashed var(--color-border);
-    padding: 0;
-    flex: 1;
-  }
-
-  .source-link-input:focus {
-    outline: none;
-    border-bottom-color: var(--color-link);
   }
 
   .source-link {
     display: inline-block;
-    margin-top: 0.5rem;
     font-size: 0.85rem;
     color: var(--color-text-light);
     text-decoration: none;
@@ -472,6 +477,27 @@ const sourceTypes = ['book', 'article', 'paper', 'podcast'];
 
   .source-link:hover {
     color: var(--color-link-hover);
+  }
+
+  .source-link-url {
+    display: block;
+    font-size: 0.75rem;
+    color: var(--color-text-light);
+    opacity: 0.5;
+    margin-top: 0.25rem;
+    outline: none;
+    border-bottom: 1px dashed transparent;
+    word-break: break-all;
+  }
+
+  .source-link-url:hover {
+    opacity: 0.8;
+    border-bottom-color: var(--color-border);
+  }
+
+  .source-link-url:focus {
+    opacity: 1;
+    border-bottom-color: var(--color-link);
   }
 
   .source-tags-container {
@@ -524,6 +550,15 @@ const sourceTypes = ['book', 'article', 'paper', 'podcast'];
     align-items: center;
     gap: 0.75rem;
     margin-top: 1rem;
+  }
+
+  .source-save-subtle {
+    opacity: 0.4;
+    transition: opacity 0.2s;
+  }
+
+  .source-save-subtle:hover {
+    opacity: 1;
   }
 
   .source-save-btn {
