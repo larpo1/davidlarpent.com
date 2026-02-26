@@ -2,14 +2,13 @@
 interface Props {
   slug: string;
   title: string;
+  author: string;
+  type: 'book' | 'article' | 'paper' | 'podcast';
   date: Date;
-  description?: string;
   tags?: string[];
-  draft?: boolean;
-  category?: string;
 }
 
-const { slug, title, date, description, tags = [], draft = false, category = 'work' } = Astro.props;
+const { slug, title, author, type, date, tags = [] } = Astro.props;
 
 const formattedDate = date.toLocaleDateString('en-US', {
   year: 'numeric',
@@ -19,21 +18,17 @@ const formattedDate = date.toLocaleDateString('en-US', {
 ---
 
 <li
-  class="post-list-item"
-  data-category={category}
-  data-draft={draft ? 'true' : 'false'}
-  data-content-type="essay"
+  class="post-list-item source-list-item"
+  data-content-type="source"
 >
   <h2 class="post-list-title">
-    <a href={`/posts/${slug}`}>{title}</a>
+    <a href={`/sources/${slug}`}>{title}</a>
   </h2>
   <div class="post-meta">
-    {formattedDate}
-    {draft && <span class="draft-badge">Draft</span>}
+    <span class="source-type-badge">{type}</span>
+    <span class="source-author">{author}</span>
+    &middot; {formattedDate}
   </div>
-  {description && (
-    <p class="post-description">{description}</p>
-  )}
   {tags.length > 0 && (
     <div class="post-tags">
       {tags.map(tag => (

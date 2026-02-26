@@ -13,4 +13,16 @@ const posts = defineCollection({
   }),
 });
 
-export const collections = { posts };
+const sources = defineCollection({
+  type: 'content',
+  schema: z.object({
+    title: z.string(),
+    author: z.string(),
+    type: z.enum(['book', 'article', 'paper', 'podcast']),
+    link: z.string().url().optional(),
+    date: z.date(),
+    tags: z.array(z.string()).default([]),
+  }),
+});
+
+export const collections = { posts, sources };

@@ -2,18 +2,21 @@
 import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
 import PostListItem from '../components/PostListItem.astro';
+import SourceListItem from '../components/SourceListItem.astro';
 
 const isDev = import.meta.env.DEV;
 
 // Get all posts and sort by date (newest first)
-// In dev mode: include all posts (drafts visible via toggle)
-// In production: only published posts
 const allPosts = await getCollection('posts');
 const posts = isDev
   ? allPosts.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
   : allPosts
       .filter(post => !post.data.draft)
       .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+
+// Get all sources and sort by date (newest first)
+const allSources = await getCollection('sources');
+const sources = allSources.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 
 // JSON-LD WebSite Schema
 const websiteSchema = {
@@ -39,22 +42,22 @@ const websiteSchema = {
   <div class="tab-navigation">
     <button
       class="tab-button"
-      data-tab="work"
+      data-tab="output"
       aria-pressed="true"
     >
-      Work
+      Output
     </button>
     <button
       class="tab-button"
-      data-tab="not-work"
+      data-tab="input"
       aria-pressed="false"
     >
-      Not work
+      Input
     </button>
     <div class="tab-underline" aria-hidden="true"></div>
   </div>
 
-  <ul class="post-list">
+  <ul class="post-list" data-tab-panel="output">
     {posts.map(post => (
       <PostListItem
         slug={post.slug}
@@ -64,6 +67,19 @@ const websiteSchema = {
         tags={post.data.tags}
         draft={post.data.draft}
         category={post.data.category || 'work'}
+      />
+    ))}
+  </ul>
+
+  <ul class="post-list" data-tab-panel="input" style="display: none;">
+    {sources.map(source => (
+      <SourceListItem
+        slug={source.slug}
+        title={source.data.title}
+        author={source.data.author}
+        type={source.data.type}
+        date={source.data.date}
+        tags={source.data.tags}
       />
     ))}
   </ul>
@@ -81,21 +97,27 @@ const websiteSchema = {
 
 <script is:inline>
   // Tab Navigation
-  const tabButtons = document.querySelectorAll('.tab-button');
-  const tabUnderline = document.querySelector('.tab-underline');
-  const postItems = document.querySelectorAll('.post-list-item');
+  var tabButtons = document.querySelectorAll('.tab-button');
+  var tabUnderline = document.querySelector('.tab-underline');
+  var tabPanels = document.querySelectorAll('[data-tab-panel]');
+  var draftsToggle = document.querySelector('.drafts-toggle');
 
-  // Hide all posts immediately to prevent flash
-  postItems.forEach(function(post) { post.style.display = 'none'; });
+  // Map old tab names to new ones for backward compatibility
+  var tabMap = { 'work': 'output', 'not-work': 'output' };
 
   function setActiveTab(targetTab, isInitial) {
+    // Map old tab names
+    targetTab = tabMap[targetTab] || targetTab;
+    // Fallback to output if invalid
+    if (targetTab !== 'output' && targetTab !== 'input') targetTab = 'output';
+
     // Update button states
     tabButtons.forEach(function(button) {
       var isActive = button.dataset.tab === targetTab;
       button.setAttribute('aria-pressed', isActive.toString());
     });
 
-    // Move underline (skip transition on initial load)
+    // Move underline
     var activeButton = document.querySelector('[data-tab="' + targetTab + '"]');
     if (activeButton && tabUnderline) {
       var buttonRect = activeButton.getBoundingClientRect();
@@ -108,30 +130,32 @@ const websiteSchema = {
       tabUnderline.style.transform = 'translateX(' + offsetLeft + 'px)';
       tabUnderline.style.width = buttonRect.width + 'px';
       if (isInitial) {
-        // Force reflow then restore transition
         tabUnderline.offsetWidth;
         tabUnderline.style.transition = '';
       }
     }
 
-    // Filter posts with cascading fade-in
-    var visibleIndex = 0;
-    postItems.forEach(function(post) {
-      var category = post.dataset.category || 'work';
-
-      if (category === targetTab) {
-        post.style.display = '';
-        // Reset animation by removing class, forcing reflow, re-adding
-        post.classList.remove('fade-in');
-        post.offsetWidth; // force reflow
-        post.style.animationDelay = (visibleIndex * 60) + 'ms';
-        post.classList.add('fade-in');
-        visibleIndex++;
+    // Show/hide panels
+    tabPanels.forEach(function(panel) {
+      if (panel.getAttribute('data-tab-panel') === targetTab) {
+        panel.style.display = '';
+        // Fade in items
+        var items = panel.querySelectorAll('.post-list-item');
+        items.forEach(function(item, i) {
+          item.classList.remove('fade-in');
+          item.offsetWidth;
+          item.style.animationDelay = (i * 60) + 'ms';
+          item.classList.add('fade-in');
+        });
       } else {
-        post.style.display = 'none';
-        post.classList.remove('fade-in');
+        panel.style.display = 'none';
       }
     });
+
+    // Show drafts toggle only on output tab
+    if (draftsToggle) {
+      draftsToggle.style.display = targetTab === 'output' ? '' : 'none';
+    }
 
     // Update URL
     var url = new URL(window.location);
@@ -150,15 +174,15 @@ const websiteSchema = {
     });
   });
 
-  // Initialize immediately (no DOMContentLoaded delay)
+  // Initialize
   var urlParams = new URLSearchParams(window.location.search);
-  var initialTab = urlParams.get('tab') || 'work';
+  var initialTab = urlParams.get('tab') || 'output';
   setActiveTab(initialTab, true);
 
   // Handle browser back/forward
   window.addEventListener('popstate', function() {
     var params = new URLSearchParams(window.location.search);
-    var tab = params.get('tab') || 'work';
+    var tab = params.get('tab') || 'output';
     setActiveTab(tab, false);
   });
 </script>

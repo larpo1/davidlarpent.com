@@ -2,33 +2,42 @@
 import { getCollection } from 'astro:content';
 import Base from '../../layouts/Base.astro';
 import PostListItem from '../../components/PostListItem.astro';
+import SourceListItem from '../../components/SourceListItem.astro';
 
 export async function getStaticPaths() {
   const allPosts = await getCollection('posts');
+  const allSources = await getCollection('sources');
 
   // In dev: show all posts (including drafts). In prod: only published.
   const visiblePosts = import.meta.env.DEV
     ? allPosts
     : allPosts.filter(post => !post.data.draft);
 
-  // Get all unique tags (normalized to lowercase for consistent URLs)
-  const allTags = [...new Set(visiblePosts.flatMap(post =>
+  // Collect tags from both collections
+  const postTags = visiblePosts.flatMap(post =>
     post.data.tags.map(tag => tag.toLowerCase())
-  ))];
+  );
+  const sourceTags = allSources.flatMap(source =>
+    source.data.tags.map(tag => tag.toLowerCase())
+  );
+  const allTags = [...new Set([...postTags, ...sourceTags])];
 
-  // Create a page for each tag
   return allTags.map(tag => ({
     params: { tag },
     props: {
       posts: visiblePosts
         .filter(post => post.data.tags.map(t => t.toLowerCase()).includes(tag))
-        .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
+        .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf()),
+      sources: allSources
+        .filter(source => source.data.tags.map(t => t.toLowerCase()).includes(tag))
+        .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf()),
     }
   }));
 }
 
 const { tag } = Astro.params;
-const { posts } = Astro.props;
+const { posts, sources } = Astro.props;
+const totalCount = posts.length + sources.length;
 
 // Capitalize tag for display
 const displayTag = tag.split('-').map(word =>
@@ -63,8 +72,16 @@ const breadcrumbSchema = {
   <div class="tag-page">
     <header class="tag-header">
       <h1>#{displayTag}</h1>
-      <p class="tag-count">{posts.length} {posts.length === 1 ? 'note' : 'notes'}</p>
+      <p class="tag-count" id="tag-count">{totalCount} {totalCount === 1 ? 'item' : 'items'}</p>
     </header>
+
+    {(posts.length > 0 && sources.length > 0) && (
+      <div class="tag-filter-bar">
+        <button class="tag-filter-pill active" data-filter="all">All</button>
+        <button class="tag-filter-pill" data-filter="essay">Essays</button>
+        <button class="tag-filter-pill" data-filter="source">Sources</button>
+      </div>
+    )}
 
     <ul class="post-list">
       {posts.map(post => (
@@ -78,15 +95,57 @@ const breadcrumbSchema = {
           category={post.data.category || 'work'}
         />
       ))}
+      {sources.map(source => (
+        <SourceListItem
+          slug={source.slug}
+          title={source.data.title}
+          author={source.data.author}
+          type={source.data.type}
+          date={source.data.date}
+          tags={source.data.tags}
+        />
+      ))}
     </ul>
 
-    <a href="/" class="back-link">← Back to all notes</a>
+    <a href="/" class="back-link">&larr; Back to all notes</a>
   </div>
 </Base>
 
+<script is:inline>
+  (function() {
+    var filterButtons = document.querySelectorAll('.tag-filter-pill');
+    var items = document.querySelectorAll('.post-list-item');
+    var countEl = document.getElementById('tag-count');
+
+    filterButtons.forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        var filter = btn.dataset.filter;
+
+        filterButtons.forEach(function(b) { b.classList.remove('active'); });
+        btn.classList.add('active');
+
+        var visible = 0;
+        items.forEach(function(item) {
+          var type = item.dataset.contentType || 'essay';
+          if (filter === 'all' || type === filter) {
+            item.style.display = '';
+            visible++;
+          } else {
+            item.style.display = 'none';
+          }
+        });
+
+        if (countEl) {
+          countEl.textContent = visible + ' ' + (visible === 1 ? 'item' : 'items');
+        }
+      });
+    });
+  })();
+</script>
+
 <style>
   .tag-header {
-    margin-bottom: 3rem;
+    margin-bottom: 1.5rem;
     border-bottom: 1px solid var(--color-border);
     padding-bottom: 1.5rem;
   }
@@ -101,6 +160,35 @@ const breadcrumbSchema = {
     font-size: 1rem;
     color: var(--color-text-muted);
     margin: 0;
+  }
+
+  .tag-filter-bar {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .tag-filter-pill {
+    padding: 0.3em 0.8em;
+    font-size: 0.8rem;
+    font-family: inherit;
+    background: none;
+    border: 1px solid var(--color-border);
+    border-radius: 2rem;
+    color: var(--color-text-light);
+    cursor: pointer;
+    transition: border-color 0.2s, color 0.2s;
+  }
+
+  .tag-filter-pill:hover {
+    border-color: var(--color-link);
+    color: var(--color-link);
+  }
+
+  .tag-filter-pill.active {
+    border-color: var(--color-link);
+    color: var(--color-link);
+    font-weight: 600;
   }
 
   .tag-page :global(.post-list-item) {

@@ -1,0 +1,240 @@
+---
+import { getCollection } from 'astro:content';
+import * as fs from 'fs/promises';
+import * as path from 'path';
+import matter from 'gray-matter';
+import Base from '../../layouts/Base.astro';
+import AddNotePanel from '../../components/AddNotePanel.astro';
+import { parseNotes } from '../../lib/parse-notes';
+
+const isDev = import.meta.env.DEV;
+
+export async function getStaticPaths() {
+  const allSources = await getCollection('sources');
+  return allSources.map(source => ({
+    params: { slug: source.slug },
+    props: { source },
+  }));
+}
+
+const { source } = Astro.props;
+
+// Read raw markdown to parse notes
+const sourcesDir = path.join(process.cwd(), 'src', 'content', 'sources');
+const filePath = path.join(sourcesDir, `${source.slug}.md`);
+const rawContent = await fs.readFile(filePath, 'utf-8');
+const parsed = matter(rawContent);
+const allNotes = parseNotes(parsed.content);
+
+// In production, only show published notes
+const notes = isDev ? allNotes : allNotes.filter(n => n.published);
+
+const formattedDate = source.data.date.toLocaleDateString('en-US', {
+  year: 'numeric',
+  month: 'short',
+  day: 'numeric'
+});
+---
+
+<Base
+  title={`${source.data.title} | David Larpent`}
+  description={`Notes on ${source.data.title} by ${source.data.author}`}
+>
+  <div class="source-detail">
+    <header class="source-header">
+      <span class="source-type-badge">{source.data.type}</span>
+      <h1 class="source-title">{source.data.title}</h1>
+      <p class="source-author-line">
+        {source.data.author} &middot; {formattedDate}
+      </p>
+      {source.data.link && (
+        <a href={source.data.link} class="source-link" target="_blank" rel="noopener noreferrer">
+          View source &rarr;
+        </a>
+      )}
+      {source.data.tags.length > 0 && (
+        <div class="post-tags" style="margin-top: 0.75rem;">
+          {source.data.tags.map(tag => (
+            <a href={`/tags/${tag.toLowerCase()}`} class="tag-link">
+              #{tag}
+            </a>
+          ))}
+        </div>
+      )}
+    </header>
+
+    <div class="notes-list">
+      {notes.length === 0 && (
+        <p class="empty-notes">
+          {isDev ? 'No notes yet.' : 'No published notes yet.'}
+        </p>
+      )}
+
+      {notes.map(note => (
+        <div class:list={['note-card', { 'note-draft': !note.published }]}>
+          <div class="note-meta">
+            <time>{new Date(note.timestamp).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</time>
+            {isDev && (
+              <span class:list={['note-status-badge', { 'note-published': note.published }]}>
+                {note.published ? 'published' : 'private'}
+              </span>
+            )}
+            {note.spotify && (
+              <a href={note.spotify} class="spotify-link" target="_blank" rel="noopener noreferrer">
+                Spotify &rarr;
+              </a>
+            )}
+          </div>
+          {note.tags.length > 0 && (
+            <div class="note-tags">
+              {note.tags.map(tag => (
+                <a href={`/tags/${tag.toLowerCase()}`} class="tag-link">
+                  #{tag}
+                </a>
+              ))}
+            </div>
+          )}
+          <div class="note-content">
+            <p>{note.content}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+
+    {isDev && (
+      <button class="add-note-button" id="add-note-toggle">+ Add note</button>
+    )}
+
+    {isDev && <AddNotePanel slug={source.slug} />}
+
+    <a href="/?tab=input" class="back-link">&larr; Back to sources</a>
+  </div>
+</Base>
+
+<style>
+  .source-detail {
+    max-width: var(--max-width);
+  }
+
+  .source-header {
+    margin-bottom: 2.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .source-title {
+    font-size: 2rem;
+    margin: 0.5rem 0 0.25rem;
+    line-height: 1.3;
+  }
+
+  .source-author-line {
+    color: var(--color-text-light);
+    font-style: italic;
+    margin: 0;
+  }
+
+  .source-link {
+    display: inline-block;
+    margin-top: 0.5rem;
+    font-size: 0.85rem;
+    color: var(--color-text-light);
+    text-decoration: none;
+  }
+
+  .source-link:hover {
+    color: var(--color-link-hover);
+  }
+
+  .notes-list {
+    margin-bottom: 2rem;
+  }
+
+  .note-card {
+    padding: 1.25rem 0;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .note-draft {
+    opacity: 0.5;
+  }
+
+  .note-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.75rem;
+    color: var(--color-text-light);
+    margin-bottom: 0.5rem;
+  }
+
+  .note-status-badge {
+    font-size: 0.6rem;
+    padding: 0.1em 0.4em;
+    border-radius: 3px;
+    text-transform: uppercase;
+    font-weight: 600;
+    border: 1px solid var(--color-border);
+    color: var(--color-text-light);
+  }
+
+  .note-status-badge.note-published {
+    border-color: var(--color-link);
+    color: var(--color-link);
+  }
+
+  .note-tags {
+    margin-bottom: 0.5rem;
+  }
+
+  .note-content p {
+    margin: 0;
+    line-height: 1.6;
+  }
+
+  .spotify-link {
+    font-size: 0.75rem;
+    color: #1db954;
+    text-decoration: none;
+  }
+
+  .spotify-link:hover {
+    text-decoration: underline;
+  }
+
+  .add-note-button {
+    display: block;
+    margin: 1.5rem 0;
+    padding: 0.5rem 1rem;
+    background: none;
+    border: 1px dashed var(--color-border);
+    border-radius: 4px;
+    color: var(--color-text-light);
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 0.85rem;
+  }
+
+  .add-note-button:hover {
+    border-color: var(--color-link);
+    color: var(--color-link);
+  }
+
+  .empty-notes {
+    color: var(--color-text-light);
+    font-style: italic;
+    padding: 2rem 0;
+  }
+
+  .back-link {
+    display: inline-block;
+    margin-top: 2rem;
+    color: var(--color-text-light);
+    text-decoration: none;
+    font-size: 0.9rem;
+  }
+
+  .back-link:hover {
+    color: var(--color-link-hover);
+  }
+</style>

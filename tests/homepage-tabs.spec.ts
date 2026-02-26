@@ -1,113 +1,137 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Homepage Tabs', () => {
-  test('tabs exist and are visible', async ({ page }) => {
+  test('Output and Input tabs exist and are visible', async ({ page }) => {
     await page.goto('/');
 
-    const notWorkTab = page.locator('[data-tab="not-work"]');
-    const workTab = page.locator('[data-tab="work"]');
+    const outputTab = page.locator('[data-tab="output"]');
+    const inputTab = page.locator('[data-tab="input"]');
     const underline = page.locator('.tab-underline');
 
-    await expect(notWorkTab).toBeVisible();
-    await expect(workTab).toBeVisible();
+    await expect(outputTab).toBeVisible();
+    await expect(inputTab).toBeVisible();
     await expect(underline).toBeVisible();
   });
 
-  test('defaults to "Work" tab', async ({ page }) => {
+  test('defaults to "Output" tab', async ({ page }) => {
     await page.goto('/');
 
-    const workTab = page.locator('[data-tab="work"]');
-    await expect(workTab).toHaveAttribute('aria-pressed', 'true');
+    const outputTab = page.locator('[data-tab="output"]');
+    await expect(outputTab).toHaveAttribute('aria-pressed', 'true');
 
-    // Should show work posts
-    await expect(page.locator('text=When Decisions Stop Scaling')).toBeVisible();
+    // Output panel should be visible
+    const outputPanel = page.locator('[data-tab-panel="output"]');
+    await expect(outputPanel).toBeVisible();
 
-    // Should not show not-work posts initially
-    await expect(page.locator('text=Ralph Loops')).toBeHidden();
+    // Input panel should be hidden
+    const inputPanel = page.locator('[data-tab-panel="input"]');
+    await expect(inputPanel).toBeHidden();
   });
 
-  test('clicking "Work" tab filters posts and updates URL', async ({ page }) => {
+  test('clicking "Input" tab shows sources list', async ({ page }) => {
     await page.goto('/');
 
-    const workTab = page.locator('[data-tab="work"]');
-    await workTab.click();
-
-    // Wait for animation
+    const inputTab = page.locator('[data-tab="input"]');
+    await inputTab.click();
     await page.waitForTimeout(500);
 
-    // Check URL updated
-    expect(page.url()).toContain('?tab=work');
+    expect(page.url()).toContain('?tab=input');
+    await expect(inputTab).toHaveAttribute('aria-pressed', 'true');
 
-    // Check aria-pressed state
-    await expect(workTab).toHaveAttribute('aria-pressed', 'true');
+    // Input panel should be visible
+    const inputPanel = page.locator('[data-tab-panel="input"]');
+    await expect(inputPanel).toBeVisible();
 
-    // Should show work posts
-    await expect(page.locator('text=When Decisions Stop Scaling')).toBeVisible();
+    // Output panel should be hidden
+    const outputPanel = page.locator('[data-tab-panel="output"]');
+    await expect(outputPanel).toBeHidden();
 
-    // Should not show not-work posts
-    await expect(page.locator('text=Ralph Loops')).toBeHidden();
+    // Should show sources
+    await expect(inputPanel.locator('.source-list-item').first()).toBeVisible();
   });
 
-  test('clicking "Not work" tab filters posts', async ({ page }) => {
-    await page.goto('/?tab=work');
+  test('clicking "Output" tab shows essays', async ({ page }) => {
+    await page.goto('/?tab=input');
 
-    const notWorkTab = page.locator('[data-tab="not-work"]');
-    await notWorkTab.click();
-
+    const outputTab = page.locator('[data-tab="output"]');
+    await outputTab.click();
     await page.waitForTimeout(500);
 
-    expect(page.url()).toContain('?tab=not-work');
-    await expect(page.locator('text=Ralph Loops')).toBeVisible();
+    expect(page.url()).toContain('?tab=output');
+    await expect(outputTab).toHaveAttribute('aria-pressed', 'true');
+
+    const outputPanel = page.locator('[data-tab-panel="output"]');
+    await expect(outputPanel).toBeVisible();
   });
 
   test('underline moves between tabs', async ({ page }) => {
     await page.goto('/');
 
     const underline = page.locator('.tab-underline');
-    const notWorkTab = page.locator('[data-tab="not-work"]');
+    const inputTab = page.locator('[data-tab="input"]');
 
-    // Get initial position (under Work)
     const initialPos = await underline.boundingBox();
 
-    // Click Not work tab
-    await notWorkTab.click();
+    await inputTab.click();
     await page.waitForTimeout(500);
 
-    // Underline should have moved
     const newPos = await underline.boundingBox();
     expect(newPos?.x).not.toBe(initialPos?.x);
   });
 
-  test('deep linking: ?tab=work loads Work tab', async ({ page }) => {
-    await page.goto('/?tab=work');
+  test('deep linking: ?tab=output loads Output tab', async ({ page }) => {
+    await page.goto('/?tab=output');
 
-    const workTab = page.locator('[data-tab="work"]');
-    await expect(workTab).toHaveAttribute('aria-pressed', 'true');
-    await expect(page.locator('text=When Decisions Stop Scaling')).toBeVisible();
+    const outputTab = page.locator('[data-tab="output"]');
+    await expect(outputTab).toHaveAttribute('aria-pressed', 'true');
+
+    const outputPanel = page.locator('[data-tab-panel="output"]');
+    await expect(outputPanel).toBeVisible();
   });
 
-  test('deep linking: ?tab=not-work loads Not work tab', async ({ page }) => {
+  test('deep linking: ?tab=input loads Input tab', async ({ page }) => {
+    await page.goto('/?tab=input');
+
+    const inputTab = page.locator('[data-tab="input"]');
+    await expect(inputTab).toHaveAttribute('aria-pressed', 'true');
+
+    const inputPanel = page.locator('[data-tab-panel="input"]');
+    await expect(inputPanel).toBeVisible();
+  });
+
+  test('backward compat: ?tab=work maps to Output', async ({ page }) => {
+    await page.goto('/?tab=work');
+
+    const outputTab = page.locator('[data-tab="output"]');
+    await expect(outputTab).toHaveAttribute('aria-pressed', 'true');
+  });
+
+  test('backward compat: ?tab=not-work maps to Output', async ({ page }) => {
     await page.goto('/?tab=not-work');
 
-    const notWorkTab = page.locator('[data-tab="not-work"]');
-    await expect(notWorkTab).toHaveAttribute('aria-pressed', 'true');
-    await expect(page.locator('text=Ralph Loops')).toBeVisible();
+    const outputTab = page.locator('[data-tab="output"]');
+    await expect(outputTab).toHaveAttribute('aria-pressed', 'true');
   });
 
   test('browser back button navigates between tabs', async ({ page }) => {
     await page.goto('/');
 
-    // Click Not work tab (default is now Work)
-    await page.locator('[data-tab="not-work"]').click();
+    await page.locator('[data-tab="input"]').click();
     await page.waitForTimeout(300);
-    expect(page.url()).toContain('?tab=not-work');
+    expect(page.url()).toContain('?tab=input');
 
-    // Go back
     await page.goBack();
     await page.waitForTimeout(300);
 
-    // Should be back to Work tab
-    const workTab = page.locator('[data-tab="work"]');
-    await expect(workTab).toHaveAttribute('aria-pressed', 'true');
+    const outputTab = page.locator('[data-tab="output"]');
+    await expect(outputTab).toHaveAttribute('aria-pressed', 'true');
+  });
+
+  test('source list items have type badge', async ({ page }) => {
+    await page.goto('/?tab=input');
+    await page.waitForTimeout(300);
+
+    const badge = page.locator('.source-type-badge').first();
+    await expect(badge).toBeVisible();
   });
 });
