@@ -211,7 +211,7 @@ export const POST: APIRoute = async ({ request }) => {
 
     if (existing) {
       // Append note to existing file
-      fileContent = existing.content.trimEnd() + '\n' + buildNoteBlock({ content: noteContent, spotify: spotifyLink, published: true });
+      fileContent = existing.content.trimEnd() + '\n' + buildNoteBlock({ content: noteContent, spotify: spotifyLink });
       isNew = false;
     } else {
       // Create new source file
@@ -227,7 +227,7 @@ export const POST: APIRoute = async ({ request }) => {
         '---',
       ].join('\n');
 
-      fileContent = frontmatter + '\n' + buildNoteBlock({ content: noteContent, spotify: spotifyLink, published: true });
+      fileContent = frontmatter + '\n' + buildNoteBlock({ content: noteContent, spotify: spotifyLink });
       isNew = true;
     }
 
