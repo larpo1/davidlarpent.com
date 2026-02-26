@@ -16,3 +16,8 @@ Testing the bookmark feature
 <!-- published: false -->
 <!-- spotify: https://open.spotify.com/episode/6aeTJQPEXYHITci8d0wfdp?t=2010 -->
 Bookmarked at 33:30
+
+<!-- note: 2026-02-26T22:52 -->
+<!-- published: false -->
+<!-- spotify: https://open.spotify.com/episode/6aeTJQPEXYHITci8d0wfdp?t=2239 -->
+Bookmarked at 37:19
