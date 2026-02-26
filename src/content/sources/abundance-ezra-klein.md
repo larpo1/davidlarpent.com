@@ -18,3 +18,7 @@ Klein argues the problem isn't left vs right but vetocracy vs action. The permit
 <!-- tags: AI, governance -->
 <!-- published: false -->
 Interesting parallel between housing permitting and AI regulation -- both suffer from a bias toward inaction dressed up as caution.
+
+<!-- note: 2026-02-26T18:05 -->
+<!-- published: false -->
+This is another note
