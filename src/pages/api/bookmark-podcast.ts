@@ -48,7 +48,7 @@ async function getSpotifyAccessToken(clientId: string, clientSecret: string, ref
 interface SpotifyEpisode {
   name: string;
   id: string;
-  show: { name: string; publisher: string };
+  show: { name: string };
   progress_ms: number;
 }
 
@@ -77,7 +77,7 @@ async function getCurrentlyPlaying(accessToken: string): Promise<{ episode: Spot
     episode: {
       name: data.item.name,
       id: data.item.id,
-      show: { name: data.item.show.name, publisher: data.item.show.publisher },
+      show: { name: data.item.show.name },
       progress_ms: data.progress_ms,
     },
   };
@@ -215,11 +215,11 @@ export const POST: APIRoute = async ({ request }) => {
       isNew = false;
     } else {
       // Create new source file
-      const today = new Date().toISOString().split('T')[0];
+      const today = new Date().toISOString();
       const frontmatter = [
         '---',
         `title: ${yamlVal(episode.name)}`,
-        `author: ${yamlVal(episode.show.publisher)}`,
+        `author: ${yamlVal(episode.show.name)}`,
         'type: podcast',
         `link: ${spotifyLink}`,
         `date: ${today}`,
