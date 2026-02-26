@@ -5,7 +5,7 @@
  *
  * Prerequisites:
  *   1. Create an app at https://developer.spotify.com/dashboard
- *   2. Add redirect URI: http://localhost:8888/callback
+ *   2. Add redirect URI: http://127.0.0.1:8888/callback
  *   3. Set SPOTIFY_CLIENT_ID and SPOTIFY_CLIENT_SECRET in .env
  *
  * Usage: npm run spotify:auth
@@ -22,7 +22,7 @@ if (!clientId || !clientSecret) {
   process.exit(1);
 }
 
-const REDIRECT_URI = 'http://localhost:8888/callback';
+const REDIRECT_URI = 'http://127.0.0.1:8888/callback';
 const SCOPE = 'user-read-currently-playing';
 
 const authUrl =
@@ -37,10 +37,10 @@ const authUrl =
 console.log('\n1. Open this URL in your browser:\n');
 console.log(`   ${authUrl}\n`);
 console.log('2. Log in to Spotify and approve the permissions.');
-console.log('3. You will be redirected to localhost:8888 — the script will capture the code.\n');
+console.log('3. You will be redirected to 127.0.0.1:8888 — the script will capture the code.\n');
 
 const server = createServer(async (req, res) => {
-  const url = new URL(req.url ?? '/', `http://localhost:8888`);
+  const url = new URL(req.url ?? '/', `http://127.0.0.1:8888`);
 
   if (url.pathname !== '/callback') {
     res.writeHead(404);
@@ -95,6 +95,6 @@ const server = createServer(async (req, res) => {
   server.close();
 });
 
-server.listen(8888, () => {
-  console.log('Waiting for Spotify callback on http://localhost:8888/callback ...\n');
+server.listen(8888, '127.0.0.1', () => {
+  console.log('Waiting for Spotify callback on http://127.0.0.1:8888/callback ...\n');
 });
