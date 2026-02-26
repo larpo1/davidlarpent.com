@@ -41,3 +41,8 @@ Bookmarked at 24:44
 <!-- published: false -->
 <!-- spotify: https://open.spotify.com/episode/6aeTJQPEXYHITci8d0wfdp?t=1628 -->
 Bookmarked at 27:08
+
+<!-- note: 2026-02-26T23:32 -->
+<!-- published: false -->
+<!-- spotify: https://open.spotify.com/episode/6aeTJQPEXYHITci8d0wfdp?t=2353 -->
+Bookmarked at 39:13
