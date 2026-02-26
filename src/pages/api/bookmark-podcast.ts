@@ -53,7 +53,9 @@ interface SpotifyEpisode {
 }
 
 async function getCurrentlyPlaying(accessToken: string): Promise<{ episode: SpotifyEpisode } | { error: string }> {
-  const res = await fetch('https://api.spotify.com/v1/me/player/currently-playing', {
+  // Use /me/player (requires user-read-playback-state scope) — the
+  // /me/player/currently-playing endpoint often returns item:null for podcasts.
+  const res = await fetch('https://api.spotify.com/v1/me/player?additional_types=episode', {
     headers: { Authorization: `Bearer ${accessToken}` },
   });
 
@@ -65,6 +67,10 @@ async function getCurrentlyPlaying(accessToken: string): Promise<{ episode: Spot
 
   if (data.currently_playing_type !== 'episode') {
     return { error: 'Currently playing music, not a podcast episode' };
+  }
+
+  if (!data.item) {
+    return { error: 'Spotify returned no episode data — try pressing play first' };
   }
 
   return {
