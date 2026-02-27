@@ -9,7 +9,6 @@ tags:
   - harness-engineering
   - open-source
   - productivity
-  - test-persist-tag
 ---
 
 <!-- note: 2026-02-27T08:53 -->
@@ -54,7 +53,7 @@ Always have an agent running in the background because there is always something
 Identify the tasks that require thinking and the tasks that don’t, and delegate the only the tasks that don’t require thinking
 
 <!-- note: 2026-02-27T09:25 -->
-<!-- tags: agentic-coding, productivity, test-persist-tag -->
+<!-- tags: agentic-coding, productivity -->
 <!-- published: true -->
 <!-- spotify: https://open.spotify.com/episode/0bIuuNChmWXcwbIydP6Ckk?t=6557 -->
 "Rejecting AI before spending serious time with it ...is like trying git for an hour and deciding you’re not more productive with it."
