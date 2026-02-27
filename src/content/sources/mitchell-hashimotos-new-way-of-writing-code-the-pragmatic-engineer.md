@@ -64,6 +64,6 @@ Identify the tasks that require thinking and the tasks that don’t, and delegat
 First step for new adopters should be to reproduce your work with an agent.
 
 <!-- note: 2026-02-27T09:27 -->
-<!-- published: false -->
+<!-- published: true -->
 <!-- spotify: https://open.spotify.com/episode/0bIuuNChmWXcwbIydP6Ckk?t=6576 -->
 It doesn’t have to replace you as a person. Just find the corners of your work and let it replace those
