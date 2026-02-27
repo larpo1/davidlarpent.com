@@ -19,7 +19,7 @@ There is an unspoken contract in open source that effort in the submission is me
 <!-- tags: agentic-coding, open-source -->
 <!-- published: false -->
 <!-- spotify: https://open.spotify.com/episode/0bIuuNChmWXcwbIydP6Ckk?t=5102 -->
-Claude opening PRs at the current pace is causing a lot of pain in the community.
+Claude Code generated PRs at current pace is causing a lot of pain in the community and a backlash reaction.
 
 <!-- note: 2026-02-27T08:58 -->
 <!-- published: false -->
