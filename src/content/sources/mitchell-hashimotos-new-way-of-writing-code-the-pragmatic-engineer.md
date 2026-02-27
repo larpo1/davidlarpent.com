@@ -61,7 +61,7 @@ Identify the tasks that require thinking and the tasks that don’t, and delegat
 <!-- note: 2026-02-27T09:26 -->
 <!-- published: true -->
 <!-- spotify: https://open.spotify.com/episode/0bIuuNChmWXcwbIydP6Ckk?t=6568 -->
-First step for new adopters should be to reproduce your work with an agent.
+First step for new adopters should be to reproduce your own work with an agent.
 
 <!-- note: 2026-02-27T09:27 -->
 <!-- published: true -->
