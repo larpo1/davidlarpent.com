@@ -43,7 +43,7 @@ On “harness engineering”. When you see AI do a bad thing, try to build tooli
 
 <!-- note: 2026-02-27T09:22 -->
 <!-- tags: productivity, agentic-coding -->
-<!-- published: false -->
+<!-- published: true -->
 <!-- spotify: https://open.spotify.com/episode/0bIuuNChmWXcwbIydP6Ckk?t=6377 -->
 Always have an agent running in the background because there is always something to do. Disable its ability to notify you: remain in control of interruptions. You choose when to interrupt the agent.
 
