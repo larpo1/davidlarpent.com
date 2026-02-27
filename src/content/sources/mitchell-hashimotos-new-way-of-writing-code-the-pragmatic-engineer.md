@@ -11,9 +11,9 @@ tags:
 
 <!-- note: 2026-02-27T08:53 -->
 <!-- tags: open-source, agentic-coding -->
-<!-- published: false -->
+<!-- published: true -->
 <!-- spotify: https://open.spotify.com/episode/0bIuuNChmWXcwbIydP6Ckk?t=4979 -->
-On effort-for-effort fairness in reacting to low effort AI generated open source contributions.
+There is an unspoken contract in open source that effort in the submission is met with effort in the review. The surge in low-effort, and often low-value AI generated open source contributions is a breach of contract.
 
 <!-- note: 2026-02-27T08:55 -->
 <!-- tags: agentic-coding, open-source -->
