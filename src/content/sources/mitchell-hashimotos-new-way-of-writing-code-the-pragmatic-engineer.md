@@ -31,7 +31,7 @@ Some projects are now allowing PRs only from vouched-for contributors. Those who
 <!-- note: 2026-02-27T09:06 -->
 <!-- published: false -->
 <!-- spotify: https://open.spotify.com/episode/0bIuuNChmWXcwbIydP6Ckk?t=5727 -->
-"GitHub and forges in general do not work with agentic workflows today
+"GitHub and forges [in general] do not work with agentic workflows today"
 
 <!-- note: 2026-02-27T09:10 -->
 <!-- tags: harness-engineering -->
