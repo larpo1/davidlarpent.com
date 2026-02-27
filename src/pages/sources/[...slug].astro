@@ -285,8 +285,11 @@ const sourceTypes = ['book', 'article', 'paper', 'podcast'];
         updateNoteTags(card);
       });
 
-      // --- Tag typeahead (placeholder-based) ---
+      // --- Tag typeahead (dropdown) ---
       const tagSuggestions = [...allExistingTags]; // mutable local copy
+      let dropdown = null;
+      let highlightIdx = -1;
+      let activeInput = null;
 
       function addTagToNote(input, tagValue) {
         const val = tagValue.trim().toLowerCase().replace(/^#/, '');
@@ -304,59 +307,134 @@ const sourceTypes = ['book', 'article', 'paper', 'podcast'];
           tagSuggestions.sort();
         }
         input.value = '';
-        input.placeholder = 'Add tag...';
-        input.dataset.suggestion = '';
+        closeDropdown();
       }
 
-      function findMatch(input) {
+      function createDropdown() {
+        if (dropdown) return dropdown;
+        dropdown = document.createElement('div');
+        Object.assign(dropdown.style, {
+          position: 'fixed',
+          display: 'none',
+          background: 'var(--color-background)',
+          border: '1px solid var(--color-border)',
+          borderRadius: '4px',
+          maxHeight: '150px',
+          overflowY: 'auto',
+          zIndex: '200',
+          minWidth: '150px',
+        });
+        document.body.appendChild(dropdown);
+        return dropdown;
+      }
+
+      function closeDropdown() {
+        if (dropdown) dropdown.style.display = 'none';
+        highlightIdx = -1;
+        activeInput = null;
+      }
+
+      function showDropdown(input) {
         const query = input.value.trim().toLowerCase().replace(/^#/, '');
-        if (!query) return null;
+        if (!query) { closeDropdown(); return; }
+
         const card = input.closest('.note-card');
         const currentTags = JSON.parse(card.dataset.tags || '[]');
-        return tagSuggestions.find(t => t.startsWith(query) && !currentTags.includes(t))
-            || tagSuggestions.find(t => t.includes(query) && !currentTags.includes(t))
-            || null;
+        const matches = tagSuggestions.filter(t =>
+          t.includes(query) && !currentTags.includes(t)
+        );
+        // Sort: startsWith first, then contains
+        matches.sort((a, b) => {
+          const aStarts = a.startsWith(query) ? 0 : 1;
+          const bStarts = b.startsWith(query) ? 0 : 1;
+          return aStarts - bStarts || a.localeCompare(b);
+        });
+
+        if (matches.length === 0) { closeDropdown(); return; }
+
+        const dd = createDropdown();
+        while (dd.firstChild) dd.removeChild(dd.firstChild);
+        matches.forEach((tag, i) => {
+          const opt = document.createElement('div');
+          Object.assign(opt.style, {
+            padding: '0.3em 0.6em',
+            fontSize: '0.8rem',
+            cursor: 'pointer',
+            color: 'var(--color-text)',
+          });
+          opt.textContent = tag;
+          opt.addEventListener('mouseenter', () => {
+            opt.style.background = 'var(--color-code-bg)';
+          });
+          opt.addEventListener('mouseleave', () => {
+            if (highlightIdx !== i) opt.style.background = '';
+          });
+          opt.addEventListener('mousedown', (e) => {
+            e.preventDefault();
+            addTagToNote(input, tag);
+          });
+          dd.appendChild(opt);
+        });
+
+        // Position below the input using fixed positioning
+        const rect = input.getBoundingClientRect();
+        dd.style.position = 'fixed';
+        dd.style.top = rect.bottom + 2 + 'px';
+        dd.style.left = rect.left + 'px';
+        dd.style.minWidth = Math.max(rect.width, 150) + 'px';
+        dd.style.display = 'block';
+        highlightIdx = -1;
+        activeInput = input;
+      }
+
+      function updateHighlight() {
+        if (!dropdown) return;
+        const opts = dropdown.children;
+        for (let i = 0; i < opts.length; i++) {
+          opts[i].style.background = i === highlightIdx ? 'var(--color-code-bg)' : '';
+        }
+        if (highlightIdx >= 0 && opts[highlightIdx]) {
+          opts[highlightIdx].scrollIntoView({ block: 'nearest' });
+        }
       }
 
       document.querySelectorAll('.note-tag-input').forEach(input => {
-        input.addEventListener('input', () => {
-          const match = findMatch(input);
-          if (match) {
-            input.placeholder = match;
-            input.dataset.suggestion = match;
-          } else {
-            input.placeholder = 'Add tag...';
-            input.dataset.suggestion = '';
-          }
-        });
+        input.addEventListener('input', () => showDropdown(input));
 
         input.addEventListener('keydown', (e) => {
-          if (e.key === 'Tab') {
-            const suggestion = input.dataset.suggestion;
-            if (suggestion && input.value.trim()) {
-              e.preventDefault();
-              input.value = suggestion;
-              input.placeholder = 'Add tag...';
-              input.dataset.suggestion = '';
-            }
+          const isOpen = dropdown && dropdown.style.display === 'block' && activeInput === input;
+          const opts = isOpen ? dropdown.children : [];
+
+          if (e.key === 'ArrowDown' && isOpen) {
+            e.preventDefault();
+            highlightIdx = (highlightIdx + 1) % opts.length;
+            updateHighlight();
+          } else if (e.key === 'ArrowUp' && isOpen) {
+            e.preventDefault();
+            highlightIdx = highlightIdx <= 0 ? opts.length - 1 : highlightIdx - 1;
+            updateHighlight();
+          } else if (e.key === 'Tab' && isOpen && highlightIdx >= 0) {
+            e.preventDefault();
+            addTagToNote(input, opts[highlightIdx].textContent);
+          } else if (e.key === 'Tab' && isOpen && opts.length > 0) {
+            e.preventDefault();
+            addTagToNote(input, opts[0].textContent);
           } else if (e.key === 'Enter') {
             e.preventDefault();
-            const suggestion = input.dataset.suggestion;
-            const val = input.value.trim().toLowerCase().replace(/^#/, '');
-            if (suggestion && val && suggestion.startsWith(val)) {
-              addTagToNote(input, suggestion);
+            if (isOpen && highlightIdx >= 0) {
+              addTagToNote(input, opts[highlightIdx].textContent);
+            } else if (isOpen && opts.length > 0) {
+              addTagToNote(input, opts[0].textContent);
             } else {
               addTagToNote(input, input.value);
             }
           } else if (e.key === 'Escape') {
-            input.placeholder = 'Add tag...';
-            input.dataset.suggestion = '';
+            closeDropdown();
           }
         });
 
         input.addEventListener('blur', () => {
-          input.placeholder = 'Add tag...';
-          input.dataset.suggestion = '';
+          setTimeout(() => closeDropdown(), 150);
         });
       });
 
@@ -621,12 +699,16 @@ const sourceTypes = ['book', 'article', 'paper', 'podcast'];
   .note-tag-remove {
     background: none;
     border: none;
+    outline: none;
     color: var(--color-text-light);
     cursor: pointer;
+    font-family: inherit;
     font-size: 0.9rem;
     padding: 0;
     line-height: 1;
     opacity: 0.5;
+    -webkit-appearance: none;
+    appearance: none;
   }
 
   .note-tag-remove:hover {
@@ -711,8 +793,4 @@ const sourceTypes = ['book', 'article', 'paper', 'podcast'];
     color: var(--color-link-hover);
   }
 
-  .note-tag-input::placeholder {
-    color: var(--color-text-light);
-    opacity: 0.5;
-  }
 </style>
