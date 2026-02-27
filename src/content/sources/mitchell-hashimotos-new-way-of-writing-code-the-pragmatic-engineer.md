@@ -28,6 +28,7 @@ Claude Code generated PRs at current pace is causing a lot of pain in the commun
 Some projects are now allowing PRs only from vouched-for contributors. Those who break trust are denounced and gated.
 
 <!-- note: 2026-02-27T09:06 -->
+<!-- tags: agentic-coding -->
 <!-- published: false -->
 <!-- spotify: https://open.spotify.com/episode/0bIuuNChmWXcwbIydP6Ckk?t=5690 -->
 The real examples of companies going highly agentic and drinking the cool aid is they are drowning in a release problem. Performance, workflow, merge conflicts. You can’t push because there is a new version every few minutes
