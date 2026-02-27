@@ -32,7 +32,7 @@ Some projects are now allowing PRs only from vouched-for contributors. Those who
 <!-- tags: agentic-coding -->
 <!-- published: true -->
 <!-- spotify: https://open.spotify.com/episode/0bIuuNChmWXcwbIydP6Ckk?t=5690 -->
-The real examples of companies going highly agentic and drinking the cool aid is they are drowning in a release problem. Performance, workflow, merge conflicts. You can’t push because there is a new version every few minutes
+"GitHub and forges in general do not work with agentic workflows today"
 
 <!-- note: 2026-02-27T09:06 -->
 <!-- published: false -->
