@@ -13,7 +13,7 @@ tags:
 <!-- tags: open-source, agentic-coding -->
 <!-- published: false -->
 <!-- spotify: https://open.spotify.com/episode/0bIuuNChmWXcwbIydP6Ckk?t=4979 -->
-On effort for effort fairness in reacting to low effort AI generated open source contributions.
+On effort-for-effort fairness in reacting to low effort AI generated open source contributions.
 
 <!-- note: 2026-02-27T08:55 -->
 <!-- tags: agentic-coding, open-source -->
