@@ -36,3 +36,8 @@ GitHub and forges in general do not work with agentic workflows today
 <!-- published: false -->
 <!-- spotify: https://open.spotify.com/episode/0bIuuNChmWXcwbIydP6Ckk?t=5874 -->
 On “harness engineering”. When you see AI do a bad thing, try to build tooling it could have called out to avoid or course correct away from that bad thing.
+
+<!-- note: 2026-02-27T09:22 -->
+<!-- published: false -->
+<!-- spotify: https://open.spotify.com/episode/0bIuuNChmWXcwbIydP6Ckk?t=6377 -->
+Always have an agent running in the background because there is always something to do. Disable its ability to notify so you remain in control of interruptions. You choose when to interrupt the agent.
