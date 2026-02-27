@@ -13,7 +13,7 @@ tags:
 <!-- tags: open-source, agentic-coding -->
 <!-- published: true -->
 <!-- spotify: https://open.spotify.com/episode/0bIuuNChmWXcwbIydP6Ckk?t=4979 -->
-There is an unspoken contract in open source that effort in the submission is met with effort in the review. The surge in low-effort, and often low-value AI generated open source contributions is a breach of contract.
+There is an unspoken compact in open source that effort in the submission is met with effort in the review. The surge in low-effort, and often low-value AI generated open source contributions is a breach of contract.
 
 <!-- note: 2026-02-27T08:55 -->
 <!-- tags: agentic-coding, open-source -->
