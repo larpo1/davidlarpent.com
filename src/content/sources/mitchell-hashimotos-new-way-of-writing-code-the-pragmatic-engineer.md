@@ -46,3 +46,8 @@ Always have an agent running in the background because there is always something
 <!-- published: false -->
 <!-- spotify: https://open.spotify.com/episode/0bIuuNChmWXcwbIydP6Ckk?t=6417 -->
 Identify the tasks that require thinking and the tasks that don’t, and delegate the only the tasks that don’t require thinking
+
+<!-- note: 2026-02-27T09:25 -->
+<!-- published: false -->
+<!-- spotify: https://open.spotify.com/episode/0bIuuNChmWXcwbIydP6Ckk?t=6557 -->
+Rejecting AI use is like swinging the hammer well off. It’s like trying git for an hour and deciding you’re not more productive with it.
