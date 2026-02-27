@@ -16,3 +16,8 @@ On effort for effort fairness in reacting to low effort AI generated open source
 <!-- published: false -->
 <!-- spotify: https://open.spotify.com/episode/0bIuuNChmWXcwbIydP6Ckk?t=5102 -->
 Claude opening PRs at the current pace is causing a lot of pain in the community.
+
+<!-- note: 2026-02-27T08:58 -->
+<!-- published: false -->
+<!-- spotify: https://open.spotify.com/episode/0bIuuNChmWXcwbIydP6Ckk?t=5266 -->
+Vouching for and denouncing contributors as a gate to who can open a PR
