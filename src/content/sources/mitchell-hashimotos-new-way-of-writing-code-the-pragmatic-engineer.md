@@ -24,7 +24,7 @@ Claude Code generated PRs at current pace is causing a lot of pain in the commun
 <!-- note: 2026-02-27T08:58 -->
 <!-- published: false -->
 <!-- spotify: https://open.spotify.com/episode/0bIuuNChmWXcwbIydP6Ckk?t=5266 -->
-Some projects are allowing PRs only from vouched for contributors and those who break the compact can are denounced and gated.
+Some projects are now allowing PRs only from vouched-for contributors and those who break the compact can are denounced and gated.
 
 <!-- note: 2026-02-27T09:06 -->
 <!-- published: false -->
