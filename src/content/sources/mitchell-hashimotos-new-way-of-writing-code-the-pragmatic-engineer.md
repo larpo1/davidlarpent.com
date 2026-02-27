@@ -51,3 +51,8 @@ Identify the tasks that require thinking and the tasks that don’t, and delegat
 <!-- published: false -->
 <!-- spotify: https://open.spotify.com/episode/0bIuuNChmWXcwbIydP6Ckk?t=6557 -->
 Rejecting AI use is like swinging the hammer well off. It’s like trying git for an hour and deciding you’re not more productive with it.
+
+<!-- note: 2026-02-27T09:26 -->
+<!-- published: false -->
+<!-- spotify: https://open.spotify.com/episode/0bIuuNChmWXcwbIydP6Ckk?t=6568 -->
+First step for new adopters should be to reproduce your work with an agent.
