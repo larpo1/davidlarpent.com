@@ -1306,8 +1306,8 @@ a:hover {
 }
 
 .draft-badge {
-  background: var(--color-link);
-  color: var(--color-background);
+  background: #6ba4ff;
+  color: white;
   font-size: 0.7rem;
   padding: 0.2em 0.5em;
   border-radius: 3px;
@@ -1378,7 +1378,7 @@ a:hover {
 }
 
 .publish-toggle input:checked + .publish-toggle-slider {
-  background: var(--color-link);
+  background: #6ba4ff;
 }
 
 .publish-toggle input:checked + .publish-toggle-slider::after {
