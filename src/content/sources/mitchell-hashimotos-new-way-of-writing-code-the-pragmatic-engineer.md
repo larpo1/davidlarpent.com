@@ -56,3 +56,8 @@ Rejecting AI use is like swinging the hammer well off. It’s like trying git fo
 <!-- published: false -->
 <!-- spotify: https://open.spotify.com/episode/0bIuuNChmWXcwbIydP6Ckk?t=6568 -->
 First step for new adopters should be to reproduce your work with an agent.
+
+<!-- note: 2026-02-27T09:27 -->
+<!-- published: false -->
+<!-- spotify: https://open.spotify.com/episode/0bIuuNChmWXcwbIydP6Ckk?t=6576 -->
+It doesn’t have to replace you as a person. Just find the corners of your work and let it replace those
