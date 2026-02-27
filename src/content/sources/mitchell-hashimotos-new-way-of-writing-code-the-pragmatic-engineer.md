@@ -29,12 +29,6 @@ Claude Code generated PRs at current pace is causing a lot of pain in the commun
 Some projects are now allowing PRs only from vouched-for contributors. Those who break trust are denounced and gated.
 
 <!-- note: 2026-02-27T09:06 -->
-<!-- tags: agentic-coding -->
-<!-- published: true -->
-<!-- spotify: https://open.spotify.com/episode/0bIuuNChmWXcwbIydP6Ckk?t=5690 -->
-"GitHub and forges in general do not work with agentic workflows today"
-
-<!-- note: 2026-02-27T09:06 -->
 <!-- published: false -->
 <!-- spotify: https://open.spotify.com/episode/0bIuuNChmWXcwbIydP6Ckk?t=5727 -->
 GitHub and forges in general do not work with agentic workflows today
