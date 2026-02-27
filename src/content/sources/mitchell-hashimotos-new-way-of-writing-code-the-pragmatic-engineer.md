@@ -2,9 +2,11 @@
 title: Mitchell Hashimoto’s new way of writing code
 author: The Pragmatic Engineer
 type: podcast
-link: https://open.spotify.com/episode/0bIuuNChmWXcwbIydP6Ckk?t=4979
-date: 2026-02-27T08:53:42.001Z
-tags: []
+link: 'https://open.spotify.com/episode/0bIuuNChmWXcwbIydP6Ckk?t=4979'
+date: 2026-02-27T00:00:00.000Z
+tags:
+  - agentic-coding
+  - open-source
 ---
 
 <!-- note: 2026-02-27T08:53 -->
