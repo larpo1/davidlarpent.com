@@ -107,7 +107,7 @@ const sourceTypes = ['book', 'article', 'paper', 'podcast'];
       )}
 
       {notes.map(note => (
-        <div class:list={['note-card', { 'note-draft': !note.published }]} data-timestamp={note.timestamp}>
+        <div class:list={['note-card', { 'note-draft': !note.published }]} data-timestamp={note.timestamp} data-tags={JSON.stringify(note.tags)}>
           <div class="note-meta">
             <time>{new Date(note.timestamp).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</time>
             {isDev && (
@@ -126,13 +126,23 @@ const sourceTypes = ['book', 'article', 'paper', 'podcast'];
               </a>
             )}
           </div>
-          {note.tags.length > 0 && (
+          {(note.tags.length > 0 || isDev) && (
             <div class="note-tags">
               {note.tags.map(tag => (
-                <a href={`/tags/${tag.toLowerCase()}`} class="tag-link">
-                  #{tag}
-                </a>
+                isDev ? (
+                  <span class="tag-link note-tag-pill">
+                    #{tag}
+                    <button class="note-tag-remove" data-tag={tag}>&times;</button>
+                  </span>
+                ) : (
+                  <a href={`/tags/${tag.toLowerCase()}`} class="tag-link">
+                    #{tag}
+                  </a>
+                )
               ))}
+              {isDev && (
+                <input class="note-tag-input" placeholder="Add tag..." />
+              )}
             </div>
           )}
           <div class="note-content">
@@ -241,6 +251,86 @@ const sourceTypes = ['book', 'article', 'paper', 'podcast'];
       // --- Gear button opens settings panel ---
       document.getElementById('source-settings-button')?.addEventListener('click', () => {
         window.openSourceSettings?.();
+      });
+
+      // --- Note tag editing ---
+      function renderNoteTags(card) {
+        const tags = JSON.parse(card.dataset.tags || '[]');
+        const container = card.querySelector('.note-tags');
+        if (!container) return;
+        const input = container.querySelector('.note-tag-input');
+        container.querySelectorAll('.note-tag-pill').forEach(el => el.remove());
+        tags.forEach(tag => {
+          const pill = document.createElement('span');
+          pill.className = 'tag-link note-tag-pill';
+          pill.textContent = '#' + tag;
+          const removeBtn = document.createElement('button');
+          removeBtn.className = 'note-tag-remove';
+          removeBtn.dataset.tag = tag;
+          removeBtn.textContent = '\u00d7';
+          pill.appendChild(removeBtn);
+          container.insertBefore(pill, input);
+        });
+      }
+
+      async function updateNoteTags(card) {
+        const tags = JSON.parse(card.dataset.tags || '[]');
+        const timestamp = card.dataset.timestamp;
+        try {
+          const res = await fetch('/api/update-note', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ slug: sourceSlug, timestamp, action: 'update-tags', tags }),
+          });
+          const data = await res.json();
+          if (data.success && data.sourceTags) {
+            updateSourceTagsDisplay(data.sourceTags);
+          }
+        } catch (err) {
+          console.error('Failed to update note tags:', err);
+        }
+      }
+
+      // Update source-level tag display from computed tags
+      function updateSourceTagsDisplay(tags) {
+        const container = document.querySelector('.source-tags-container');
+        if (!container) return;
+        container.querySelectorAll('.source-tag-pill').forEach(el => el.remove());
+        tags.forEach(tag => {
+          const pill = document.createElement('span');
+          pill.className = 'tag-link source-tag-pill';
+          pill.textContent = '#' + tag;
+          container.appendChild(pill);
+        });
+      }
+
+      document.querySelector('.notes-list')?.addEventListener('click', (e) => {
+        const removeBtn = e.target.closest('.note-tag-remove');
+        if (!removeBtn) return;
+        const card = removeBtn.closest('.note-card');
+        const tags = JSON.parse(card.dataset.tags || '[]');
+        const tag = removeBtn.dataset.tag;
+        card.dataset.tags = JSON.stringify(tags.filter(t => t !== tag));
+        renderNoteTags(card);
+        updateNoteTags(card);
+      });
+
+      document.querySelectorAll('.note-tag-input').forEach(input => {
+        input.addEventListener('keydown', (e) => {
+          if (e.key !== 'Enter') return;
+          e.preventDefault();
+          const val = e.target.value.trim().toLowerCase().replace(/^#/, '');
+          if (!val) return;
+          const card = e.target.closest('.note-card');
+          const tags = JSON.parse(card.dataset.tags || '[]');
+          if (!tags.includes(val)) {
+            tags.push(val);
+            card.dataset.tags = JSON.stringify(tags);
+            renderNoteTags(card);
+            updateNoteTags(card);
+          }
+          e.target.value = '';
+        });
       });
 
       // --- Note content editing (blur-to-save) ---
@@ -539,7 +629,49 @@ const sourceTypes = ['book', 'article', 'paper', 'podcast'];
   }
 
   .note-tags {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
     margin-bottom: 0.5rem;
+  }
+
+  .note-tag-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+
+  .note-tag-remove {
+    background: none;
+    border: none;
+    color: var(--color-text-light);
+    cursor: pointer;
+    font-size: 0.9rem;
+    padding: 0;
+    line-height: 1;
+    opacity: 0.5;
+  }
+
+  .note-tag-remove:hover {
+    color: #f87171;
+    opacity: 1;
+  }
+
+  .note-tag-input {
+    font-family: inherit;
+    font-size: 0.8rem;
+    background: none;
+    color: var(--color-text-light);
+    border: 1px dashed var(--color-border);
+    border-radius: 2rem;
+    padding: 0.2em 0.6em;
+    width: 100px;
+  }
+
+  .note-tag-input:focus {
+    outline: none;
+    border-color: var(--color-link);
   }
 
   .note-content p {
