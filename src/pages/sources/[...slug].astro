@@ -5,6 +5,7 @@ import * as path from 'path';
 import matter from 'gray-matter';
 import Base from '../../layouts/Base.astro';
 import AddNotePanel from '../../components/AddNotePanel.astro';
+import SourceSettingsPanel from '../../components/SourceSettingsPanel.astro';
 import { parseNotes } from '../../lib/parse-notes';
 
 const isDev = import.meta.env.DEV;
@@ -89,15 +90,12 @@ const sourceTypes = ['book', 'article', 'paper', 'podcast'];
       </div>
 
       {isDev && (
-        <div class="source-save-controls source-save-subtle">
-          <label class="publish-toggle source-archive-toggle">
-            <input type="checkbox" id="source-archived" checked={!isArchived} />
-            <span class="publish-toggle-slider"></span>
-            <span class="publish-toggle-text">{isArchived ? 'archived' : 'active'}</span>
-          </label>
-          <button class="source-save-btn" id="source-save-btn">Save</button>
-          <span class="source-save-status" id="source-save-status"></span>
-        </div>
+        <button class="source-settings-button" id="source-settings-button" title="Source settings">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/>
+          </svg>
+        </button>
       )}
     </header>
 
@@ -149,6 +147,7 @@ const sourceTypes = ['book', 'article', 'paper', 'podcast'];
     )}
 
     {isDev && <AddNotePanel slug={source.slug} />}
+    {isDev && <SourceSettingsPanel slug={source.slug} archived={isArchived} />}
 
     <a href="/?tab=input" class="back-link">&larr; Back to sources</a>
   </div>
@@ -239,73 +238,9 @@ const sourceTypes = ['book', 'article', 'paper', 'podcast'];
         e.target.value = '';
       });
 
-      // --- Archive toggle ---
-      document.getElementById('source-archived')?.addEventListener('change', async (e) => {
-        const isActive = e.target.checked;
-        const label = e.target.closest('.publish-toggle').querySelector('.publish-toggle-text');
-        try {
-          const res = await fetch('/api/save-source', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ slug: sourceSlug, archived: !isActive }),
-          });
-          const data = await res.json();
-          if (data.success) {
-            label.textContent = isActive ? 'active' : 'archived';
-            document.querySelector('.source-detail').classList.toggle('source-archived', !isActive);
-          } else {
-            e.target.checked = !e.target.checked;
-          }
-        } catch {
-          e.target.checked = !e.target.checked;
-        }
-      });
-
-      // --- Metadata save (button + Cmd+S) ---
-      async function saveMetadata() {
-        const statusEl = document.getElementById('source-save-status');
-        const btn = document.getElementById('source-save-btn');
-        btn.disabled = true;
-        statusEl.textContent = 'Saving...';
-
-        const title = document.getElementById('source-title').textContent.trim();
-        const author = document.getElementById('source-author').textContent.trim();
-        const type = document.getElementById('source-type').textContent.trim();
-        const link = document.getElementById('source-link')?.textContent.trim() || '';
-        const date = document.getElementById('source-date').value;
-
-        try {
-          const res = await fetch('/api/save-source', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              slug: sourceSlug,
-              title,
-              author,
-              type,
-              link: link || undefined,
-              date,
-              tags: currentTags,
-            }),
-          });
-          const data = await res.json();
-          statusEl.textContent = data.success ? 'Saved' : data.message;
-          if (data.success) {
-            setTimeout(() => { statusEl.textContent = ''; }, 2000);
-          }
-        } catch (err) {
-          statusEl.textContent = 'Error saving';
-        }
-        btn.disabled = false;
-      }
-
-      document.getElementById('source-save-btn')?.addEventListener('click', saveMetadata);
-
-      document.addEventListener('keydown', (e) => {
-        if ((e.metaKey || e.ctrlKey) && e.key === 's') {
-          e.preventDefault();
-          saveMetadata();
-        }
+      // --- Gear button opens settings panel ---
+      document.getElementById('source-settings-button')?.addEventListener('click', () => {
+        window.openSourceSettings?.();
       });
 
       // --- Note content editing (blur-to-save) ---
@@ -400,9 +335,28 @@ const sourceTypes = ['book', 'article', 'paper', 'podcast'];
   }
 
   .source-header {
+    position: relative;
     margin-bottom: 2.5rem;
     padding-bottom: 1.5rem;
     border-bottom: 1px solid var(--color-border);
+  }
+
+  .source-settings-button {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background: none;
+    border: none;
+    color: var(--color-text-light);
+    cursor: pointer;
+    padding: 0.25rem;
+    opacity: 0.4;
+    transition: opacity 0.2s;
+  }
+
+  .source-settings-button:hover {
+    opacity: 1;
+    color: var(--color-link);
   }
 
   .source-title {
@@ -545,50 +499,6 @@ const sourceTypes = ['book', 'article', 'paper', 'podcast'];
     border-color: var(--color-link);
   }
 
-  .source-save-controls {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    margin-top: 1rem;
-  }
-
-  .source-save-subtle {
-    opacity: 0.4;
-    transition: opacity 0.2s;
-  }
-
-  .source-save-subtle:hover {
-    opacity: 1;
-  }
-
-  .source-save-btn {
-    font-family: inherit;
-    font-size: 0.8rem;
-    padding: 0.3em 1em;
-    background: var(--color-link);
-    color: var(--color-background);
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-  }
-
-  .source-save-btn:hover {
-    opacity: 0.85;
-  }
-
-  .source-save-btn:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-
-  .source-save-status {
-    font-size: 0.8rem;
-    color: var(--color-text-light);
-  }
-
-  .source-archive-toggle {
-    font-size: 0.75rem;
-  }
 
   .notes-list {
     margin-bottom: 2rem;

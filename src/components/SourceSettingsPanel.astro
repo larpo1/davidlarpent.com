@@ -1,0 +1,134 @@
+---
+interface Props {
+  slug: string;
+  archived: boolean;
+}
+
+const { slug, archived } = Astro.props;
+---
+
+<div id="source-settings-modal" class="settings-modal" data-open="false">
+  <div class="settings-modal-backdrop"></div>
+  <div class="settings-modal-content">
+    <h2>Source Settings</h2>
+
+    <div class="form-group">
+      <label class="publish-toggle source-archive-toggle">
+        <input type="checkbox" id="source-archived" checked={!archived} />
+        <span class="publish-toggle-slider"></span>
+        <span class="publish-toggle-text">{archived ? 'archived' : 'active'}</span>
+      </label>
+    </div>
+
+    <div class="form-actions">
+      <button type="button" class="cancel-button">Cancel</button>
+      <button type="button" class="submit-button" id="source-save-btn">Save</button>
+    </div>
+
+    <span class="modal-status" id="source-save-status"></span>
+  </div>
+</div>
+
+<script define:vars={{ sourceSlug: slug }}>
+  const modal = document.getElementById('source-settings-modal');
+  const backdrop = modal?.querySelector('.settings-modal-backdrop');
+  const cancelButton = modal?.querySelector('.cancel-button');
+  const statusEl = modal?.querySelector('.modal-status');
+
+  function openSourceSettings() {
+    modal?.setAttribute('data-open', 'true');
+  }
+
+  function closeSourceSettings() {
+    modal?.setAttribute('data-open', 'false');
+    if (statusEl) {
+      statusEl.textContent = '';
+      statusEl.className = 'modal-status';
+    }
+  }
+
+  // Expose globally so the gear button can call it
+  window.openSourceSettings = openSourceSettings;
+
+  backdrop?.addEventListener('click', closeSourceSettings);
+  cancelButton?.addEventListener('click', closeSourceSettings);
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modal?.getAttribute('data-open') === 'true') {
+      closeSourceSettings();
+    }
+  });
+
+  // Archive toggle
+  document.getElementById('source-archived')?.addEventListener('change', async (e) => {
+    const isActive = e.target.checked;
+    const label = e.target.closest('.publish-toggle').querySelector('.publish-toggle-text');
+    try {
+      const res = await fetch('/api/save-source', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ slug: sourceSlug, archived: !isActive }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        label.textContent = isActive ? 'active' : 'archived';
+        document.querySelector('.source-detail').classList.toggle('source-archived', !isActive);
+      } else {
+        e.target.checked = !e.target.checked;
+      }
+    } catch {
+      e.target.checked = !e.target.checked;
+    }
+  });
+
+  // Metadata save
+  async function saveMetadata() {
+    const btn = document.getElementById('source-save-btn');
+    btn.disabled = true;
+    statusEl.textContent = 'Saving...';
+    statusEl.className = 'modal-status';
+
+    const title = document.getElementById('source-title').textContent.trim();
+    const author = document.getElementById('source-author').textContent.trim();
+    const type = document.getElementById('source-type').textContent.trim();
+    const link = document.getElementById('source-link')?.textContent.trim() || '';
+    const date = document.getElementById('source-date').value;
+
+    try {
+      const res = await fetch('/api/save-source', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          slug: sourceSlug,
+          title,
+          author,
+          type,
+          link: link || undefined,
+          date,
+        }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        statusEl.textContent = 'Saved';
+        statusEl.className = 'modal-status success';
+        setTimeout(() => { statusEl.textContent = ''; statusEl.className = 'modal-status'; }, 2000);
+      } else {
+        statusEl.textContent = data.message;
+        statusEl.className = 'modal-status error';
+      }
+    } catch (err) {
+      statusEl.textContent = 'Error saving';
+      statusEl.className = 'modal-status error';
+    }
+    btn.disabled = false;
+  }
+
+  document.getElementById('source-save-btn')?.addEventListener('click', saveMetadata);
+
+  document.addEventListener('keydown', (e) => {
+    if ((e.metaKey || e.ctrlKey) && e.key === 's') {
+      e.preventDefault();
+      saveMetadata();
+    }
+  });
+</script>
