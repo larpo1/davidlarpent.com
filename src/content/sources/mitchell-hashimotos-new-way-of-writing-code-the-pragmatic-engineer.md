@@ -17,9 +17,9 @@ There is an unspoken contract in open source that effort in the submission is me
 
 <!-- note: 2026-02-27T08:55 -->
 <!-- tags: agentic-coding, open-source -->
-<!-- published: false -->
+<!-- published: true -->
 <!-- spotify: https://open.spotify.com/episode/0bIuuNChmWXcwbIydP6Ckk?t=5102 -->
-Claude Code generated PRs at current pace is causing a lot of pain in the community and a backlash reaction.
+Claude Code generated PRs at current pace is causing a lot of pain in the community and an inevitable backlash reaction. Where does this lead? Blanket rejection of AI contributions to open source projects is also not the answer.
 
 <!-- note: 2026-02-27T08:58 -->
 <!-- published: false -->
