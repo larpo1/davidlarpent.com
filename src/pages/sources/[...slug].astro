@@ -33,6 +33,15 @@ const notes = isDev ? allNotes : allNotes.filter(n => n.published);
 // Source tags are computed as the union of all note tags
 const computedTags = [...new Set(allNotes.flatMap(n => n.tags))].sort();
 
+// Collect all existing tags across posts and sources for autocomplete
+const allPosts = await getCollection('posts');
+const allSources = await getCollection('sources');
+const allExistingTags = [...new Set([
+  ...allPosts.flatMap(p => p.data.tags || []),
+  ...allSources.flatMap(s => s.data.tags || []),
+  ...allNotes.flatMap(n => n.tags),
+])].map(t => t.toLowerCase()).sort();
+
 const formattedDate = source.data.date.toLocaleDateString('en-US', {
   year: 'numeric',
   month: 'short',
@@ -164,7 +173,7 @@ const sourceTypes = ['book', 'article', 'paper', 'podcast'];
   </div>
 
   {isDev && (
-    <script define:vars={{ sourceSlug: source.slug }}>
+    <script define:vars={{ sourceSlug: source.slug, allExistingTags }}>
       // --- Type badge click-to-cycle ---
       const typeBadge = document.getElementById('source-type');
       if (typeBadge) {
@@ -273,21 +282,131 @@ const sourceTypes = ['book', 'article', 'paper', 'podcast'];
         updateNoteTags(card);
       });
 
+      // --- Tag autocomplete ---
+      const tagSuggestions = [...allExistingTags]; // mutable local copy
+
+      function addTagToNote(input, tagValue) {
+        const val = tagValue.trim().toLowerCase().replace(/^#/, '');
+        if (!val) return;
+        const card = input.closest('.note-card');
+        const tags = JSON.parse(card.dataset.tags || '[]');
+        if (!tags.includes(val)) {
+          tags.push(val);
+          card.dataset.tags = JSON.stringify(tags);
+          renderNoteTags(card);
+          updateNoteTags(card);
+        }
+        // Add to local suggestions if new
+        if (!tagSuggestions.includes(val)) {
+          tagSuggestions.push(val);
+          tagSuggestions.sort();
+        }
+        input.value = '';
+        closeDropdown(input);
+      }
+
+      function getDropdown(input) {
+        return input.parentElement.querySelector('.tag-autocomplete');
+      }
+
+      function ensureDropdown(input) {
+        let dropdown = getDropdown(input);
+        if (!dropdown) {
+          dropdown = document.createElement('div');
+          dropdown.className = 'tag-autocomplete';
+          input.parentElement.appendChild(dropdown);
+        }
+        return dropdown;
+      }
+
+      function closeDropdown(input) {
+        const dropdown = getDropdown(input);
+        if (dropdown) dropdown.style.display = 'none';
+      }
+
+      function showSuggestions(input) {
+        const query = input.value.trim().toLowerCase().replace(/^#/, '');
+        const dropdown = ensureDropdown(input);
+
+        if (!query) {
+          dropdown.style.display = 'none';
+          return;
+        }
+
+        const card = input.closest('.note-card');
+        const currentTags = JSON.parse(card.dataset.tags || '[]');
+        const matches = tagSuggestions.filter(t =>
+          t.includes(query) && !currentTags.includes(t)
+        );
+
+        if (matches.length === 0) {
+          dropdown.style.display = 'none';
+          return;
+        }
+
+        // Clear and rebuild options using DOM methods
+        while (dropdown.firstChild) dropdown.removeChild(dropdown.firstChild);
+        matches.forEach(tag => {
+          const option = document.createElement('div');
+          option.className = 'tag-autocomplete-option';
+          option.textContent = '#' + tag;
+          option.dataset.value = tag;
+          option.addEventListener('mousedown', (e) => {
+            e.preventDefault(); // prevent blur
+            addTagToNote(input, tag);
+          });
+          dropdown.appendChild(option);
+        });
+        dropdown.style.display = 'block';
+      }
+
+      function getHighlighted(dropdown) {
+        return dropdown?.querySelector('.tag-autocomplete-option.highlighted');
+      }
+
+      function moveHighlight(dropdown, direction) {
+        if (!dropdown || dropdown.style.display === 'none') return;
+        const options = [...dropdown.querySelectorAll('.tag-autocomplete-option')];
+        if (options.length === 0) return;
+        const current = getHighlighted(dropdown);
+        let idx = current ? options.indexOf(current) : -1;
+        if (current) current.classList.remove('highlighted');
+        idx += direction;
+        if (idx < 0) idx = options.length - 1;
+        if (idx >= options.length) idx = 0;
+        options[idx].classList.add('highlighted');
+        options[idx].scrollIntoView({ block: 'nearest' });
+      }
+
       document.querySelectorAll('.note-tag-input').forEach(input => {
+        input.addEventListener('input', () => showSuggestions(input));
+
         input.addEventListener('keydown', (e) => {
-          if (e.key !== 'Enter') return;
-          e.preventDefault();
-          const val = e.target.value.trim().toLowerCase().replace(/^#/, '');
-          if (!val) return;
-          const card = e.target.closest('.note-card');
-          const tags = JSON.parse(card.dataset.tags || '[]');
-          if (!tags.includes(val)) {
-            tags.push(val);
-            card.dataset.tags = JSON.stringify(tags);
-            renderNoteTags(card);
-            updateNoteTags(card);
+          const dropdown = getDropdown(input);
+          const isOpen = dropdown && dropdown.style.display === 'block';
+
+          if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            if (isOpen) moveHighlight(dropdown, 1);
+          } else if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            if (isOpen) moveHighlight(dropdown, -1);
+          } else if (e.key === 'Escape') {
+            closeDropdown(input);
+          } else if (e.key === 'Enter') {
+            e.preventDefault();
+            const highlighted = isOpen && getHighlighted(dropdown);
+            if (highlighted) {
+              addTagToNote(input, highlighted.dataset.value);
+            } else {
+              addTagToNote(input, input.value);
+            }
           }
-          e.target.value = '';
+        });
+
+        input.addEventListener('blur', () => {
+          // Small delay so mousedown on option fires first
+          setTimeout(() => closeDropdown(input), 150);
         });
       });
 
@@ -555,6 +674,7 @@ const sourceTypes = ['book', 'article', 'paper', 'podcast'];
     align-items: center;
     gap: 0.5rem;
     margin-bottom: 0.5rem;
+    position: relative;
   }
 
   .note-tag-pill {
@@ -654,5 +774,31 @@ const sourceTypes = ['book', 'article', 'paper', 'podcast'];
 
   .back-link:hover {
     color: var(--color-link-hover);
+  }
+
+  .tag-autocomplete {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background: var(--color-background);
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    max-height: 150px;
+    overflow-y: auto;
+    z-index: 50;
+    min-width: 150px;
+    display: none;
+  }
+
+  .tag-autocomplete-option {
+    padding: 0.3em 0.6em;
+    font-size: 0.8rem;
+    cursor: pointer;
+    color: var(--color-text);
+  }
+
+  .tag-autocomplete-option:hover,
+  .tag-autocomplete-option.highlighted {
+    background: var(--color-code-bg);
   }
 </style>
