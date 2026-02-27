@@ -1413,8 +1413,8 @@ a:hover {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 2rem;
-  height: 2rem;
+  width: 3rem;
+  height: 3rem;
   border-radius: 50%;
   border: none;
   cursor: pointer;
@@ -1423,8 +1423,8 @@ a:hover {
 
 .save-button svg,
 .settings-button svg {
-  width: 14px;
-  height: 14px;
+  width: 21px;
+  height: 21px;
 }
 
 .save-button {
@@ -1454,8 +1454,8 @@ a:hover {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 2rem;
-  height: 2rem;
+  width: 3rem;
+  height: 3rem;
   border-radius: 50%;
   border: none;
   cursor: pointer;
@@ -1466,8 +1466,8 @@ a:hover {
 
 .linkedin-copy-button svg,
 .substack-copy-button svg {
-  width: 14px;
-  height: 14px;
+  width: 21px;
+  height: 21px;
 }
 
 .linkedin-copy-button:hover {
