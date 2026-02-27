@@ -66,10 +66,22 @@ export const POST: APIRoute = async ({ request }) => {
     const parsed = matter(rawContent);
     let bodyContent = parsed.content;
 
-    const noteHeader = `<!-- note: ${timestamp} -->`;
-    const noteIndex = bodyContent.indexOf(noteHeader);
+    // Find the correct note by position index (handles duplicate timestamps)
+    const noteMarkers = [...bodyContent.matchAll(/<!-- note: .+? -->/g)];
+    const requestedIndex = typeof body.noteIndex === 'number' ? body.noteIndex : null;
 
-    if (noteIndex === -1) {
+    let notePos: number;
+    let noteHeader: string;
+    if (requestedIndex !== null && requestedIndex >= 0 && requestedIndex < noteMarkers.length) {
+      notePos = noteMarkers[requestedIndex].index!;
+      noteHeader = noteMarkers[requestedIndex][0];
+    } else {
+      // Fallback: find by timestamp (backward compat)
+      noteHeader = `<!-- note: ${timestamp} -->`;
+      notePos = bodyContent.indexOf(noteHeader);
+    }
+
+    if (notePos === -1) {
       return new Response(
         JSON.stringify({ success: false, message: `Note not found: ${timestamp}` }),
         { status: 404, headers: { 'Content-Type': 'application/json' } }
@@ -78,16 +90,18 @@ export const POST: APIRoute = async ({ request }) => {
 
     if (action === 'toggle-published') {
       // Find the published comment within this note's block
-      const nextNoteIndex = bodyContent.indexOf('<!-- note:', noteIndex + noteHeader.length);
-      const blockEnd = nextNoteIndex === -1 ? bodyContent.length : nextNoteIndex;
-      const block = bodyContent.slice(noteIndex, blockEnd);
+      const nextNoteStart = requestedIndex !== null && requestedIndex + 1 < noteMarkers.length
+        ? noteMarkers[requestedIndex + 1].index!
+        : bodyContent.indexOf('<!-- note:', notePos + noteHeader.length);
+      const blockEnd = nextNoteStart === -1 ? bodyContent.length : nextNoteStart;
+      const block = bodyContent.slice(notePos, blockEnd);
 
       const updatedBlock = block.replace(
         /<!-- published: (true|false) -->/,
         (_match, val) => `<!-- published: ${val === 'true' ? 'false' : 'true'} -->`
       );
 
-      bodyContent = bodyContent.slice(0, noteIndex) + updatedBlock + bodyContent.slice(blockEnd);
+      bodyContent = bodyContent.slice(0, notePos) + updatedBlock + bodyContent.slice(blockEnd);
     } else if (action === 'update-tags') {
       // Update tags comment within the note block
       const { tags } = body;
@@ -98,9 +112,11 @@ export const POST: APIRoute = async ({ request }) => {
         );
       }
 
-      const nextNoteIndex = bodyContent.indexOf('<!-- note:', noteIndex + noteHeader.length);
-      const blockEnd = nextNoteIndex === -1 ? bodyContent.length : nextNoteIndex;
-      let block = bodyContent.slice(noteIndex, blockEnd);
+      const nextNoteStart = requestedIndex !== null && requestedIndex + 1 < noteMarkers.length
+        ? noteMarkers[requestedIndex + 1].index!
+        : bodyContent.indexOf('<!-- note:', notePos + noteHeader.length);
+      const blockEnd = nextNoteStart === -1 ? bodyContent.length : nextNoteStart;
+      let block = bodyContent.slice(notePos, blockEnd);
 
       const tagsLine = tags.length > 0 ? `<!-- tags: ${tags.join(', ')} -->` : null;
       const existingTagsMatch = block.match(/<!-- tags: .+? -->/);
@@ -114,7 +130,7 @@ export const POST: APIRoute = async ({ request }) => {
         block = block.replace(noteHeader, noteHeader + '\n' + tagsLine);
       }
 
-      bodyContent = bodyContent.slice(0, noteIndex) + block + bodyContent.slice(blockEnd);
+      bodyContent = bodyContent.slice(0, notePos) + block + bodyContent.slice(blockEnd);
 
       // Recompute source frontmatter tags as union of all note tags
       const allNotes = parseNotes(bodyContent);
@@ -122,26 +138,15 @@ export const POST: APIRoute = async ({ request }) => {
       parsed.data.tags = computedTags;
     } else {
       // Delete: remove from note header to next note header (or end of file)
-      const nextNoteIndex = bodyContent.indexOf('<!-- note:', noteIndex + noteHeader.length);
-      const blockEnd = nextNoteIndex === -1 ? bodyContent.length : nextNoteIndex;
-      bodyContent = bodyContent.slice(0, noteIndex) + bodyContent.slice(blockEnd);
+      const nextNoteStart = requestedIndex !== null && requestedIndex + 1 < noteMarkers.length
+        ? noteMarkers[requestedIndex + 1].index!
+        : bodyContent.indexOf('<!-- note:', notePos + noteHeader.length);
+      const blockEnd = nextNoteStart === -1 ? bodyContent.length : nextNoteStart;
+      bodyContent = bodyContent.slice(0, notePos) + bodyContent.slice(blockEnd);
     }
 
     // Reassemble frontmatter + body
     const output = matter.stringify(bodyContent, parsed.data);
-    await fs.writeFile(filePath, output, 'utf-8');
-
-    // Auto-commit after delay
-    const commitFile = `src/content/sources/${slug}.md`;
-    setTimeout(async () => {
-      try {
-        await execAsync(`git add "${commitFile}"`);
-        const commitMsg = `Auto-save: ${slug} (note ${action})`;
-        await execAsync(`git commit -m "${commitMsg}"`);
-      } catch (gitError) {
-        console.log('Git auto-commit skipped:', gitError);
-      }
-    }, 3000);
 
     const responseData: Record<string, any> = {
       success: true,
@@ -150,6 +155,24 @@ export const POST: APIRoute = async ({ request }) => {
     if (action === 'update-tags') {
       responseData.sourceTags = parsed.data.tags;
     }
+
+    // Defer file write so the API response reaches the client first.
+    // The write triggers Astro HMR (page reload) — if it happens before
+    // the client processes the response, the UI reverts to stale data.
+    const commitFile = `src/content/sources/${slug}.md`;
+    setTimeout(async () => {
+      await fs.writeFile(filePath, output, 'utf-8');
+      // Auto-commit after additional delay
+      setTimeout(async () => {
+        try {
+          await execAsync(`git add "${commitFile}"`);
+          const commitMsg = `Auto-save: ${slug} (note ${action})`;
+          await execAsync(`git commit -m "${commitMsg}"`);
+        } catch (gitError) {
+          console.log('Git auto-commit skipped:', gitError);
+        }
+      }, 3000);
+    }, 200);
 
     return new Response(
       JSON.stringify(responseData),

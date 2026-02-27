@@ -108,8 +108,8 @@ const sourceTypes = ['book', 'article', 'paper', 'podcast'];
         </p>
       )}
 
-      {notes.map(note => (
-        <div class:list={['note-card', { 'note-draft': !note.published }]} data-timestamp={note.timestamp} data-tags={JSON.stringify(note.tags)}>
+      {notes.map((note, noteIdx) => (
+        <div class:list={['note-card', { 'note-draft': !note.published }]} data-timestamp={note.timestamp} data-tags={JSON.stringify(note.tags)} data-note-index={noteIdx}>
           <div class="note-meta">
             <time>{new Date(note.timestamp).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</time>
             {isDev && (
@@ -246,11 +246,12 @@ const sourceTypes = ['book', 'article', 'paper', 'podcast'];
       async function updateNoteTags(card) {
         const tags = JSON.parse(card.dataset.tags || '[]');
         const timestamp = card.dataset.timestamp;
+        const noteIndex = parseInt(card.dataset.noteIndex, 10);
         try {
           const res = await fetch('/api/update-note', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ slug: sourceSlug, timestamp, action: 'update-tags', tags }),
+            body: JSON.stringify({ slug: sourceSlug, timestamp, noteIndex, action: 'update-tags', tags }),
           });
           const data = await res.json();
           if (data.success && data.sourceTags) {
@@ -447,12 +448,13 @@ const sourceTypes = ['book', 'article', 'paper', 'podcast'];
 
           const card = el.closest('.note-card');
           const timestamp = card.dataset.timestamp;
+          const noteIndex = parseInt(card.dataset.noteIndex, 10);
 
           try {
             const res = await fetch('/api/save-source', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ slug: sourceSlug, timestamp, content: newContent }),
+              body: JSON.stringify({ slug: sourceSlug, timestamp, noteIndex, content: newContent }),
             });
             const data = await res.json();
             if (!data.success) {
@@ -471,13 +473,14 @@ const sourceTypes = ['book', 'article', 'paper', 'podcast'];
 
         const card = checkbox.closest('.note-card');
         const timestamp = card.dataset.timestamp;
+        const noteIndex = parseInt(card.dataset.noteIndex, 10);
         const label = checkbox.closest('.publish-toggle').querySelector('.publish-toggle-text');
 
         try {
           const res = await fetch('/api/update-note', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ slug: sourceSlug, timestamp, action: 'toggle-published' }),
+            body: JSON.stringify({ slug: sourceSlug, timestamp, noteIndex, action: 'toggle-published' }),
           });
           const data = await res.json();
           if (data.success) {
@@ -501,12 +504,13 @@ const sourceTypes = ['book', 'article', 'paper', 'podcast'];
 
         const card = btn.closest('.note-card');
         const timestamp = card.dataset.timestamp;
+        const noteIndex = parseInt(card.dataset.noteIndex, 10);
 
         try {
           const res = await fetch('/api/update-note', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ slug: sourceSlug, timestamp, action: 'delete' }),
+            body: JSON.stringify({ slug: sourceSlug, timestamp, noteIndex, action: 'delete' }),
           });
           const data = await res.json();
           if (data.success) {

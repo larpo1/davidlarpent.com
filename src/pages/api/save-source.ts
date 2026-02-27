@@ -73,6 +73,7 @@ export const POST: APIRoute = async ({ request }) => {
     const parsed = matter(rawContent);
 
     // Determine which mode based on body fields
+    let fileOutput: string;
     if ('timestamp' in body && 'content' in body) {
       // --- Note content save ---
       const { timestamp, content } = body;
@@ -84,10 +85,23 @@ export const POST: APIRoute = async ({ request }) => {
       }
 
       let bodyContent = parsed.content;
-      const noteHeader = `<!-- note: ${timestamp} -->`;
-      const noteIndex = bodyContent.indexOf(noteHeader);
 
-      if (noteIndex === -1) {
+      // Find the correct note by position index (handles duplicate timestamps)
+      const noteMarkers = [...bodyContent.matchAll(/<!-- note: .+? -->/g)];
+      const requestedIndex = typeof body.noteIndex === 'number' ? body.noteIndex : null;
+
+      let notePos: number;
+      let noteHeader: string;
+      if (requestedIndex !== null && requestedIndex >= 0 && requestedIndex < noteMarkers.length) {
+        notePos = noteMarkers[requestedIndex].index!;
+        noteHeader = noteMarkers[requestedIndex][0];
+      } else {
+        // Fallback: find by timestamp
+        noteHeader = `<!-- note: ${timestamp} -->`;
+        notePos = bodyContent.indexOf(noteHeader);
+      }
+
+      if (notePos === -1) {
         return new Response(
           JSON.stringify({ success: false, message: `Note not found: ${timestamp}` }),
           { status: 404, headers: { 'Content-Type': 'application/json' } }
@@ -95,9 +109,11 @@ export const POST: APIRoute = async ({ request }) => {
       }
 
       // Find the end of this note block (next note header or end of file)
-      const nextNoteIndex = bodyContent.indexOf('<!-- note:', noteIndex + noteHeader.length);
-      const blockEnd = nextNoteIndex === -1 ? bodyContent.length : nextNoteIndex;
-      const block = bodyContent.slice(noteIndex, blockEnd);
+      const nextNoteStart = requestedIndex !== null && requestedIndex + 1 < noteMarkers.length
+        ? noteMarkers[requestedIndex + 1].index!
+        : bodyContent.indexOf('<!-- note:', notePos + noteHeader.length);
+      const blockEnd = nextNoteStart === -1 ? bodyContent.length : nextNoteStart;
+      const block = bodyContent.slice(notePos, blockEnd);
 
       // Extract metadata comments from the block (tags, published, spotify)
       const metaLines: string[] = [];
@@ -119,22 +135,13 @@ export const POST: APIRoute = async ({ request }) => {
 
       // Rebuild the note block: metadata + new content
       const newBlock = metaLines.join('\n') + '\n' + (content || '').trim() + '\n\n';
-      bodyContent = bodyContent.slice(0, noteIndex) + newBlock + bodyContent.slice(blockEnd);
+      bodyContent = bodyContent.slice(0, notePos) + newBlock + bodyContent.slice(blockEnd);
 
-      const output = buildSourceYaml(parsed.data) + '\n' + bodyContent;
-      const tmpPath = filePath + '.tmp';
-      await fs.writeFile(tmpPath, output, 'utf-8');
-      await fs.rename(tmpPath, filePath);
-
+      fileOutput = buildSourceYaml(parsed.data) + '\n' + bodyContent;
     } else if ('archived' in body && Object.keys(body).length === 2) {
       // --- Archive toggle ---
       parsed.data.archived = body.archived === true;
-
-      const output = buildSourceYaml(parsed.data) + '\n' + parsed.content;
-      const tmpPath = filePath + '.tmp';
-      await fs.writeFile(tmpPath, output, 'utf-8');
-      await fs.rename(tmpPath, filePath);
-
+      fileOutput = buildSourceYaml(parsed.data) + '\n' + parsed.content;
     } else {
       // --- Metadata save ---
       if (body.title !== undefined) parsed.data.title = body.title;
@@ -143,24 +150,28 @@ export const POST: APIRoute = async ({ request }) => {
       if (body.link !== undefined) parsed.data.link = body.link;
       if (body.date !== undefined) parsed.data.date = new Date(body.date);
       if (body.tags !== undefined) parsed.data.tags = body.tags;
-
-      const output = buildSourceYaml(parsed.data) + '\n' + parsed.content;
-      const tmpPath = filePath + '.tmp';
-      await fs.writeFile(tmpPath, output, 'utf-8');
-      await fs.rename(tmpPath, filePath);
+      fileOutput = buildSourceYaml(parsed.data) + '\n' + parsed.content;
     }
 
-    // Auto-commit after delay
+    // Defer file write so the API response reaches the client first.
+    // The write triggers Astro HMR (page reload) — if it happens before
+    // the client processes the response, the UI reverts to stale data.
     const commitFile = `src/content/sources/${slug}.md`;
     setTimeout(async () => {
-      try {
-        await execAsync(`git add "${commitFile}"`);
-        const commitMsg = `Auto-save: ${slug} (source edit)`;
-        await execAsync(`git commit -m "${commitMsg}"`);
-      } catch (gitError) {
-        console.log('Git auto-commit skipped:', gitError);
-      }
-    }, 3000);
+      const tmpPath = filePath + '.tmp';
+      await fs.writeFile(tmpPath, fileOutput, 'utf-8');
+      await fs.rename(tmpPath, filePath);
+      // Auto-commit after additional delay
+      setTimeout(async () => {
+        try {
+          await execAsync(`git add "${commitFile}"`);
+          const commitMsg = `Auto-save: ${slug} (source edit)`;
+          await execAsync(`git commit -m "${commitMsg}"`);
+        } catch (gitError) {
+          console.log('Git auto-commit skipped:', gitError);
+        }
+      }, 3000);
+    }, 200);
 
     return new Response(
       JSON.stringify({ success: true, message: 'Source saved' }),
