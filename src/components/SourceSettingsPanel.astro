@@ -7,12 +7,10 @@ interface Props {
 const { slug, archived } = Astro.props;
 ---
 
-<div id="source-settings-modal" class="settings-modal" data-open="false">
-  <div class="settings-modal-backdrop"></div>
-  <div class="settings-modal-content">
-    <h2>Source Settings</h2>
-
-    <div class="form-group">
+<div id="source-settings-modal" class="source-settings-modal" data-open="false">
+  <div class="source-settings-backdrop"></div>
+  <div class="source-settings-content">
+    <div class="source-settings-group">
       <label class="publish-toggle source-archive-toggle">
         <input type="checkbox" id="source-archived" checked={!archived} />
         <span class="publish-toggle-slider"></span>
@@ -20,17 +18,17 @@ const { slug, archived } = Astro.props;
       </label>
     </div>
 
-    <div class="form-actions">
-      <button type="button" class="cancel-button">Cancel</button>
-      <button type="button" class="submit-button" id="source-save-btn">Save</button>
+    <div class="source-settings-actions">
+      <button type="button" class="source-settings-cancel">Cancel</button>
+      <button type="button" class="source-settings-save" id="source-save-btn">Save</button>
     </div>
 
-    <span class="modal-status" id="source-save-status"></span>
+    <span class="source-settings-status" id="source-save-status"></span>
   </div>
 </div>
 
 <style>
-  .settings-modal {
+  .source-settings-modal {
     position: fixed;
     top: 0;
     left: 0;
@@ -40,11 +38,11 @@ const { slug, archived } = Astro.props;
     pointer-events: none;
   }
 
-  .settings-modal[data-open="true"] {
+  .source-settings-modal[data-open="true"] {
     pointer-events: auto;
   }
 
-  .settings-modal-backdrop {
+  .source-settings-backdrop {
     position: absolute;
     top: 0;
     left: 0;
@@ -55,95 +53,92 @@ const { slug, archived } = Astro.props;
     transition: opacity 0.2s ease-in-out;
   }
 
-  .settings-modal[data-open="true"] .settings-modal-backdrop {
+  .source-settings-modal[data-open="true"] .source-settings-backdrop {
     opacity: 1;
   }
 
-  .settings-modal-content {
+  .source-settings-content {
     position: fixed;
     top: 0;
     right: 0;
     bottom: 0;
-    width: 320px;
+    width: 280px;
     max-width: 90vw;
     height: 100%;
     overflow-y: auto;
     background: var(--color-background);
     border-left: 1px solid var(--color-border);
-    padding: 2rem;
+    padding: 1.5rem;
     transform: translateX(100%);
     transition: transform 0.2s ease-in-out;
+    font-size: 0.9rem;
   }
 
-  .settings-modal[data-open="true"] .settings-modal-content {
+  .source-settings-modal[data-open="true"] .source-settings-content {
     transform: translateX(0);
   }
 
-  .settings-modal-content h2 {
-    margin: 0 0 1.5rem;
-    font-size: 1.25rem;
-  }
-
-  .form-group {
+  .source-settings-group {
     margin-bottom: 1.25rem;
   }
 
-  .form-actions {
+  .source-settings-actions {
     display: flex;
     justify-content: flex-end;
     gap: 0.75rem;
     margin-top: 1.5rem;
   }
 
-  .cancel-button,
-  .submit-button {
-    padding: 0.5rem 1rem;
-    font-size: 0.9rem;
+  .source-settings-cancel,
+  .source-settings-save {
+    padding: 0.4rem 0.9rem;
+    font-size: 0.85rem;
+    font-family: inherit;
     border-radius: 4px;
     cursor: pointer;
     border: none;
   }
 
-  .cancel-button {
+  .source-settings-cancel {
     background: var(--color-code-bg);
     color: var(--color-text-light);
     border: 1px solid var(--color-border);
   }
 
-  .cancel-button:hover {
+  .source-settings-cancel:hover {
     background: var(--color-border);
   }
 
-  .submit-button {
+  .source-settings-save {
     background: var(--color-link);
     color: white;
   }
 
-  .submit-button:hover {
+  .source-settings-save:hover {
     background: var(--color-link-hover);
   }
 
-  .modal-status {
+  .source-settings-status {
     display: block;
     margin-top: 1rem;
     font-size: 0.85rem;
     text-align: center;
   }
 
-  .modal-status.error {
+  .source-settings-status.error {
     color: #f87171;
   }
 
-  .modal-status.success {
+  .source-settings-status.success {
     color: #4ade80;
   }
 </style>
 
 <script define:vars={{ sourceSlug: slug }}>
   const modal = document.getElementById('source-settings-modal');
-  const backdrop = modal?.querySelector('.settings-modal-backdrop');
-  const cancelButton = modal?.querySelector('.cancel-button');
-  const statusEl = modal?.querySelector('.modal-status');
+  const backdrop = modal?.querySelector('.source-settings-backdrop');
+  const cancelButton = modal?.querySelector('.source-settings-cancel');
+  const statusEl = modal?.querySelector('.source-settings-status');
 
   function openSourceSettings() {
     modal?.setAttribute('data-open', 'true');
@@ -153,7 +148,7 @@ const { slug, archived } = Astro.props;
     modal?.setAttribute('data-open', 'false');
     if (statusEl) {
       statusEl.textContent = '';
-      statusEl.className = 'modal-status';
+      statusEl.className = 'source-settings-status';
     }
   }
 
@@ -196,7 +191,7 @@ const { slug, archived } = Astro.props;
     const btn = document.getElementById('source-save-btn');
     btn.disabled = true;
     statusEl.textContent = 'Saving...';
-    statusEl.className = 'modal-status';
+    statusEl.className = 'source-settings-status';
 
     const title = document.getElementById('source-title').textContent.trim();
     const author = document.getElementById('source-author').textContent.trim();
@@ -220,15 +215,15 @@ const { slug, archived } = Astro.props;
       const data = await res.json();
       if (data.success) {
         statusEl.textContent = 'Saved';
-        statusEl.className = 'modal-status success';
-        setTimeout(() => { statusEl.textContent = ''; statusEl.className = 'modal-status'; }, 2000);
+        statusEl.className = 'source-settings-status success';
+        setTimeout(() => { statusEl.textContent = ''; statusEl.className = 'source-settings-status'; }, 2000);
       } else {
         statusEl.textContent = data.message;
-        statusEl.className = 'modal-status error';
+        statusEl.className = 'source-settings-status error';
       }
     } catch (err) {
       statusEl.textContent = 'Error saving';
-      statusEl.className = 'modal-status error';
+      statusEl.className = 'source-settings-status error';
     }
     btn.disabled = false;
   }
