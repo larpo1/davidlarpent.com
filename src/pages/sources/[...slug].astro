@@ -225,7 +225,8 @@ const sourceTypes = ['book', 'article', 'paper', 'podcast'];
         const tags = JSON.parse(card.dataset.tags || '[]');
         const container = card.querySelector('.note-tags');
         if (!container) return;
-        const input = container.querySelector('.note-tag-input');
+        // Insert before the wrapper (if ghost is set up) or the raw input
+        const insertTarget = container.querySelector('.tag-input-wrapper') || container.querySelector('.note-tag-input');
         container.querySelectorAll('.note-tag-pill').forEach(el => el.remove());
         tags.forEach(tag => {
           const pill = document.createElement('span');
@@ -236,7 +237,7 @@ const sourceTypes = ['book', 'article', 'paper', 'podcast'];
           removeBtn.dataset.tag = tag;
           removeBtn.textContent = '\u00d7';
           pill.appendChild(removeBtn);
-          container.insertBefore(pill, input);
+          container.insertBefore(pill, insertTarget);
         });
       }
 
