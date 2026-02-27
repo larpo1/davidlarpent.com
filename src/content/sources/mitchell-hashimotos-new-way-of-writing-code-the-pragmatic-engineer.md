@@ -4,9 +4,6 @@ author: The Pragmatic Engineer
 type: podcast
 link: 'https://open.spotify.com/episode/0bIuuNChmWXcwbIydP6Ckk?t=4979'
 date: 2026-02-27T00:00:00.000Z
-tags:
-  - agentic-coding
-  - open-source
 ---
 
 <!-- note: 2026-02-27T08:53 -->

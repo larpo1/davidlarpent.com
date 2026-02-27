@@ -4,9 +4,6 @@ author: Ezra Klein & Derek Thompson
 type: book
 link: 'https://www.simonandschuster.com/books/Abundance/Ezra-Klein/9781668082010'
 date: 2026-02-26T00:00:00.000Z
-tags:
-  - housing
-  - policy
 ---
 
 <!-- note: 2026-02-26T14:30 -->
