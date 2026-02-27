@@ -8,11 +8,11 @@ date: 2026-02-26T00:00:00.000Z
 
 <!-- note: 2026-02-26T14:30 -->
 <!-- tags: housing, abundance -->
-<!-- published: false -->
+<!-- published: true -->
 Klein argues the problem isn't left vs right but vetocracy vs action. The permitting system has become a tool for blocking rather than building.
 
 <!-- note: 2026-02-27T09:15 -->
 <!-- tags: AI, governance -->
-<!-- published: false -->
+<!-- published: true -->
 Interesting parallel between housing permitting and AI regulation -- both suffer from a bias toward inaction dressed up as caution.
 
