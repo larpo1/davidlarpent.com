@@ -16,6 +16,7 @@ tags:
 On effort for effort fairness in reacting to low effort AI generated open source contributions.
 
 <!-- note: 2026-02-27T08:55 -->
+<!-- tags: agentic-coding -->
 <!-- published: false -->
 <!-- spotify: https://open.spotify.com/episode/0bIuuNChmWXcwbIydP6Ckk?t=5102 -->
 Claude opening PRs at the current pace is causing a lot of pain in the community.
