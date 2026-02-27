@@ -30,6 +30,9 @@ const allNotes = parseNotes(parsed.content);
 // In production, only show published notes
 const notes = isDev ? allNotes : allNotes.filter(n => n.published);
 
+// Source tags are computed as the union of all note tags
+const computedTags = [...new Set(allNotes.flatMap(n => n.tags))].sort();
+
 const formattedDate = source.data.date.toLocaleDateString('en-US', {
   year: 'numeric',
   month: 'short',
@@ -77,17 +80,15 @@ const sourceTypes = ['book', 'article', 'paper', 'podcast'];
         </div>
       )}
 
-      <div class="post-tags source-tags-container" style="margin-top: 0.75rem;">
-        {source.data.tags.map(tag => (
-          <span class="tag-link source-tag-pill">
-            #{tag}
-            {isDev && <button class="source-tag-remove" data-tag={tag}>&times;</button>}
-          </span>
-        ))}
-        {isDev && (
-          <input class="source-tag-input" id="source-tag-input" placeholder="Add tag..." />
-        )}
-      </div>
+      {computedTags.length > 0 && (
+        <div class="post-tags source-tags-container" style="margin-top: 0.75rem;">
+          {computedTags.map(tag => (
+            <a href={`/tags/${tag.toLowerCase()}`} class="tag-link source-tag-pill">
+              #{tag}
+            </a>
+          ))}
+        </div>
+      )}
 
       {isDev && (
         <button class="source-settings-button" id="source-settings-button" title="Source settings">
@@ -163,7 +164,7 @@ const sourceTypes = ['book', 'article', 'paper', 'podcast'];
   </div>
 
   {isDev && (
-    <script define:vars={{ sourceSlug: source.slug, initialTags: source.data.tags }}>
+    <script define:vars={{ sourceSlug: source.slug }}>
       // --- Type badge click-to-cycle ---
       const typeBadge = document.getElementById('source-type');
       if (typeBadge) {
@@ -204,49 +205,6 @@ const sourceTypes = ['book', 'article', 'paper', 'podcast'];
           }
         });
       }
-
-      // --- Tag management ---
-      let currentTags = [...initialTags];
-
-      function renderTags() {
-        const container = document.querySelector('.source-tags-container');
-        const input = document.getElementById('source-tag-input');
-        // Remove existing tag pills (but keep the input)
-        container.querySelectorAll('.source-tag-pill').forEach(el => el.remove());
-        // Insert pills before the input using safe DOM methods
-        currentTags.forEach(tag => {
-          const pill = document.createElement('span');
-          pill.className = 'tag-link source-tag-pill';
-          pill.textContent = '#' + tag;
-
-          const removeBtn = document.createElement('button');
-          removeBtn.className = 'source-tag-remove';
-          removeBtn.dataset.tag = tag;
-          removeBtn.textContent = '\u00d7';
-          pill.appendChild(removeBtn);
-
-          container.insertBefore(pill, input);
-        });
-      }
-
-      document.querySelector('.source-tags-container')?.addEventListener('click', (e) => {
-        const btn = e.target.closest('.source-tag-remove');
-        if (!btn) return;
-        const tag = btn.dataset.tag;
-        currentTags = currentTags.filter(t => t !== tag);
-        renderTags();
-      });
-
-      document.getElementById('source-tag-input')?.addEventListener('keydown', (e) => {
-        if (e.key !== 'Enter') return;
-        e.preventDefault();
-        const val = e.target.value.trim().toLowerCase().replace(/^#/, '');
-        if (val && !currentTags.includes(val)) {
-          currentTags.push(val);
-          renderTags();
-        }
-        e.target.value = '';
-      });
 
       // --- Gear button opens settings panel ---
       document.getElementById('source-settings-button')?.addEventListener('click', () => {
@@ -551,43 +509,6 @@ const sourceTypes = ['book', 'article', 'paper', 'podcast'];
     gap: 0.5rem;
   }
 
-  .source-tag-pill {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.25rem;
-  }
-
-  .source-tag-remove {
-    background: none;
-    border: none;
-    color: var(--color-text-light);
-    cursor: pointer;
-    font-size: 0.9rem;
-    padding: 0;
-    line-height: 1;
-    opacity: 0.5;
-  }
-
-  .source-tag-remove:hover {
-    color: #f87171;
-    opacity: 1;
-  }
-
-  .source-tag-input {
-    font-family: inherit;
-    font-size: 0.8rem;
-    background: none;
-    color: var(--color-text-light);
-    border: 1px dashed var(--color-border);
-    border-radius: 2rem;
-    padding: 0.2em 0.6em;
-    width: 100px;
-  }
-
-  .source-tag-input:focus {
-    outline: none;
-    border-color: var(--color-link);
-  }
 
 
   .notes-list {
