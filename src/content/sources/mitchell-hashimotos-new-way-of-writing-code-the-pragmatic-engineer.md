@@ -22,6 +22,7 @@ There is an unspoken compact in open source that effort in the submission is met
 Claude Code generated PRs at current pace is causing a lot of pain in the community and an inevitable backlash reaction. Where does this lead? Blanket rejection of AI contributions to open source projects is also not the answer.
 
 <!-- note: 2026-02-27T08:58 -->
+<!-- tags: open-source -->
 <!-- published: true -->
 <!-- spotify: https://open.spotify.com/episode/0bIuuNChmWXcwbIydP6Ckk?t=5266 -->
 Some projects are now allowing PRs only from vouched-for contributors. Those who break trust are denounced and gated.
