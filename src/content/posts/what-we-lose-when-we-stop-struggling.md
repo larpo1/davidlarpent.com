@@ -29,7 +29,7 @@ Sometimes speed is the game. A trader has milliseconds. A pilot in an emergency 
 
 But many (most) other forms cognitive work aren’t like that.
 
-Arguably most thought work benefits from sitting with a problem for a time. Turning it over. Feeling the friction of competing considerations. 
+Arguably most thought work requiring judgement benefits from sitting with a problem for a time. Turning it over. Feeling the friction of competing considerations. 
 
 Often what good work really needs isn’t speed, but the slower work of judgment forming. Judgment doesn’t form when you skip to the answer.
 
