@@ -27,7 +27,7 @@ This is not a small thing. 
 
 Sometimes speed is the game. A trader has milliseconds. A pilot in an emergency has seconds. An A&E doctor triaging patients needs answers now. In these contexts, AI supported decision making is already proving invaluable. Faster is better.
 
-But many (most) other forms cognitive work aren't like that.
+But many (most) other forms cognitive work aren’t like that.
 
 Arguably most thought work benefits from sitting with a problem for a time. Turning it over. Feeling the friction of competing considerations. 
 
@@ -57,7 +57,7 @@ I paint. Not very well. Oils, mostly. I like the smell of turps. I also make mus
 
 I have noticed that since Suno came out I lost some motivation to make music - in fact I all but stopped doing it. Not because I started using Suno. I have no interest in Suno as a creative tool, that’s not the point. The point is Suno devalued the musical creative process to zero, and that had the effect of making the effort of music creation feel a pointless. It isn’t pointless and I need to talk myself back into again (just not with Suno). 
 
-Someone is probably working on Suno for oil painting. Please stop if you are and go use your (no-doubt prodigious) talents to build something else. But actually here it is clearer for me. I don’t paint to have paintings. I paint because the process in engrossing.  The frustration when the colour isn’t right. The moment where you do something unplanned and it looks much better than you intended. The way hyper-focus kicks in and time disappears. I used to get the same feeling from making crappy electronic music, but fortunately the physical tactile real-ness in physical space of an oil painting is proving resilient (for now) to the cheapening process of gen AI. Long may that last.
+Someone is probably working on Suno for oil painting. Please stop if you are and go use your (no-doubt prodigious) talents to build something else. But actually here it is clearer for me. I don’t paint to have paintings. I paint because the process in engrossing.  The frustration when the colour isn’t right. The moment where you do something unplanned and it looks much better than you intended. The way hyper-focus kicks in and time disappears. I used to get the same feeling from making crappy electronic music, but fortunately the tactile real-ness-in-physical-space of an oil painting is more resilient (for now) to the cheapening process of gen AI. Long may that last.
 
 The point is: none of this good struggle happens when you type a prompt. The output might look similar. The experience is nothing alike.
 
