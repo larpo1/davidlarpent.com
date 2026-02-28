@@ -6,11 +6,11 @@ link: 'https://open.spotify.com/episode/0bIuuNChmWXcwbIydP6Ckk?t=4979'
 date: 2026-02-27T00:00:00.000Z
 tags:
   - agentic-coding
+  - ai
   - harness-engineering
   - open-source
   - productivity
   - test-duplicate-tag
-  - test-persist-tag
 ---
 
 <!-- note: 2026-02-27T08:53 -->
@@ -26,7 +26,7 @@ There is an unspoken compact in open source that effort in the submission is met
 The flood of Claude-generated PRs is causing a lot of pain in the open source community and an inevitable backlash reaction. Where does this lead? Blanket rejection of AI contributions to open source projects is also not the answer.
 
 <!-- note: 2026-02-27T08:58 -->
-<!-- tags: open-source, agentic-coding -->
+<!-- tags: open-source, agentic-coding, ai -->
 <!-- published: true -->
 <!-- spotify: https://open.spotify.com/episode/0bIuuNChmWXcwbIydP6Ckk?t=5266 -->
 Some projects are now allowing PRs only from vouched-for contributors. Those who break trust are denounced and gated.
