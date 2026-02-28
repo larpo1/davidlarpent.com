@@ -27,15 +27,15 @@ This is not a small thing. 
 
 Sometimes speed is the game. A trader has milliseconds. A pilot in an emergency has seconds. An A&E doctor triaging patients needs answers now. In these contexts, AI supported decision making is already proving invaluable. Faster is better.
 
-But many decisions aren’t like that.
+But many (most) other forms cognitive work aren't like that.
 
-Arguably most decisions benefit from sitting with them. Turning them over. Feeling the friction of competing considerations. 
+Arguably most thought work benefits from sitting with a problem for a time. Turning it over. Feeling the friction of competing considerations. 
 
-Often what good decisions really need isn’t speed, but the slow work of judgment forming. Judgment doesn’t form when you skip to the answer.
+Often what good work really needs isn’t speed, but the slower work of judgment forming. Judgment doesn’t form when you skip to the answer.
 
 ## The Formation Problem
 
-Neural pathways are formed by reps and struggle. You don’t learn to write and articulate thought by reading. You learn by writing badly, repeatedly, until you write less badly. You don’t learn to diagnose problems by watching someone else diagnose them. You learn by being wrong, in painful, memorable ways.
+Neural pathways are formed by reps and struggle. You don’t learn to write and articulate thought only by reading. You learn by writing badly, repeatedly, until you write less badly. You don’t learn to diagnose problems by watching someone else diagnose them. You learn by being wrong, in painful, memorable ways.
 
 <img src="/images/posts/what-we-lose-when-we-stop-struggling/sketch-1770882936.jpg" alt="A bauhaus style abstract human head and brain exposing connecting lines and nodes implying neural pathway formation. A branching pathway that starts as scattered, broken lines and gradually consolidates into a clear, confident stroke. Small nodes mark points of failure along the route. The final path emerges clean and decisive from the tangle of earlier attempts. Absolutely no labels or text." class="sketch-illustration" data-prompt="Style: Square 1:1 aspect ratio. Minimal architectural line drawing on a pure white background. Fine black ink lines only. Clean, precise, spare linework. No shading, no cross-hatching, no fills, no gradients.  Absolutely no borders, no background textures nor paper mounting effects. Just architectural hand drawn lines on solid, pure white #ffffff background. Think Bauhaus drawing meets Dieter Rams sketch meets architectural blueprint. Abstract where possible. Elegant negative space. The drawing should feel like a diagram that became art. Absolutely no labels or text anywhere - just drawing. Subject: A bauhaus style abstract human head and brain exposing connecting lines and nodes implying neural pathway formation. A branching pathway that starts as scattered, broken lines and gradually consolidates into a clear, confident stroke. Small nodes mark points of failure along the route. The final path emerges clean and decisive from the tangle of earlier attempts. Absolutely no labels or text.">
 
@@ -45,7 +45,7 @@ The pilots who hand-fly the least are the worst at hand-flying when the automati
 
 But there’s something else here that bothers me more than the competence question.
 
-A person who has wrestled with hard problems is likely to have interesting opinions about them. They’ve developed instincts, heuristics, preferences. They can surprise you with an angle you hadn’t considered. They’re _engaging to talk to_ about the thing they’ve struggled with.
+A person who has wrestled with hard problems is more likely to have interesting opinions about them. They’ve developed instincts, heuristics, preferences. They can surprise you with an angle you hadn’t considered. They’re _engaging to talk to_ about the thing they’ve struggled with.
 
 A person who’s always had the answer handed to them …well, isn’t. They can tell you what the AI told them. That’s it.
 
@@ -55,7 +55,7 @@ We’re not just risking a less capable workforce. We’re risking less capable 
 
 I paint. Not very well. Oils, mostly. I like the smell of turps. I also make music, badly, for my own amusement.  
 
-I have noticed that since Suno came out I lost some motivation to make music - in fact I all but stopped doing it. Not because I started using Suno. I hate the whole idea of Suno and would never use it, that’s not the point. The point is Suno cheapened the creative process to close to zero and that had the effect of making the effort of music creation feel a little pointless. It isn’t pointless and I need to talk myself back into again (just never with Suno). 
+I have noticed that since Suno came out I lost some motivation to make music - in fact I all but stopped doing it. Not because I started using Suno. I have no interest in Suno as a creative tool, that’s not the point. The point is Suno devalued the musical creative process to zero, and that had the effect of making the effort of music creation feel a pointless. It isn’t pointless and I need to talk myself back into again (just not with Suno). 
 
 Someone is probably working on Suno for oil painting. Please stop if you are and go use your (no-doubt prodigious) talents to build something else. But actually here it is clearer for me. I don’t paint to have paintings. I paint because the process in engrossing.  The frustration when the colour isn’t right. The moment where you do something unplanned and it looks much better than you intended. The way hyper-focus kicks in and time disappears. I used to get the same feeling from making crappy electronic music, but fortunately the physical tactile real-ness in physical space of an oil painting is proving resilient (for now) to the cheapening process of gen AI. Long may that last.
 
