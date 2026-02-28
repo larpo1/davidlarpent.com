@@ -48,6 +48,7 @@ On “harness engineering”. When you see AI do a bad thing, try to build tooli
 Always have an agent running in the background because there is always something to do. Disable its ability to notify you: remain in control of interruptions. You choose when to interrupt the agent.
 
 <!-- note: 2026-02-27T09:22 -->
+<!-- tags: productivity -->
 <!-- published: true -->
 <!-- spotify: https://open.spotify.com/episode/0bIuuNChmWXcwbIydP6Ckk?t=6417 -->
 Identify the tasks that require thinking and the tasks that don’t, and delegate the only the tasks that don’t require thinking
