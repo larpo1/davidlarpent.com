@@ -75,11 +75,11 @@ I’m not worried about AI putting creative people out of work. I’m worried ab
 
 ## There _is_ a Choice
 
-None of this is an argument against AI. I use it constantly. I’m running an AI assistant right now that helps me think, research, and manage my work. It makes me better at my job in ways I wouldn’t want to give up.
+None of this is an argument against AI. I use it constantly. I’m running an AI sidekick right now that helps me think, I have an agent doing research, another writing code and an assistant managing aspects my work. They make me better at my job in ways I wouldn’t want to give up.
 
 But we can choose to be deliberate about _which_ parts of our work we hand over.
 
-The stuff that’s mechanical, repetitive, or where speed genuinely matters? Take it. The stuff where the struggle is the learning? Use it as a thought partner a trainer, a coach. Use it in every way that helps you learn, just don’t let give you the answer.
+The stuff that’s mechanical, repetitive, or where speed genuinely matters? Take it. The stuff where the struggle is the learning? Use it more carefully. Use it in every way that helps you learn, just don’t use it to give you the answer.
 
 This might sound like an individual choice, a matter of personal discipline. But it’s not just that. It’s a design choice. A leadership choice. A parenting choice.
 
