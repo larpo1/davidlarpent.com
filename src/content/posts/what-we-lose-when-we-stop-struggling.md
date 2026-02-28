@@ -17,7 +17,7 @@ I wrote this the old fashioned way. Partly to conjure some new neural pathways i
 
 Researchers watched how people worked. Some handed everything to the AI and breezed through. Others asked the AI questions, then wrote the code themselves. The first group was quickest, but only the second group understood what they’d built.
 
-The Anthropic study is not the first to make this point. A study in Nature last year concluded: “[Human-generative AI collaboration enhances task performance but undermines human’s intrinsic motivation](https://www.nature.com/articles/s41598-025-98385-2)”.
+The Anthropic research is not the first to make this point. A study in Nature last year concluded: “[Human-generative AI collaboration enhances task performance but undermines human’s intrinsic motivation](https://www.nature.com/articles/s41598-025-98385-2)”.
 
 This is not a small thing. 
 
