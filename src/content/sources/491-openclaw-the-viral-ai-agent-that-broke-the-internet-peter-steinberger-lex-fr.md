@@ -36,3 +36,8 @@ Toxicity in the crypto world
 <!-- published: false -->
 <!-- spotify: https://open.spotify.com/episode/0aM69uGff54ewQJzQxZVLf?t=3968 -->
 The latest generation of models have a lot of post training to avoid prompt injection attacks.
+
+<!-- note: 2026-03-17T19:07 -->
+<!-- published: false -->
+<!-- spotify: https://open.spotify.com/episode/0aM69uGff54ewQJzQxZVLf?t=4030 -->
+Don’t use haiku or local models with personal agents if security is a concern. They are gullible and susceptible to prompt injection
