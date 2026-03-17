@@ -16,3 +16,8 @@ The Age of the Lobster
 <!-- published: false -->
 <!-- spotify: https://open.spotify.com/episode/0aM69uGff54ewQJzQxZVLf?t=1323 -->
 If anyone is unclear how important the last few months have been: 4 months development of AI is all it took to go from miserable attempts to convert a codebase to a completely successful conversion.
+
+<!-- note: 2026-03-17T09:24 -->
+<!-- published: false -->
+<!-- spotify: https://open.spotify.com/episode/0aM69uGff54ewQJzQxZVLf?t=1637 -->
+Peter clearly has very relaxed permissions for his own personal agent!
