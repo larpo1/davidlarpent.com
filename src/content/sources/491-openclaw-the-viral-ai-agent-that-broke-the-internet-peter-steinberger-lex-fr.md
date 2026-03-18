@@ -14,7 +14,7 @@ The Age of the Lobster
 <!-- note: 2026-03-17T09:19 -->
 <!-- published: true -->
 <!-- spotify: https://open.spotify.com/episode/0aM69uGff54ewQJzQxZVLf?t=1323 -->
-If anyone is unclear how important the last few months have been: 4 months development of AI is all it took to go from miserable attempts to convert a codebase from one language to another to a completely successful conversion (in the case in question: into the slightly obscure Zig).
+If anyone is unclear how important the last few months have been: 4 months development of the frontier AI models is all it took to go from miserable attempts to convert a codebase from one language to another to a completely successful conversion (in the case in question: into the slightly obscure Zig).
 
 <!-- note: 2026-03-17T09:24 -->
 <!-- published: true -->
