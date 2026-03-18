@@ -25,7 +25,7 @@ If anyone is unclear how important the last few months have been: 4 months devel
 Peter clearly has very relaxed permissions for his own personal agent!
 
 <!-- note: 2026-03-17T09:39 -->
-<!-- published: false -->
+<!-- published: true -->
 <!-- spotify: https://open.spotify.com/episode/0aM69uGff54ewQJzQxZVLf?t=2540 -->
 There’s a subculture of people who follow viral growth and try to quickly snaffle the name on socials etc.
 
