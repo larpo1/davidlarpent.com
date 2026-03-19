@@ -51,6 +51,18 @@ const formattedDate = source.data.date.toLocaleDateString('en-US', {
 const isoDate = source.data.date.toISOString().split('T')[0];
 const isArchived = source.data.archived ?? false;
 const sourceTypes = ['book', 'article', 'paper', 'podcast'];
+
+function formatSpotifyTimestamp(url: string): string {
+  const match = url.match(/[?&]t=(\d+)/);
+  if (!match) return '';
+  const total = parseInt(match[1], 10);
+  const h = Math.floor(total / 3600);
+  const m = Math.floor((total % 3600) / 60);
+  const s = total % 60;
+  return h > 0
+    ? `${h}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`
+    : `${m}:${String(s).padStart(2,'0')}`;
+}
 ---
 
 <Base
@@ -108,50 +120,55 @@ const sourceTypes = ['book', 'article', 'paper', 'podcast'];
         </p>
       )}
 
-      {notes.map((note, noteIdx) => (
+      {notes.map((note, noteIdx) => {
+        const spotifyTs = note.spotify ? formatSpotifyTimestamp(note.spotify) : '';
+        const timeOnly = new Date(note.timestamp).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
+        return (
         <div class:list={['note-card', { 'note-draft': !note.published }]} data-timestamp={note.timestamp} data-tags={JSON.stringify(note.tags)} data-note-index={noteIdx}>
-          <div class="note-meta">
-            <time>{new Date(note.timestamp).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</time>
-            {isDev && (
+          <div class="note-content">
+            <p contenteditable={isDev ? 'true' : undefined} class={isDev ? 'note-editable' : ''}>{note.content}</p>
+          </div>
+          <div class="note-footer">
+            <div class="note-footer-left">
+              {(note.tags.length > 0 || isDev) && (
+                <div class="note-tags">
+                  {note.tags.map(tag => (
+                    isDev ? (
+                      <span class="tag-link note-tag-pill">
+                        #{tag}
+                        <button class="note-tag-remove" data-tag={tag}>&times;</button>
+                      </span>
+                    ) : (
+                      <a href={`/tags/${tag.toLowerCase()}`} class="tag-link">
+                        #{tag}
+                      </a>
+                    )
+                  ))}
+                  {isDev && (
+                    <input class="note-tag-input" placeholder="Add tag..." />
+                  )}
+                </div>
+              )}
+            </div>
+            {note.spotify && spotifyTs ? (
+              <a href={note.spotify} class="note-timestamp-link" target="_blank" rel="noopener noreferrer">{spotifyTs}</a>
+            ) : (
+              <span class="note-timestamp">{timeOnly}</span>
+            )}
+          </div>
+          {isDev && (
+            <div class="note-hover-meta">
               <label class="publish-toggle">
                 <input type="checkbox" class="note-publish-checkbox" checked={note.published} />
                 <span class="publish-toggle-slider"></span>
                 <span class="publish-toggle-text">{note.published ? 'published' : 'private'}</span>
               </label>
-            )}
-            {isDev && (
               <button class="note-delete-btn">Delete</button>
-            )}
-            {note.spotify && (
-              <a href={note.spotify} class="spotify-link" target="_blank" rel="noopener noreferrer">
-                Spotify &rarr;
-              </a>
-            )}
-          </div>
-          {(note.tags.length > 0 || isDev) && (
-            <div class="note-tags">
-              {note.tags.map(tag => (
-                isDev ? (
-                  <span class="tag-link note-tag-pill">
-                    #{tag}
-                    <button class="note-tag-remove" data-tag={tag}>&times;</button>
-                  </span>
-                ) : (
-                  <a href={`/tags/${tag.toLowerCase()}`} class="tag-link">
-                    #{tag}
-                  </a>
-                )
-              ))}
-              {isDev && (
-                <input class="note-tag-input" placeholder="Add tag..." />
-              )}
             </div>
           )}
-          <div class="note-content">
-            <p contenteditable={isDev ? 'true' : undefined} class={isDev ? 'note-editable' : ''}>{note.content}</p>
-          </div>
         </div>
-      ))}
+        );
+      })}
     </div>
 
     {isDev && (
@@ -649,6 +666,7 @@ const sourceTypes = ['book', 'article', 'paper', 'podcast'];
   }
 
   .note-card {
+    position: relative;
     padding: 1.25rem 0;
     border-bottom: 1px solid var(--color-border);
   }
@@ -661,13 +679,79 @@ const sourceTypes = ['book', 'article', 'paper', 'podcast'];
     color: var(--color-text);
   }
 
-  .note-meta {
+  .note-footer {
     display: flex;
-    align-items: center;
+    align-items: baseline;
+    justify-content: space-between;
     gap: 0.75rem;
+    margin-top: 0.5rem;
+  }
+
+  .note-footer-left {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .note-timestamp-link {
     font-size: 0.75rem;
     color: var(--color-text-light);
-    margin-bottom: 0.5rem;
+    text-decoration: none;
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .note-timestamp-link:hover {
+    color: var(--color-link);
+  }
+
+  .note-timestamp {
+    font-size: 0.75rem;
+    color: var(--color-text-light);
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+  }
+
+  @media (min-width: 1201px) {
+    .note-card::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 100%;
+      width: calc(2rem + 200px);
+      height: 100%;
+      pointer-events: none;
+    }
+
+    .note-card:hover::after {
+      pointer-events: auto;
+    }
+
+    .note-hover-meta {
+      position: absolute;
+      left: calc(100% + 2rem);
+      top: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .note-card:hover .note-hover-meta {
+      opacity: 1;
+      pointer-events: auto;
+    }
+  }
+
+  @media (max-width: 1200px) {
+    .note-hover-meta {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-top: 0.5rem;
+    }
   }
 
   .note-delete-btn {
@@ -691,7 +775,6 @@ const sourceTypes = ['book', 'article', 'paper', 'podcast'];
     flex-wrap: wrap;
     align-items: center;
     gap: 0.5rem;
-    margin-bottom: 0.5rem;
   }
 
   .note-tag-pill {
@@ -749,16 +832,6 @@ const sourceTypes = ['book', 'article', 'paper', 'podcast'];
 
   .note-editable:focus {
     border-bottom-color: var(--color-link);
-  }
-
-  .spotify-link {
-    font-size: 0.75rem;
-    color: #1db954;
-    text-decoration: none;
-  }
-
-  .spotify-link:hover {
-    text-decoration: underline;
   }
 
   .add-note-button {

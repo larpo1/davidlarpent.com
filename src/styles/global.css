@@ -91,6 +91,14 @@ p {
   margin: 1.2rem 0;
 }
 
+/* Interactive elements */
+a,
+button,
+[role="button"],
+summary {
+  cursor: pointer;
+}
+
 /* Links */
 a {
   color: var(--color-link);

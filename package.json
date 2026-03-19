@@ -16,7 +16,9 @@
     "test:update": "playwright test --update-snapshots",
     "postinstall": "bash scripts/patch-astro-datastore.sh",
     "og": "node scripts/generate-og-image.mjs",
-    "spotify:auth": "node --env-file=.env --import tsx/esm scripts/spotify-auth.ts"
+    "spotify:auth": "node --env-file=.env --import tsx/esm scripts/spotify-auth.ts",
+    "verify": "astro build && playwright test",
+    "verify:light": "playwright test"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.73.0",
