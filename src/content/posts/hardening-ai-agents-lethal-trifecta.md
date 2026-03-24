@@ -1,5 +1,5 @@
 ---
-title: 'Hardening AI Agents Against the ''Lethal Trifecta'''
+title: 'Hardening Personal AI Agents Against the ''Lethal Trifecta'''
 date: 2026-03-24T00:00:00.000Z
 description: 'Personal AI agents like Openclaw running with privileged access to external content, private data and an ability to send information out, is a major exploitation risk. Here''s how to harden a personal assistant without making it useless.'
 draft: false
