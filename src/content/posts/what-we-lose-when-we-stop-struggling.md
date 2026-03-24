@@ -65,7 +65,7 @@ What happens when we commoditise the output?
 
 When the thing you can make in 30 seconds with a prompt is indistinguishable from the thing I sweated over for 30 hours, something negative happens to the value of both. Not the market value. The felt value. The meaning.
 
-I’m not worried about AI putting creative people out of work. I _am_ a bit concerned about AI putting creative people out of the _experience_ of being creative. Making the struggle feel pointless.
+I’m not worried about AI putting creative people out of work. I am a bit concerned about AI putting creative people out of the _experience_ of being creative. Making the struggle feel pointless.
 
 ## There _is_ a Choice
 
@@ -73,7 +73,7 @@ We can choose to be deliberate about _which_ parts of our work we hand over.
 
 The stuff that’s mechanical, repetitive, or where speed genuinely matters? Take it. The stuff where the struggle is the learning? Use it more carefully. Use it in every way that helps you learn, just don’t use it to give you the answer.
 
-This might sound like an individual choice, a matter of personal discipline. But it’s not just that. It’s a design choice. A leadership choice. A parenting choice.
+This might sound like an individual choice, a matter of personal discipline. But it’s not just that. It’s a life design choice. A leadership choice. A parenting choice.
 
 If you run a company, you’re making decisions every day about which cognitive work your people do themselves and which they outsource. Get this wrong and you’ll have a team that executes fast and thinks slow. That can ship but can’t adapt. That looks productive right up until the world changes and nobody knows what to do.
 
