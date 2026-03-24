@@ -22,7 +22,7 @@ This is prompt injection, and Simon Willison has been [documenting it since 2022
 
 Any two: manageable. All three in the same execution context: an attacker can plant instructions in untrusted content, access private data through the agent, and exfiltrate it.
 
-## This keeps happening to production systems
+## This problem is real
 
 Willison has tracked this pattern against [Microsoft 365 Copilot](https://simonwillison.net/2025/Jun/11/echoleak/), [GitHub’s MCP server](https://simonwillison.net/2025/May/26/github-mcp-exploited/), [Slack AI](https://simonwillison.net/2024/Aug/20/data-exfiltration-from-slack-ai/), [Claude’s iOS app](https://simonwillison.net/2024/Dec/17/johann-rehberger/), and [dozens more](https://simonwillison.net/tags/exfiltration-attacks/). When Microsoft gets hit, a security team patches it within days. A personal AI assistant connected to email, web browsing, and messaging has assembled the same trifecta with no one watching.
 
