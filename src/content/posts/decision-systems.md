@@ -15,30 +15,24 @@ tags:
 category: work
 featureImage: /images/posts/decision-systems/sketch-1770653132.jpg
 ---
-In a [previous note](/posts/when-decisions-stop-scaling), I described the synthesis bottleneck: organisations have plenty of data but struggle to turn it into decisions at scale. The constraint isn’t visibility. It’s the cognitive work of combining multiple sources into actionable recommendations.
-
-This piece is about a different kind of tool. Not a better dashboard. Something that starts from a different premise entirely.
-
 ## Question-first, not data-first
 
-<img src="/images/posts/decision-systems/sketch-1770674931.jpg" alt="A simple bauhaus style drawing of two questions leading to different responses divided by a simple horizontal line with the word &quot;becomes&quot; implying the first becomes the second . The first states &quot;What is occupancy?&quot; and leads to an simple chat answer &quot;87%&quot;. The second question is &quot;What will increase NOI?&quot; and leads to a &quot;hypothesis&quot; response answer supported by three nodes implying &quot;verifiable data&quot;. No other labels." class="sketch-illustration" data-prompt="Style: Square 1:1 aspect ratio. Minimal architectural line drawing on a pure white background. Fine black ink lines only. Clean, precise, spare linework. No shading, no cross-hatching, no fills, no gradients.  Absolutely no borders, no background textures nor paper mounting effects. Just architectural hand drawn lines on solid, pure white #ffffff background. Think Bauhaus drawing meets Dieter Rams sketch meets architectural blueprint. Abstract where possible. Include minimal handwritten labels in a loose architect's hand — like notes on a draft, not typeset text. Elegant negative space. The drawing should feel like a diagram that became art. Subject: A simple bauhaus style drawing of two questions leading to different responses divided by a simple horizontal line with the word &quot;becomes&quot; implying the first becomes the second . The first states &quot;What is occupancy?&quot; and leads to an simple chat answer &quot;87%&quot;. The second question is &quot;What will increase NOI?&quot; and leads to a &quot;hypothesis&quot; response answer supported by three nodes implying &quot;verifiable data&quot;. No other labels.">
+<img src="/images/posts/decision-systems/sketch-1770674931.jpg" alt="A simple bauhaus style drawing of two questions leading to different responses divided by a simple horizontal line with the word &quot;becomes&quot; implying the first becomes the second . The first states &quot;What is occupancy?&quot; and leads to an simple chat answer &quot;87%&quot;. The second question is &quot;What will increase NOI?&quot; and leads to a &quot;hypothesis&quot; response answer supported by three nodes implying &quot;verifiable data&quot;. No other labels." class="sketch-illustration" data-prompt="Style: Square 1:1 aspect ratio. Minimal architectural line drawing on a pure white background. Fine black ink lines only. Clean, precise, spare linework. No shading, no cross-hatching, no fills, no gradients.  Absolutely no borders, no background textures nor paper mounting effects. Just architectural hand drawn lines on solid, pure white #ffffff background. Think Bauhaus drawing meets Dieter Rams sketch meets architectural blueprint. Abstract where possible. Include minimal handwritten labels in a loose architect's hand - like notes on a draft, not typeset text. Elegant negative space. The drawing should feel like a diagram that became art. Subject: A simple bauhaus style drawing of two questions leading to different responses divided by a simple horizontal line with the word &quot;becomes&quot; implying the first becomes the second . The first states &quot;What is occupancy?&quot; and leads to an simple chat answer &quot;87%&quot;. The second question is &quot;What will increase NOI?&quot; and leads to a &quot;hypothesis&quot; response answer supported by three nodes implying &quot;verifiable data&quot;. No other labels.">
 
-A dashboard starts with data and asks: “What do you want to see?”
+A dashboard starts with data and asks: "What do you want to see?"
 
-A decision system starts with a question and asks: “What decision are you trying to make?”
+A decision system starts with a question and asks: "What decision are you trying to make?"
 
-This is not a semantic distinction.
+When you ask a dashboard "what's our occupancy?", you get a number. You then have to figure out what that number means and what to do about it.
 
-When you ask a dashboard “what’s our occupancy?”, you get a number. You then have to figure out what that number means and what to do about it.
+When you ask a decision system "where should I be more aggressive on pricing?", you get a recommendation with evidence. The system has already done the synthesis work:
 
-When you ask a decision system “where should I be more aggressive on pricing?”, you get a recommendation with evidence. The system has already done the synthesis work: 
-
-*   combined booking pace with demand signals, 
-*   checked competitor movements, 
-*   considered your review trajectory, and 
+*   combined booking pace with demand signals,
+*   checked competitor movements,
+*   considered your review trajectory, and
 *   identified where you have headroom.
 
-The output isn’t a number. It’s a _judgment_\-ready brief. Note the emphasis. This is not about outsourcing judgement to a model. It is about supporting judgement with a reasonable argument. 
+The output isn't a number. It's a judgment-ready brief. Not outsourcing judgment to a model. Supporting judgment with a reasonable argument.
 
 ## The anatomy of a decision-first query
 
@@ -46,14 +40,14 @@ The output isn’t a number. It’s a _judgment_\-ready brief. Note the emphasis
 
 Every decision-first question follows a pattern. It starts with an action and a scope:
 
-*   “Where should I invest in facility improvements?”
-*   “Which assets are we at risk of underperforming this year?”
-*   “What would need to be true to hit our occupancy target?”
-*   “Where is service quality hurting commercial performance?”
+*   "Where should I invest in facility improvements?"
+*   "Which assets are we at risk of underperforming this year?"
+*   "What would need to be true to hit our occupancy target?"
+*   "Where is service quality hurting commercial performance?"
 
-These aren’t report requests. They’re the questions that currently require a senior person to assemble context from multiple sources and weigh trade-offs.
+These aren't report requests. They're the questions that currently require a senior person to assemble context from multiple sources and weigh trade-offs.
 
-A decision system decomposes each question into evidence requirements. Take “where should I invest in facility improvements?”
+A decision system decomposes each question into evidence requirements. Take "where should I invest in facility improvements?"
 
 The system breaks this into sub-queries:
 
@@ -64,37 +58,33 @@ The system breaks this into sub-queries:
 
 Each sub-query pulls from a different part of your data architecture. Structured metrics. Unstructured feedback. Market correlation data. The system then synthesises across all of it.
 
-The output might be: “Building X has cleanliness scores 1.2 points below market, correlating with a 6% occupancy gap worth approximately £180k annually. Competitor properties that addressed common area cleanliness saw average review improvements of 0.8 points within two cycles.”
+The output might be: "Building X has cleanliness scores 1.2 points below market, correlating with a 6% occupancy gap worth approximately £180k annually. Competitor properties that addressed common area cleanliness saw average review improvements of 0.8 points within two cycles."
 
-That’s decision support.
+That's decision support.
 
-## What makes this possible?
+## What changed
 
 <img src="/images/posts/decision-systems/sketch-1770670950.jpg" alt="" class="sketch-illustration">
 
-Two things have changed that make decision systems viable now.
+Two things make decision systems viable now. Language models can combine multiple pieces of information, reason across them, and produce coherent recommendations. The synthesis work that used to require a skilled analyst can be partially automated. And embedding models make unstructured data queryable. Reviews, feedback, support tickets, free-text survey responses that sat in databases doing nothing can now be searched semantically and included in synthesis alongside structured metrics.
 
-**First, large language models are good at synthesis.** Given multiple pieces of information, they can combine them, reason across them, and produce a coherent recommendation. This is what they’re trained to do. The synthesis work that used to require a skilled analyst can now be partially automated.
+These capabilities only work if the underlying data architecture supports them. Point a language model at messy, inconsistent data and you'll get confident-sounding nonsense.
 
-**Second, embedding models make unstructured data queryable.** Reviews, feedback, support tickets, free-text survey responses. This data used to sit in databases doing nothing because it didn’t fit into structured reports. Now you can embed it, search it semantically, and include it in synthesis alongside your structured metrics.
-
-But these capabilities only work if the underlying data architecture supports them. Point a language model at messy, inconsistent data and you’ll get confident-sounding nonsense.
-
-This is why [data readiness](/posts/ai-data-architecture) matters. You need canonical metrics that are pre-calculated and trustworthy. You need semantic data that’s embedded and searchable. You need correlation mappings that connect your internal data to external context.
+This is why [data readiness](/posts/ai-data-architecture) matters. You need canonical metrics that are pre-calculated and trustworthy. You need semantic data that's embedded and searchable. You need correlation mappings that connect your internal data to external context.
 
 The AI is the reasoning layer. It needs a foundation to reason over.
 
 ## Building blocks
 
-If you’re thinking about building something like this, here’s how I’d structure it.
+If you're thinking about building something like this, here's how I'd structure it.
 
-**Natural language decomposition.** The user’s question has to be parsed into sub-queries that map to your data structure. This is where an LLM interprets intent and breaks it into evidence requirements.
+**Natural language decomposition.** The user's question has to be parsed into sub-queries that map to your data structure. This is where an LLM interprets intent and breaks it into evidence requirements.
 
-<img src="/images/posts/decision-systems/sketch-1770670131.jpg" alt="A branching diagram showing one input line splitting into three output branches, with minimal handwritten labels &quot;query&quot; at the input, &quot;sub-query&quot; along each of the three branches, and &quot;canonical&quot;, &quot;semantic&quot; and &quot;correlation&quot; at each of the three clusters of terminal points, rendered as clean geometric lines suggesting information flow and decomposition." class="sketch-illustration" data-prompt="Square 1:1 aspect ratio. Minimal architectural line drawing on a pure white background. Fine black ink lines only. Clean, precise, spare linework. No shading, no cross-hatching, no fills, no gradients. Absolutely no borders, no background textures or effects. Just architectural hand drawn lines on white. Think Dieter Rams sketch meets architectural blueprint. Abstract where possible. Include minimal handwritten labels in a loose architect's hand — like notes on a draft, not typeset text. Elegant negative space. The drawing should feel like a diagram that became art. Subject: A branching diagram showing one input line splitting into three output branches, with minimal handwritten labels &quot;query&quot; at the input, &quot;sub-query&quot; along each of the three branches, and &quot;canonical&quot;, &quot;semantic&quot; and &quot;correlation&quot; at each of the three clusters of terminal points, rendered as clean geometric lines suggesting information flow and decomposition.">
+<img src="/images/posts/decision-systems/sketch-1770670131.jpg" alt="A branching diagram showing one input line splitting into three output branches, with minimal handwritten labels &quot;query&quot; at the input, &quot;sub-query&quot; along each of the three branches, and &quot;canonical&quot;, &quot;semantic&quot; and &quot;correlation&quot; at each of the three clusters of terminal points, rendered as clean geometric lines suggesting information flow and decomposition." class="sketch-illustration" data-prompt="Square 1:1 aspect ratio. Minimal architectural line drawing on a pure white background. Fine black ink lines only. Clean, precise, spare linework. No shading, no cross-hatching, no fills, no gradients. Absolutely no borders, no background textures or effects. Just architectural hand drawn lines on white. Think Dieter Rams sketch meets architectural blueprint. Abstract where possible. Include minimal handwritten labels in a loose architect's hand - like notes on a draft, not typeset text. Elegant negative space. The drawing should feel like a diagram that became art. Subject: A branching diagram showing one input line splitting into three output branches, with minimal handwritten labels &quot;query&quot; at the input, &quot;sub-query&quot; along each of the three branches, and &quot;canonical&quot;, &quot;semantic&quot; and &quot;correlation&quot; at each of the three clusters of terminal points, rendered as clean geometric lines suggesting information flow and decomposition.">
 
-**Reliable structured retrieval.** Canonical metrics should return fast and consistent. You don’t want the system writing complex SQL on the fly for core KPIs. Pre-calculate them. Version them. Treat them as the source of truth.
+**Reliable structured retrieval.** Canonical metrics should return fast and consistent. You don't want the system writing complex SQL on the fly for core KPIs. Pre-calculate them. Version them. Treat them as the source of truth.
 
-**Semantic search over unstructured data.** Embeddings, vector databases, similarity search. When the question requires understanding “what people are saying about X”, the system needs to surface relevant passages from thousands of documents without manual tagging.
+**Semantic search over unstructured data.** Embeddings, vector databases, similarity search. When the question requires understanding "what people are saying about X", the system needs to surface relevant passages from thousands of documents without manual tagging.
 
 **Correlation mappings.** Which properties serve which markets? What external signals are relevant to which assets? The system needs to traverse these relationships to add context.
 
@@ -108,29 +98,23 @@ One risk with decision systems is false confidence. A well-constructed sentence 
 
 Good decision systems make evidence quality visible. They show sources. They flag data freshness. They express uncertainty when it exists.
 
-“Based on 2024 review data and current booking pace, with moderate confidence…” is more honest than a clean recommendation with no caveats.
+"Based on 2024 review data and current booking pace, with moderate confidence…" is more honest than a clean recommendation with no caveats.
 
 This is a design choice. The interface can either hide uncertainty behind polish or surface it clearly. The second approach builds more trust over time.
 
-## No substitute for human judgement. 
+## Humans still decide
 
 <img src="/images/posts/decision-systems/sketch-1770673831.jpg" alt="A stylised loop of activity with a human face, bauhaus stylised, as an inextricable part of the loop, implying artistically the notion of 'human-in-the-loop'. Absolutely no labels" class="sketch-illustration" data-prompt="Style: Square 1:1 aspect ratio. Minimal architectural line drawing on a pure white background. Fine black ink lines only. Clean, precise, spare linework. No shading, no cross-hatching, no fills, no gradients.  Absolutely no borders, no background textures nor paper mounting effects. Just architectural hand drawn lines on solid, pure white #ffffff background. Think Bauhaus drawing meets Dieter Rams sketch meets architectural blueprint. Abstract where possible. Elegant negative space. The drawing should feel like a diagram that became art. Subject: A stylised loop of activity with a human face, bauhaus stylised, as an inextricable part of the loop, implying artistically the notion of 'human-in-the-loop'. Absolutely no labels">
 
-Decision systems replace the manual synthesis work that currently bottlenecks on key people. The analyst who spends two days pulling data for a quarterly review. The spreadsheet that triangulates three reports. The meeting where everyone argues about what the numbers mean.
+Decision systems replace the manual synthesis work that bottlenecks on key people. The analyst spending two days pulling data for a quarterly review. The spreadsheet that triangulates three reports. The meeting where everyone argues about what the numbers mean.
 
-They don’t replace judgment. The system recommends; humans decide. The system surfaces evidence; humans weigh trade-offs that aren’t in the data. The system can tell you that Building X has a cleanliness problem worth £180k. It can’t tell you whether fixing it fits your capital allocation strategy this year, or whether you’re planning to sell that asset anyway.
-
-Decision systems are augmentation for human judgment. They compress the time between “I need to make a decision” and “I have what I need to make it well.” The decision itself still requires a person.
+They don't replace judgment. The system can tell you that Building X has a cleanliness problem worth £180k. It can't tell you whether fixing it fits your capital allocation strategy this year, or whether you're planning to sell that asset anyway. Decision systems compress the time between "I need to make a decision" and "I have what I need to make it well."
 
 ## The shift
 
-Traditional data analytics and dashboards were the right answer for an era when the hard problem was visibility. 
+Dashboards were the right answer when the hard problem was visibility. The hard problem now is synthesis. Decision systems start with your question, not your tables. They interpret and show you what they found, rather than showing you data and asking you to interpret it.
 
-The hard problem now is different. We have more data than ever, from more sources, updating more frequently. The constraint isn’t visibility. It’s synthesis.
-
-Decision systems are the tool for this constraint. They don’t show you data and ask you to interpret it. They interpret it and show you what they found. They start with your question, not your tables.
-
-The organisations that build this capability will make better decisions, faster, with less dependence on heroic individuals. That advantage compounds.
+The organisations that build this capability will make better decisions, faster, with less dependence on heroic individuals.
 
 * * *
 
