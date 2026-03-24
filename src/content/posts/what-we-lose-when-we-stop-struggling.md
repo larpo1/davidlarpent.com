@@ -65,7 +65,7 @@ What happens when we commoditise the output?
 
 When the thing you can make in 30 seconds with a prompt is indistinguishable from the thing I sweated over for 30 hours, something negative happens to the value of both. Not the market value. The felt value. The meaning.
 
-I’m not worried about AI putting creative people out of work. I’m worried about AI putting creative people out of the _experience_ of being creative. Making the struggle feel pointless.
+I’m not worried about AI putting creative people out of work. I am a bit concerned about AI putting creative people out of the _experience_ of being creative. Making the struggle feel pointless.
 
 ## There _is_ a Choice
 
