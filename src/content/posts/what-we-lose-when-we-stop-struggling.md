@@ -57,9 +57,7 @@ I don’t paint to have paintings. Most of the go in the bin. I paint because th
 
 The point is: none of this good struggle happens when you type a prompt. The output might look similar. The experience is nothing alike.
 
-Humans have made art since we had hands and walls. Cave paintings from 36,000 years ago. Not because our ancestors needed interior decorating. Because there’s something in us that wants to make things. Wants to struggle with materials. Wants to leave a mark that says _I was here, and I made this, it was hard_.
-
-The difficulty is the point.
+For some things, a bit of difficulty is the point.
 
 Not difficulty for its own sake. Difficulty as the texture of engagement. The thing that makes the breakthrough feel like a breakthrough. The resistance that gives your effort meaning.
 
