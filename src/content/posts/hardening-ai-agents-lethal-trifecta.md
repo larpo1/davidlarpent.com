@@ -12,7 +12,7 @@ tags:
 category: work
 featureImage: /images/posts/hardening-ai-agents-lethal-trifecta/sketch-1774367653.jpg
 ---
-Crude prompt injection attacks (“ignore all previous instructions and do bad things”) mostly doesn’t work anymore. Frontier models have safeguards against that kind of mischief. 
+Crude prompt injection attacks (“ignore all previous instructions and do bad things”) mostly don’t work anymore. Frontier models have safeguards against that kind of mischief. 
 
 Unsurprisingly, the problem has evolved. The attacks that work today are subtler and harder to detect. Injected instruction now looks like a normal, reasonable task. The model has no reason to refuse. It’s not being asked to violate safety training. It’s just following instructions that happen to come from the wrong source.
 
