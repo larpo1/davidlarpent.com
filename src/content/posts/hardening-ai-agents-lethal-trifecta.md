@@ -22,7 +22,7 @@ Simon Willison has been [documenting prompt injection patterns since 2022](https
 2.  **Exposure to untrusted content.** Web pages, incoming emails, documents from external sources.
 3.  **The ability to communicate externally.** Sending messages, making HTTP requests, creating files that sync.
 
-Any two: manageable. All three in the same execution context: an attacker plants instructions in untrusted content, accesses private data through the agent, and exfiltrates it. When Microsoft gets hit, a security team patches it within days. A personal AI assistant connected to email, web browsing, and messaging has assembled the same trifecta with no one watching.
+Any two: manageable. All three in the same execution context could lead to a personal nightmare. Agents like Openclaw are fantastic - hugely empowering time savers, but they also allow you to set up these very unsafe trifectas in seconds. There are ways to limit your risk.
 
 ## Prompt-level defences are not enough
 
