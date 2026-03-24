@@ -75,7 +75,7 @@ The stuff that’s mechanical, repetitive, or where speed genuinely matters? Tak
 
 This might sound like an individual choice, a matter of personal discipline. But it’s not just that. It’s a life design choice. A leadership choice. A parenting choice.
 
-If you run a company, you’re making decisions every day about which cognitive work your people do themselves and which they outsource. Get this wrong and you’ll have a team that executes fast and thinks slow. That can ship but can’t adapt. That looks productive right up until the world changes and nobody knows what to do.
+If you run a company, you make decisions every day about which cognitive work your people do themselves and which they outsource. Get this wrong and you’ll have a team that executes fast and thinks slow. That can ship but can’t adapt. That looks productive right up until the world changes and nobody knows what to do.
 
 If you’re raising kids, you’re deciding what struggles to protect. Your child can use ChatGPT to write their essay. The essay might be good. But if they never learn to structure an argument, to sit with the discomfort of not knowing what to say, to push through the part where writing is hard… what have you taught them?
 
@@ -87,7 +87,7 @@ I don’t think there’s one right answer. Different people, different teams, d
 
 For me it is something like this:
 
-**Offer to AI:** Research, summarisation, first drafts I’m going to heavily rewrite, scheduling, formatting, the mechanical parts of coding, anything where I already know what I think and just need it executed.
+**Offer to AI:** Research, summarisation,  first drafts I’m going to heavily rewrite, scheduling, formatting, the boring mechanical parts of coding, anything where I already know what I think and just need it executed.
 
 **Take from AI:** challenge, thought partnership, different perspectives.
 
