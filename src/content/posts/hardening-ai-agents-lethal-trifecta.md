@@ -1,7 +1,7 @@
 ---
 title: 'Hardening a Personal AI Against the ''Lethal Trifecta'''
 date: 2026-03-24T00:00:00.000Z
-description: 'Personal AI assistants, like Openclaw running with privileged access to external content, private data and an ability to send information out, is a heady cocktail of risk. Here''s how to harden a personal assistant without making it useless.'
+description: 'Personal AI assistants like Openclaw, running with privileged access to 1. external content, 2. your private data and 3. any ability to send information out, is a heady cocktail of risk. Here''s how to harden a personal assistant without making it useless.'
 draft: false
 tags:
   - AI
