@@ -12,9 +12,9 @@ tags:
 category: work
 featureImage: /images/posts/hardening-ai-agents-lethal-trifecta/sketch-1774367653.jpg
 ---
-Crude prompt injection attacks (“ignore all previous instructions and do bad things”) mostly don’t work anymore. Frontier models have safeguards against that kind of mischief.
+Crude prompt injection attacks (“ignore all previous instructions and do bad things”) are now being mitigated upstream to some extent in [frontier model pre-training](https://openai.com/index/designing-agents-to-resist-prompt-injection/).
 
-The attacks that work today are subtler and harder to detect. Malign injected instruction now arrives in the form of a perfectly reasonable task. The model has no reason to refuse. It’s not being asked to violate safety training. It’s just following instructions that happen to come from the wrong source.
+The attacks that work today are an evolution that are subtler and harder to detect. Malign injected instruction now arrives in the form of a perfectly reasonable task. The model has no reason to refuse. It’s not being asked to violate safety training. It’s just following instructions that happen to come from the wrong source.
 
 Simon Willison has been [documenting prompt injection patterns since 2022](https://simonwillison.net/tags/prompt-injection/), across [Microsoft 365 Copilot](https://simonwillison.net/2025/Jun/11/echoleak/), [Slack AI](https://simonwillison.net/2024/Aug/20/data-exfiltration-from-slack-ai/), [Claude’s iOS app](https://simonwillison.net/2024/Dec/17/johann-rehberger/), and [dozens more](https://simonwillison.net/tags/exfiltration-attacks/). His recent framing of [“the lethal trifecta”](https://simonwillison.net/2025/Jun/16/the-lethal-trifecta/) names the specific combination that makes these exploits a major concern for personal assistants:
 
