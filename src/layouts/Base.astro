@@ -191,12 +191,8 @@ const imageURL = new URL(image, Astro.site);
             window.addEventListener(eventName, onInteraction, { once: true, passive: true });
           });
 
-          // Fallback: eventually load for no-interaction sessions.
-          if (document.readyState === 'complete') {
-            setTimeout(startOnce, 8000);
-          } else {
-            window.addEventListener('load', () => setTimeout(startOnce, 8000), { once: true });
-          }
+          // No timer fallback: keep analytics fully off the critical path.
+          // It boots on first real interaction only.
         })();
       </script>
     )}
