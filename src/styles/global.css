@@ -227,7 +227,7 @@ a:hover {
 }
 
 .theme-logo {
-  width: 44px;
+  width: 42px;
   height: 48px;
   transition: filter 0.3s ease, transform 0.2s ease;
 }
@@ -847,7 +847,7 @@ a:hover {
   font-family: inherit;
   font-size: 0.85rem;
   font-weight: 600;
-  background: #6ba4ff;
+  background: #1f5fbf;
   color: #fff;
   border: none;
   border-radius: 4px;
@@ -857,7 +857,7 @@ a:hover {
 }
 
 .newsletter-button:hover {
-  background: #5a93ee;
+  background: #1a4f9f;
 }
 
 .newsletter-button:disabled {
