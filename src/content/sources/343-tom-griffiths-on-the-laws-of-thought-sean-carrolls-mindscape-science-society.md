@@ -81,3 +81,8 @@ Inductive bias and generalisability are the two man differences between human an
 <!-- published: false -->
 <!-- spotify: https://open.spotify.com/episode/1Aj9O2tq1pBamTTJAhdTxc?t=4433 -->
 If concepts are points in space how do you do computation on them and work out what the consequences are. The answer was neural networks. Boolean circuits in terms of operations between neurons. Marvin Minsky - built a learning neural network at Harvard. Gave up. Would have to be ridiculously large to learn anything interesting. Frank Rosenblat in his PhD came up with a device for tabulating data and came up with the perceptron. One layer of adjustable weights. It takes in a vector of values and transforms it into another set
+
+<!-- note: 2026-04-08T21:01 -->
+<!-- published: false -->
+<!-- spotify: https://open.spotify.com/episode/1Aj9O2tq1pBamTTJAhdTxc?t=4629 -->
+The math for the back propagation algorithm uses the chan rule calculus attributed to Leibniz
