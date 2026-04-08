@@ -11,3 +11,8 @@ tags: []
 <!-- published: false -->
 <!-- spotify: https://open.spotify.com/episode/1Aj9O2tq1pBamTTJAhdTxc?t=2501 -->
 What we should do with our limited cognitive resources - book
+
+<!-- note: 2026-04-08T18:37 -->
+<!-- published: false -->
+<!-- spotify: https://open.spotify.com/episode/1Aj9O2tq1pBamTTJAhdTxc?t=2592 -->
+Carl friston - the free energy principle
