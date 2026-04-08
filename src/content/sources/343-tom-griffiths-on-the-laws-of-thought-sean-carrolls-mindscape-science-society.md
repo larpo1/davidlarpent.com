@@ -8,10 +8,11 @@ link: 'https://open.spotify.com/episode/1Aj9O2tq1pBamTTJAhdTxc?t=2501'
 date: 2026-04-08T18:36:22.440Z
 tags:
   - books
+  - cognitive-science
 ---
 
 <!-- note: 2026-04-08T18:36 -->
-<!-- tags: books -->
+<!-- tags: books, cognitive-science -->
 <!-- published: true -->
 <!-- spotify: https://open.spotify.com/episode/1Aj9O2tq1pBamTTJAhdTxc?t=2501 -->
 The Rational Use of Cognitive Resources - Tom Griffiths, Feb 2026
