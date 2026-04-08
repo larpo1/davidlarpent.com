@@ -59,7 +59,7 @@ The ability to break down problems and set goals is a product of a resource cons
 <!-- tags: bayes, philosophy, cognitive-science -->
 <!-- published: false -->
 <!-- spotify: https://open.spotify.com/episode/1Aj9O2tq1pBamTTJAhdTxc?t=3013 -->
-Bayesian reasoning - you have your priors, you get new data, you calculate a likelihood function and you update your priors. Where do your priors come from? We have rough feelings. Intuitions. How do we learn language in the first place. Inductive problems with different answers to how “where do priors come from”
+Bayesian reasoning - you have your priors, you get new data, you calculate a likelihood function and you update your priors. Where do your priors come from? We have rough feelings. Intuitions. How do we learn language in the first place.
 
 <!-- note: 2026-04-08T18:48 -->
 <!-- tags: cognitive-science, neuroscience -->
