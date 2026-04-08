@@ -61,3 +61,8 @@ We are born with some ideas in our heads - Kant
 <!-- published: false -->
 <!-- spotify: https://open.spotify.com/episode/1Aj9O2tq1pBamTTJAhdTxc?t=3436 -->
 The amount of data it takes to train an LLM to undertand a language is a proof of Chomsky’s views on how complex an object language is
+
+<!-- note: 2026-04-08T18:55 -->
+<!-- published: false -->
+<!-- spotify: https://open.spotify.com/episode/1Aj9O2tq1pBamTTJAhdTxc?t=3481 -->
+What explains the gap between the child’s five years and the LLMs 4995 years of data inputs?
