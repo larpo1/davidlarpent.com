@@ -15,6 +15,7 @@ tags:
   - economics
   - kant
   - linguistics
+  - model-training
   - neuroscience
   - philosophy
 ---
@@ -78,7 +79,7 @@ The big difference between human minds and brains and LLMs is inductive bias. Hu
 Kant's "synthetic a priori" judgments. Our minds are hard-wired with a framework to process reality.
 
 <!-- note: 2026-04-08T18:53 -->
-<!-- tags: linguistics, ai -->
+<!-- tags: linguistics, ai, model-training -->
 <!-- published: true -->
 <!-- spotify: https://open.spotify.com/episode/1Aj9O2tq1pBamTTJAhdTxc?t=3436 -->
 The amount of data it takes to train an LLM to undertand a language supports Chomsky’s views of how complex an object language is.
