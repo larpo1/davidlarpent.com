@@ -105,7 +105,7 @@ Inductive bias and generalisability are the two man differences between human an
 Marvin Minsky - built a learning neural network at Harvard. Gave up. Would have to be ridiculously large to learn anything interesting. Frank Rosenblat in his PhD came up with a device for tabulating data and created the perceptron with a single layer of adjustable weights.
 
 <!-- note: 2026-04-08T21:01 -->
-<!-- tags: ai -->
+<!-- tags: ai, neural-networks -->
 <!-- published: false -->
 <!-- spotify: https://open.spotify.com/episode/1Aj9O2tq1pBamTTJAhdTxc?t=4629 -->
 The maths for the back propagation algorithm in neural nets uses the chain rule calculus attributed to Leibniz.
