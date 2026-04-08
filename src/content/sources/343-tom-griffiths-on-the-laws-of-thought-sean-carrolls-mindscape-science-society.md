@@ -20,7 +20,7 @@ The Rational Use of Cognitive Resources - Tom Griffiths, Feb 2026
 <!-- tags: cognitive-science, neuroscience -->
 <!-- published: false -->
 <!-- spotify: https://open.spotify.com/episode/1Aj9O2tq1pBamTTJAhdTxc?t=2592 -->
-Karl Friston - The Free Energy Principle. proposes that all living systems, from cells to brains, minimize a mathematical quantity called "free energy" to maintain their integrity and resist disorder. It acts as a unified theory of brain function, suggesting that action and perception work together to minimize sensory prediction errors, effectively making the brain a proactive prediction machine.
+Karl Friston - The Free Energy Principle. Proposes that all living systems, from cells to brains, minimize a mathematical quantity called "free energy" to maintain their integrity and resist disorder. It acts as a unified theory of brain function, suggesting that action and perception work together to minimize sensory prediction errors, effectively making the brain a proactive prediction machine.
 
 <!-- note: 2026-04-08T18:38 -->
 <!-- published: false -->
