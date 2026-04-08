@@ -1,8 +1,6 @@
 ---
-title: 343 | Tom Griffiths on The Laws of Thought
-author: >-
-  Sean Carroll's Mindscape: Science, Society, Philosophy, Culture, Arts, and
-  Ideas
+title: '343 | Tom Griffiths on The Laws of Thought'
+author: 'Sean Carroll''s Mindscape: Science, Society, Philosophy, Culture, Arts, and Ideas'
 type: podcast
 link: 'https://open.spotify.com/episode/1Aj9O2tq1pBamTTJAhdTxc?t=2501'
 date: 2026-04-08T18:36:22.440Z
@@ -78,7 +76,7 @@ Kant's "synthetic a priori" judgments. Our minds are hard-wired with a framewor
 <!-- note: 2026-04-08T18:53 -->
 <!-- published: false -->
 <!-- spotify: https://open.spotify.com/episode/1Aj9O2tq1pBamTTJAhdTxc?t=3436 -->
-The amount of data it takes to train an LLM to undertand a language is a proof of Chomsky’s views on how complex an object language is
+The amount of data it takes to train an LLM to undertand a language supports Chomsky’s views of how complex an object language is.
 
 <!-- note: 2026-04-08T18:55 -->
 <!-- published: false -->
