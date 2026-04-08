@@ -17,6 +17,7 @@ tags:
   - learning
   - linguistics
   - model-training
+  - neural-networks
   - neuroscience
   - philosophy
 ---
@@ -98,7 +99,7 @@ Metalearning to train neural networks with less training by including inductive 
 Inductive bias and generalisability are the two man differences between human and machine learning
 
 <!-- note: 2026-04-08T20:57 -->
-<!-- tags: ai -->
+<!-- tags: ai, neural-networks -->
 <!-- published: false -->
 <!-- spotify: https://open.spotify.com/episode/1Aj9O2tq1pBamTTJAhdTxc?t=4433 -->
 Marvin Minsky - built a learning neural network at Harvard. Gave up. Would have to be ridiculously large to learn anything interesting. Frank Rosenblat in his PhD came up with a device for tabulating data and created the perceptron. One layer of adjustable weights. It takes in a vector of values and transforms it into another set
