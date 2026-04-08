@@ -71,3 +71,8 @@ What explains the gap between the child’s five years and the LLMs 4995 years o
 <!-- published: false -->
 <!-- spotify: https://open.spotify.com/episode/1Aj9O2tq1pBamTTJAhdTxc?t=3693 -->
 Metalearning to train neural networks with less training and including inductive biases. For example initial weights to help language learning possible with 5 years of data rather than 5000. Outer loop and inner loop. Optimise for initial weights that allow the model to learn better from limited data. What biases are needed to improve language learning.
+
+<!-- note: 2026-04-08T20:15 -->
+<!-- published: false -->
+<!-- spotify: https://open.spotify.com/episode/1Aj9O2tq1pBamTTJAhdTxc?t=3815 -->
+Inductive bias and generalisability are the two man differences between human and machine learning
