@@ -16,3 +16,8 @@ What we should do with our limited cognitive resources - book
 <!-- published: false -->
 <!-- spotify: https://open.spotify.com/episode/1Aj9O2tq1pBamTTJAhdTxc?t=2592 -->
 Carl friston - the free energy principle
+
+<!-- note: 2026-04-08T18:38 -->
+<!-- published: false -->
+<!-- spotify: https://open.spotify.com/episode/1Aj9O2tq1pBamTTJAhdTxc?t=2647 -->
+Using the best algorithm to determine what action you are going to take
