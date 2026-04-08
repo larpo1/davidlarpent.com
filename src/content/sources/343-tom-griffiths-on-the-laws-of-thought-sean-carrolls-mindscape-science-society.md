@@ -51,3 +51,8 @@ Bayesian reasoning inference - you have your priors, you get new data, you calcu
 <!-- published: false -->
 <!-- spotify: https://open.spotify.com/episode/1Aj9O2tq1pBamTTJAhdTxc?t=3093 -->
 The big difference between human minds and brains and LLMs is inductive bias. Huma child is 5 years of data. LLM is equivalent of 50000 years of data.
+
+<!-- note: 2026-04-08T18:49 -->
+<!-- published: false -->
+<!-- spotify: https://open.spotify.com/episode/1Aj9O2tq1pBamTTJAhdTxc?t=3141 -->
+We are born with some ideas in our heads - Kant
