@@ -93,7 +93,7 @@ Metalearning to train neural networks with less training by including inductive 
 
 <!-- note: 2026-04-08T20:15 -->
 <!-- tags: cognitive-science, ai -->
-<!-- published: false -->
+<!-- published: true -->
 <!-- spotify: https://open.spotify.com/episode/1Aj9O2tq1pBamTTJAhdTxc?t=3815 -->
 Inductive bias and generalisability are the two man differences between human and machine learning
 
