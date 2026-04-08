@@ -26,3 +26,8 @@ Using the best algorithm to determine what action you are going to take
 <!-- published: false -->
 <!-- spotify: https://open.spotify.com/episode/1Aj9O2tq1pBamTTJAhdTxc?t=2664 -->
 Algorithms to live by
+
+<!-- note: 2026-04-08T18:39 -->
+<!-- published: false -->
+<!-- spotify: https://open.spotify.com/episode/1Aj9O2tq1pBamTTJAhdTxc?t=2685 -->
+Computer science is a better guide to rationality than economics
