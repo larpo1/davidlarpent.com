@@ -9,6 +9,7 @@ date: 2026-04-08T18:36:22.440Z
 tags:
   - books
   - cognitive-science
+  - neuroscience
 ---
 
 <!-- note: 2026-04-08T18:36 -->
@@ -18,7 +19,7 @@ tags:
 The Rational Use of Cognitive Resources - Tom Griffiths, Feb 2026
 
 <!-- note: 2026-04-08T18:37 -->
-<!-- tags: cognitive-science -->
+<!-- tags: cognitive-science, neuroscience -->
 <!-- published: false -->
 <!-- spotify: https://open.spotify.com/episode/1Aj9O2tq1pBamTTJAhdTxc?t=2592 -->
 Karl Friston - The Free Energy Principle
