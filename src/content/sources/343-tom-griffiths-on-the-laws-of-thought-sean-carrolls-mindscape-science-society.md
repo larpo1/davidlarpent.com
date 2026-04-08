@@ -11,6 +11,7 @@ tags:
   - cognitive-science
   - kant
   - neuroscience
+  - philosophy
 ---
 
 <!-- note: 2026-04-08T18:36 -->
@@ -61,7 +62,7 @@ Bayesian reasoning inference - you have your priors, you get new data, you calcu
 The big difference between human minds and brains and LLMs is inductive bias. Human children acquire language with about 5 years of data. LLM training requires the equivalent of 5000 years of data. What explains the 4995 years of priors found in a human child?
 
 <!-- note: 2026-04-08T18:49 -->
-<!-- tags: kant -->
+<!-- tags: kant, philosophy -->
 <!-- published: true -->
 <!-- spotify: https://open.spotify.com/episode/1Aj9O2tq1pBamTTJAhdTxc?t=3141 -->
 Kant's "synthetic a priori" judgments. Our minds are hard-wired with a framework to process reality.
