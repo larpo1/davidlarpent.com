@@ -1,8 +1,6 @@
 ---
-title: 343 | Tom Griffiths on The Laws of Thought
-author: >-
-  Sean Carroll's Mindscape: Science, Society, Philosophy, Culture, Arts, and
-  Ideas
+title: '343 | Tom Griffiths on The Laws of Thought'
+author: 'Sean Carroll''s Mindscape: Science, Society, Philosophy, Culture, Arts, and Ideas'
 type: podcast
 link: 'https://open.spotify.com/episode/1Aj9O2tq1pBamTTJAhdTxc?t=2501'
 date: 2026-04-08T18:36:22.440Z
@@ -62,7 +60,7 @@ The big difference between human minds and brains and LLMs is inductive bias. Hu
 <!-- note: 2026-04-08T18:49 -->
 <!-- published: true -->
 <!-- spotify: https://open.spotify.com/episode/1Aj9O2tq1pBamTTJAhdTxc?t=3141 -->
-Kant's "synthetic a priori" judgments. Our minds are hard-wired with a framework to process reality
+Kant's "synthetic a priori" judgments. Our minds are hard-wired with a framework to process reality.
 
 <!-- note: 2026-04-08T18:53 -->
 <!-- published: false -->
