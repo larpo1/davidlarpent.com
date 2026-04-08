@@ -46,3 +46,8 @@ The ability to break down problems and set goals is a product of a resource cons
 <!-- published: false -->
 <!-- spotify: https://open.spotify.com/episode/1Aj9O2tq1pBamTTJAhdTxc?t=3013 -->
 Bayesian reasoning inference - you have your priors, you get new data, you calculate a likelihood function and you update your priors. Where do your priors come from? We have rough feelings. Intuitions. How do we learn language in the first place. Inductive problems with different answers to how “where do priors come from”
+
+<!-- note: 2026-04-08T18:48 -->
+<!-- published: false -->
+<!-- spotify: https://open.spotify.com/episode/1Aj9O2tq1pBamTTJAhdTxc?t=3093 -->
+The big difference between human minds and brains and LLMs is inductive bias. Huma child is 5 years of data. LLM is equivalent of 50000 years of data.
