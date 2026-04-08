@@ -21,3 +21,8 @@ Carl friston - the free energy principle
 <!-- published: false -->
 <!-- spotify: https://open.spotify.com/episode/1Aj9O2tq1pBamTTJAhdTxc?t=2647 -->
 Using the best algorithm to determine what action you are going to take
+
+<!-- note: 2026-04-08T18:39 -->
+<!-- published: false -->
+<!-- spotify: https://open.spotify.com/episode/1Aj9O2tq1pBamTTJAhdTxc?t=2664 -->
+Algorithms to live by
