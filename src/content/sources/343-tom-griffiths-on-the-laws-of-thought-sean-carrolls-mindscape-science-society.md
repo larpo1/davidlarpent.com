@@ -105,5 +105,5 @@ Marvin Minsky - built a learning neural network at Harvard. Gave up. Would have 
 <!-- note: 2026-04-08T21:01 -->
 <!-- published: false -->
 <!-- spotify: https://open.spotify.com/episode/1Aj9O2tq1pBamTTJAhdTxc?t=4629 -->
-The maths for the back propagation algorithm uses the chain rule calculus attributed to Leibniz
+The maths for the back propagation algorithm in neural nets uses the chain rule calculus attributed to Leibniz.
 
