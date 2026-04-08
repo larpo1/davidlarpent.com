@@ -7,6 +7,7 @@ type: podcast
 link: 'https://open.spotify.com/episode/1Aj9O2tq1pBamTTJAhdTxc?t=2501'
 date: 2026-04-08T18:36:22.440Z
 tags:
+  - bayes
   - books
   - cognitive-science
   - kant
@@ -52,6 +53,7 @@ Heuristics - rules of thumb that have inherent biases.
 The ability to break down problems and set goals is a product of a resource constraint. It’s a tool that emerges when you can’t reason endlessly.
 
 <!-- note: 2026-04-08T18:46 -->
+<!-- tags: bayes -->
 <!-- published: false -->
 <!-- spotify: https://open.spotify.com/episode/1Aj9O2tq1pBamTTJAhdTxc?t=3013 -->
 Bayesian reasoning inference - you have your priors, you get new data, you calculate a likelihood function and you update your priors. Where do your priors come from? We have rough feelings. Intuitions. How do we learn language in the first place. Inductive problems with different answers to how “where do priors come from”
