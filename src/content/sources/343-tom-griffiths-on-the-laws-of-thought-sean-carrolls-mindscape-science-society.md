@@ -36,3 +36,8 @@ Computer science is a better guide to rationality than economics
 <!-- published: false -->
 <!-- spotify: https://open.spotify.com/episode/1Aj9O2tq1pBamTTJAhdTxc?t=2787 -->
 Heuristics - rules of thumb that have inherent biases.
+
+<!-- note: 2026-04-08T18:43 -->
+<!-- published: false -->
+<!-- spotify: https://open.spotify.com/episode/1Aj9O2tq1pBamTTJAhdTxc?t=2900 -->
+The ability to break down problems and set goals is a product of a resource constraint. It’s a tool that emerges when you can’t reason endlessly.
