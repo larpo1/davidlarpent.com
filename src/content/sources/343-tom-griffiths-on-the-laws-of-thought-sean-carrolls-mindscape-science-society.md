@@ -56,3 +56,8 @@ The big difference between human minds and brains and LLMs is inductive bias. Hu
 <!-- published: false -->
 <!-- spotify: https://open.spotify.com/episode/1Aj9O2tq1pBamTTJAhdTxc?t=3141 -->
 We are born with some ideas in our heads - Kant
+
+<!-- note: 2026-04-08T18:53 -->
+<!-- published: false -->
+<!-- spotify: https://open.spotify.com/episode/1Aj9O2tq1pBamTTJAhdTxc?t=3436 -->
+The amount of data it takes to train an LLM to undertand a language is a proof of Chomsky’s views on how complex an object language is
