@@ -10,6 +10,7 @@ tags:
   - bayes
   - books
   - cognitive-science
+  - computer-science
   - kant
   - neuroscience
   - philosophy
@@ -38,7 +39,7 @@ Using the best algorithm to determine what action you are going to take
 Algorithms to Live By - Tom Griffiths and Brian Christian. Argues that many human dilemmas—like deciding when to stop looking for an apartment or how to organise a closet—are essentially computational problems that computer scientists have already solved
 
 <!-- note: 2026-04-08T18:39 -->
-<!-- tags: cognitive-science -->
+<!-- tags: cognitive-science, computer-science -->
 <!-- published: true -->
 <!-- spotify: https://open.spotify.com/episode/1Aj9O2tq1pBamTTJAhdTxc?t=2685 -->
 Computer science is a better guide to rationality than economics
