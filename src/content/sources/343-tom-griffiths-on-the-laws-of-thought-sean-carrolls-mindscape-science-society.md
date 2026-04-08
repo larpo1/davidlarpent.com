@@ -1,6 +1,8 @@
 ---
-title: '343 | Tom Griffiths on The Laws of Thought'
-author: 'Sean Carroll''s Mindscape: Science, Society, Philosophy, Culture, Arts, and Ideas'
+title: 343 | Tom Griffiths on The Laws of Thought
+author: >-
+  Sean Carroll's Mindscape: Science, Society, Philosophy, Culture, Arts, and
+  Ideas
 type: podcast
 link: 'https://open.spotify.com/episode/1Aj9O2tq1pBamTTJAhdTxc?t=2501'
 date: 2026-04-08T18:36:22.440Z
@@ -28,7 +30,7 @@ Karl Friston - The Free Energy Principle. Proposes that all living systems, from
 Using the best algorithm to determine what action you are going to take
 
 <!-- note: 2026-04-08T18:39 -->
-<!-- published: false -->
+<!-- published: true -->
 <!-- spotify: https://open.spotify.com/episode/1Aj9O2tq1pBamTTJAhdTxc?t=2664 -->
 Algorithms to Live By - Tom Griffiths and Brian Christian. Argues that many human dilemmas—like deciding when to stop looking for an apartment or how to organise a closet—are essentially computational problems that computer scientists have already solved
 
