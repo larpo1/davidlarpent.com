@@ -92,6 +92,7 @@ The amount of data it takes to train an LLM to undertand a language supports Cho
 Metalearning to train neural networks with less training by including inductive biases. For example initial weights to help make language learning possible with 5 years of data rather than 5000. Outer loop and inner loop. Optimise for initial weights that allow the model to learn better from limited data. What biases are needed to improve language learning?
 
 <!-- note: 2026-04-08T20:15 -->
+<!-- tags: cognitive-science -->
 <!-- published: false -->
 <!-- spotify: https://open.spotify.com/episode/1Aj9O2tq1pBamTTJAhdTxc?t=3815 -->
 Inductive bias and generalisability are the two man differences between human and machine learning
