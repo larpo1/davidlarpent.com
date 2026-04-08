@@ -1,8 +1,13 @@
 ---
 import { getCollection } from 'astro:content';
+import * as fs from 'fs/promises';
+import * as path from 'path';
+import matter from 'gray-matter';
 import Base from '../layouts/Base.astro';
 import PostListItem from '../components/PostListItem.astro';
-import SourceListItem from '../components/SourceListItem.astro';
+import InputSourceGroup from '../components/InputSourceGroup.astro';
+import InputTagFilter from '../components/InputTagFilter.astro';
+import { parseNotes } from '../lib/parse-notes';
 
 const isDev = import.meta.env.DEV;
 
@@ -14,13 +19,79 @@ const posts = isDev
       .filter(post => !post.data.draft)
       .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 
-// Get all sources and sort by date (newest first)
+// Get all sources and flatten into enriched notes
 const allSources = await getCollection('sources');
 const sources = isDev
   ? allSources.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
   : allSources
       .filter(source => !source.data.archived)
       .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+
+const sourcesDir = path.join(process.cwd(), 'src', 'content', 'sources');
+
+interface SourceGroup {
+  slug: string;
+  title: string;
+  author: string;
+  type: string;
+  date: Date;
+  notes: Array<{ content: string; tags: string[]; timestamp: string; spotify?: string; noteIndex: number }>;
+  latestTimestamp: string;
+}
+
+const sourceGroups: SourceGroup[] = [];
+const allTags = new Set<string>();
+const allExistingTags: string[] = [];
+
+for (const source of sources) {
+  const filePath = path.join(sourcesDir, `${source.slug}.md`);
+  const rawContent = await fs.readFile(filePath, 'utf-8');
+  const parsed = matter(rawContent);
+  const allNotes = parseNotes(parsed.content);
+  const visibleNotes = isDev ? allNotes : allNotes.filter(n => n.published);
+
+  if (visibleNotes.length === 0) continue;
+
+  const notes = visibleNotes.map((note, idx) => {
+    note.tags.forEach(t => { allTags.add(t); allExistingTags.push(t); });
+    return {
+      content: note.content,
+      tags: note.tags,
+      timestamp: note.timestamp,
+      spotify: note.spotify,
+      noteIndex: allNotes.indexOf(note),
+    };
+  });
+
+  // Sort notes within group by timestamp descending
+  notes.sort((a, b) => b.timestamp.localeCompare(a.timestamp));
+
+  sourceGroups.push({
+    slug: source.slug,
+    title: source.data.title,
+    author: source.data.author,
+    type: source.data.type,
+    date: source.data.date,
+    notes,
+    latestTimestamp: notes[0].timestamp,
+  });
+}
+
+// Sort groups by most recent note
+sourceGroups.sort((a, b) => b.latestTimestamp.localeCompare(a.latestTimestamp));
+
+// Collect all existing tags for typeahead (posts + sources + notes)
+const allPosts2 = await getCollection('posts');
+const tagSet = new Set([
+  ...allExistingTags,
+  ...allPosts2.flatMap(p => p.data.tags || []),
+  ...sources.flatMap(s => s.data.tags || []),
+]);
+const allTagsSorted = [...tagSet].map(t => t.toLowerCase()).sort();
+
+// Build sorted tag list for filter bar
+const sortedTags = [...allTags]
+  .sort((a, b) => a.localeCompare(b));
 
 // JSON-LD WebSite Schema
 const websiteSchema = {
@@ -75,18 +146,20 @@ const websiteSchema = {
     ))}
   </ul>
 
-  <ul class="post-list" data-tab-panel="input" style="display: none;">
-    {sources.map(source => (
-      <SourceListItem
-        slug={source.slug}
-        title={source.data.title}
-        author={source.data.author}
-        type={source.data.type}
-        date={source.data.date}
-        tags={source.data.tags}
+  <div class="input-panel" data-tab-panel="input" style="display: none;">
+    <InputTagFilter tags={sortedTags} />
+    {sourceGroups.map(group => (
+      <InputSourceGroup
+        slug={group.slug}
+        title={group.title}
+        author={group.author}
+        type={group.type}
+        date={group.date}
+        notes={group.notes}
+        isDev={isDev}
       />
     ))}
-  </ul>
+  </div>
 
   {isDev && (
     <div class="drafts-toggle">
@@ -144,11 +217,11 @@ const websiteSchema = {
       if (panel.getAttribute('data-tab-panel') === targetTab) {
         panel.style.display = '';
         // Fade in items
-        var items = panel.querySelectorAll('.post-list-item');
+        var items = panel.querySelectorAll('.post-list-item, .input-note, .input-source-group');
         items.forEach(function(item, i) {
           item.classList.remove('fade-in');
           item.offsetWidth;
-          item.style.animationDelay = (i * 60) + 'ms';
+          item.style.animationDelay = (i * 40) + 'ms';
           item.classList.add('fade-in');
         });
       } else {
@@ -189,10 +262,66 @@ const websiteSchema = {
     var tab = params.get('tab') || 'output';
     setActiveTab(tab, false);
   });
+
+  // Tag filtering for Input panel
+  var filterButtons = document.querySelectorAll('.input-filter-btn');
+  var inputNotes = document.querySelectorAll('.input-note');
+  var sourceGroups = document.querySelectorAll('.input-source-group');
+
+  function filterByTag(tag) {
+    filterButtons.forEach(function(b) { b.classList.remove('active'); });
+    var activeBtn = document.querySelector('.input-filter-btn[data-tag="' + tag + '"]');
+    if (activeBtn) activeBtn.classList.add('active');
+
+    var visibleIndex = 0;
+    inputNotes.forEach(function(note) {
+      var show;
+      if (tag === 'all') {
+        show = true;
+      } else {
+        var tags = JSON.parse(note.dataset.tags || '[]');
+        show = tags.indexOf(tag) !== -1;
+      }
+      note.style.display = show ? '' : 'none';
+      if (show) {
+        note.classList.remove('fade-in');
+        note.offsetWidth;
+        note.style.animationDelay = (visibleIndex * 30) + 'ms';
+        note.classList.add('fade-in');
+        visibleIndex++;
+      }
+    });
+
+    // Hide source groups with no visible notes
+    sourceGroups.forEach(function(group) {
+      var visibleNotes = group.querySelectorAll('.input-note:not([style*="display: none"])');
+      group.style.display = visibleNotes.length > 0 ? '' : 'none';
+    });
+
+    var url = new URL(window.location);
+    if (tag === 'all') {
+      url.searchParams.delete('tag');
+    } else {
+      url.searchParams.set('tag', tag);
+    }
+    history.replaceState({}, '', url);
+  }
+
+  filterButtons.forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      filterByTag(btn.dataset.tag);
+    });
+  });
+
+  // Initialize tag filter from URL
+  var initialTagParam = urlParams.get('tag');
+  if (initialTagParam) {
+    filterByTag(initialTagParam);
+  }
 </script>
 
 {isDev && (
-  <script is:inline>
+  <script is:inline define:vars={{ allTagsSorted }}>
     document.addEventListener('DOMContentLoaded', () => {
       const checkbox = document.getElementById('show-drafts');
       const draftPosts = document.querySelectorAll('[data-draft="true"]');
@@ -202,6 +331,158 @@ const websiteSchema = {
         draftPosts.forEach(post => {
           post.style.display = showDrafts ? '' : 'none';
         });
+      });
+
+      // --- Note tag editing on Input tab ---
+      const tagSuggestions = [...allTagsSorted];
+      let dropdown = null;
+      let highlightIdx = -1;
+      let activeInput = null;
+
+      function renderNoteTags(note) {
+        const tags = JSON.parse(note.dataset.tags || '[]');
+        const container = note.querySelector('.note-tags');
+        if (!container) return;
+        const insertTarget = container.querySelector('.note-tag-input');
+        container.querySelectorAll('.note-tag-pill').forEach(el => el.remove());
+        tags.forEach(tag => {
+          const pill = document.createElement('span');
+          pill.className = 'tag-link note-tag-pill';
+          pill.textContent = '#' + tag;
+          const removeBtn = document.createElement('button');
+          removeBtn.className = 'note-tag-remove';
+          removeBtn.dataset.tag = tag;
+          removeBtn.textContent = '\u00d7';
+          pill.appendChild(removeBtn);
+          container.insertBefore(pill, insertTarget);
+        });
+      }
+
+      async function updateNoteTags(note) {
+        const tags = JSON.parse(note.dataset.tags || '[]');
+        const timestamp = note.dataset.timestamp;
+        const noteIndex = parseInt(note.dataset.noteIndex, 10);
+        const slug = note.dataset.sourceSlug;
+        try {
+          await fetch('/api/update-note', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ slug, timestamp, noteIndex, action: 'update-tags', tags }),
+          });
+        } catch (err) {
+          console.error('Failed to update note tags:', err);
+        }
+      }
+
+      // Tag removal
+      document.querySelector('[data-tab-panel="input"]')?.addEventListener('click', (e) => {
+        const removeBtn = e.target.closest('.note-tag-remove');
+        if (!removeBtn) return;
+        const note = removeBtn.closest('.input-note');
+        const tags = JSON.parse(note.dataset.tags || '[]');
+        const tag = removeBtn.dataset.tag;
+        note.dataset.tags = JSON.stringify(tags.filter(t => t !== tag));
+        renderNoteTags(note);
+        updateNoteTags(note);
+      });
+
+      function addTagToNote(input, tagValue) {
+        const val = tagValue.trim().toLowerCase().replace(/^#/, '');
+        if (!val) return;
+        const note = input.closest('.input-note');
+        const tags = JSON.parse(note.dataset.tags || '[]');
+        if (!tags.includes(val)) {
+          tags.push(val);
+          note.dataset.tags = JSON.stringify(tags);
+          renderNoteTags(note);
+          updateNoteTags(note);
+        }
+        if (!tagSuggestions.includes(val)) {
+          tagSuggestions.push(val);
+          tagSuggestions.sort();
+        }
+        input.value = '';
+        closeDropdown();
+      }
+
+      function createDropdown() {
+        if (dropdown) return dropdown;
+        dropdown = document.createElement('div');
+        Object.assign(dropdown.style, {
+          position: 'fixed', display: 'none',
+          background: 'var(--color-background)', border: '1px solid var(--color-border)',
+          borderRadius: '4px', maxHeight: '150px', overflowY: 'auto',
+          zIndex: '200', minWidth: '150px',
+        });
+        document.body.appendChild(dropdown);
+        return dropdown;
+      }
+
+      function closeDropdown() {
+        if (dropdown) dropdown.style.display = 'none';
+        highlightIdx = -1;
+        activeInput = null;
+      }
+
+      function showDropdown(input) {
+        const query = input.value.trim().toLowerCase().replace(/^#/, '');
+        if (!query) { closeDropdown(); return; }
+        const note = input.closest('.input-note');
+        const currentTags = JSON.parse(note.dataset.tags || '[]');
+        const matches = tagSuggestions.filter(t => t.includes(query) && !currentTags.includes(t));
+        matches.sort((a, b) => {
+          const aStarts = a.startsWith(query) ? 0 : 1;
+          const bStarts = b.startsWith(query) ? 0 : 1;
+          return aStarts - bStarts || a.localeCompare(b);
+        });
+        if (matches.length === 0) { closeDropdown(); return; }
+        const dd = createDropdown();
+        while (dd.firstChild) dd.removeChild(dd.firstChild);
+        matches.forEach((tag, i) => {
+          const opt = document.createElement('div');
+          Object.assign(opt.style, { padding: '0.3em 0.6em', fontSize: '0.8rem', cursor: 'pointer', color: 'var(--color-text)' });
+          opt.textContent = tag;
+          opt.addEventListener('mouseenter', () => { opt.style.background = 'var(--color-code-bg)'; });
+          opt.addEventListener('mouseleave', () => { if (highlightIdx !== i) opt.style.background = ''; });
+          opt.addEventListener('mousedown', (e) => { e.preventDefault(); addTagToNote(input, tag); });
+          dd.appendChild(opt);
+        });
+        const rect = input.getBoundingClientRect();
+        dd.style.top = rect.bottom + 2 + 'px';
+        dd.style.left = rect.left + 'px';
+        dd.style.minWidth = Math.max(rect.width, 150) + 'px';
+        dd.style.display = 'block';
+        highlightIdx = -1;
+        activeInput = input;
+      }
+
+      function updateHighlight() {
+        if (!dropdown) return;
+        const opts = dropdown.children;
+        for (let i = 0; i < opts.length; i++) {
+          opts[i].style.background = i === highlightIdx ? 'var(--color-code-bg)' : '';
+        }
+        if (highlightIdx >= 0 && opts[highlightIdx]) opts[highlightIdx].scrollIntoView({ block: 'nearest' });
+      }
+
+      document.querySelectorAll('[data-tab-panel="input"] .note-tag-input').forEach(input => {
+        input.addEventListener('input', () => showDropdown(input));
+        input.addEventListener('keydown', (e) => {
+          const isOpen = dropdown && dropdown.style.display === 'block' && activeInput === input;
+          const opts = isOpen ? dropdown.children : [];
+          if (e.key === 'ArrowDown' && isOpen) { e.preventDefault(); highlightIdx = (highlightIdx + 1) % opts.length; updateHighlight(); }
+          else if (e.key === 'ArrowUp' && isOpen) { e.preventDefault(); highlightIdx = highlightIdx <= 0 ? opts.length - 1 : highlightIdx - 1; updateHighlight(); }
+          else if (e.key === 'Tab' && isOpen && highlightIdx >= 0) { e.preventDefault(); addTagToNote(input, opts[highlightIdx].textContent); }
+          else if (e.key === 'Tab' && isOpen && opts.length > 0) { e.preventDefault(); addTagToNote(input, opts[0].textContent); }
+          else if (e.key === 'Enter') {
+            e.preventDefault();
+            if (isOpen && highlightIdx >= 0) addTagToNote(input, opts[highlightIdx].textContent);
+            else if (isOpen && opts.length > 0) addTagToNote(input, opts[0].textContent);
+            else addTagToNote(input, input.value);
+          }
+          else if (e.key === 'Escape') closeDropdown();
+        });
+        input.addEventListener('blur', () => { setTimeout(() => closeDropdown(), 150); });
       });
     });
   </script>

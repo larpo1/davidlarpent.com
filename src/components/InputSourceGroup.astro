@@ -1,0 +1,76 @@
+---
+interface NoteData {
+  content: string;
+  tags: string[];
+  timestamp: string;
+  spotify?: string;
+  noteIndex: number;
+}
+
+interface Props {
+  slug: string;
+  title: string;
+  author: string;
+  type: string;
+  date: Date;
+  notes: NoteData[];
+  isDev: boolean;
+}
+
+const { slug, title, author, date, notes, isDev } = Astro.props;
+
+const formattedDate = date.toLocaleDateString('en-US', {
+  year: 'numeric',
+  month: 'short',
+});
+
+function formatSpotifyTs(url: string): string {
+  const match = url.match(/[?&]t=(\d+)/);
+  if (!match) return 'listen';
+  const s = parseInt(match[1]);
+  const m = Math.floor(s / 60);
+  const sec = s % 60;
+  return m + ':' + (sec < 10 ? '0' : '') + sec;
+}
+---
+
+<div class="input-source-group" data-source-slug={slug}>
+  <h3 class="input-source-title">
+    <a href={`/sources/${slug}`}>{title}</a>
+  </h3>
+  <p class="input-source-meta">{author} &middot; {formattedDate}</p>
+
+  {notes.map(note => (
+    <div
+      class="input-note"
+      data-tags={JSON.stringify(note.tags)}
+      data-timestamp={note.timestamp}
+      data-note-index={note.noteIndex}
+      data-source-slug={slug}
+    >
+      <p>{note.content}</p>
+      {note.spotify && (
+        <a href={note.spotify} class="note-spotify" target="_blank" rel="noopener">
+          &#9654; {formatSpotifyTs(note.spotify)}
+        </a>
+      )}
+      {(note.tags.length > 0 || isDev) && (
+        <span class="note-tags">
+          {note.tags.map(tag => (
+            isDev ? (
+              <span class="tag-link note-tag-pill">
+                #{tag}
+                <button class="note-tag-remove" data-tag={tag}>&times;</button>
+              </span>
+            ) : (
+              <a href={`/tags/${tag.toLowerCase()}`} class="tag-link">#{tag}</a>
+            )
+          ))}
+          {isDev && (
+            <input class="note-tag-input" placeholder="+" />
+          )}
+        </span>
+      )}
+    </div>
+  ))}
+</div>

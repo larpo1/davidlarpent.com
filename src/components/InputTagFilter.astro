@@ -1,0 +1,16 @@
+---
+interface Props {
+  tags: string[];
+}
+
+const { tags } = Astro.props;
+---
+
+<div class="input-tag-filter">
+  <button class="tag-link input-filter-btn active" data-tag="all">#all</button>
+  {tags.map(tag => (
+    <button class="tag-link input-filter-btn" data-tag={tag}>
+      #{tag}
+    </button>
+  ))}
+</div>

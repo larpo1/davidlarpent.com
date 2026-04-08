@@ -46,8 +46,8 @@ test.describe('Homepage Tabs', () => {
     const outputPanel = page.locator('[data-tab-panel="output"]');
     await expect(outputPanel).toBeHidden();
 
-    // Should show sources
-    await expect(inputPanel.locator('.source-list-item').first()).toBeVisible();
+    // Should show source groups with notes
+    await expect(inputPanel.locator('.input-source-group').first()).toBeVisible();
   });
 
   test('clicking "Output" tab shows essays', async ({ page }) => {
@@ -127,11 +127,12 @@ test.describe('Homepage Tabs', () => {
     await expect(outputTab).toHaveAttribute('aria-pressed', 'true');
   });
 
-  test('source list items have type badge', async ({ page }) => {
+  test('input tab shows tag filter', async ({ page }) => {
     await page.goto('/?tab=input');
     await page.waitForTimeout(300);
 
-    const badge = page.locator('.source-type-badge').first();
-    await expect(badge).toBeVisible();
+    const tagFilter = page.locator('.input-tag-filter');
+    await expect(tagFilter).toBeVisible();
+    await expect(page.locator('.input-filter-btn.active')).toHaveAttribute('data-tag', 'all');
   });
 });
