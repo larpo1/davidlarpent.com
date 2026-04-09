@@ -6,6 +6,7 @@ link: 'https://www.simonandschuster.com/books/Abundance/Ezra-Klein/9781668082010
 date: 2026-02-26T00:00:00.000Z
 tags:
   - abundance
+  - ai
   - governance
   - housing
 ---
@@ -16,7 +17,7 @@ tags:
 Klein argues the problem isn't left vs right but vetocracy vs action. The permitting system has become a tool for blocking rather than building.
 
 <!-- note: 2026-02-27T09:15 -->
-<!-- tags: governance -->
+<!-- tags: governance, ai -->
 <!-- published: true -->
 Interesting parallel between housing permitting and AI regulation -- both suffer from a bias toward inaction dressed up as caution.
 
