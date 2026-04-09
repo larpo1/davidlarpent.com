@@ -6,10 +6,11 @@ link: 'https://open.spotify.com/episode/0BGcaYvcDPkvBzFmkRI5uY?t=2628'
 date: 2026-03-25T09:03:19.545Z
 tags:
   - prompt-injection
+  - security
 ---
 
 <!-- note: 2026-03-25T09:03 -->
-<!-- tags: prompt-injection -->
+<!-- tags: prompt-injection, security -->
 <!-- published: false -->
 <!-- spotify: https://open.spotify.com/episode/0BGcaYvcDPkvBzFmkRI5uY?t=2628 -->
 Jensen Huang references the lethal trifecta and how they address it with Nemoclaw. “We are going to do our best to help Openclaw become a better claw”.
