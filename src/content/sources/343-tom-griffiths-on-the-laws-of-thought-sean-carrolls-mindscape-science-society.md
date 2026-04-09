@@ -13,6 +13,7 @@ tags:
   - cognitive-science
   - computer-science
   - economics
+  - induction
   - kant
   - learning
   - linguistics
@@ -63,7 +64,7 @@ Heuristics - rules of thumb that have inherent biases.
 The ability to break down problems and set goals is a product of a resource constraint. It’s a tool that emerges when you can’t reason endlessly.
 
 <!-- note: 2026-04-08T18:46 -->
-<!-- tags: bayes, philosophy, cognitive-science -->
+<!-- tags: bayes, philosophy, cognitive-science, induction -->
 <!-- published: true -->
 <!-- spotify: https://open.spotify.com/episode/1Aj9O2tq1pBamTTJAhdTxc?t=3013 -->
 Bayesian reasoning - you have your priors, you get new data, you calculate a likelihood function and you update your priors. Where do your priors come from? We have rough feelings. Intuitions. How do we learn language in the first place.
