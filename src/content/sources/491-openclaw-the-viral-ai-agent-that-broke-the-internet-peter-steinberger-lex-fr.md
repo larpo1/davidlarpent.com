@@ -7,6 +7,7 @@ type: podcast
 link: 'https://open.spotify.com/episode/0aM69uGff54ewQJzQxZVLf?t=231'
 date: 2026-03-17T09:11:27.685Z
 tags:
+  - agentic-coding
   - agents
   - model-training
   - prompt-injection
@@ -20,6 +21,7 @@ tags:
 The Age of the Lobster
 
 <!-- note: 2026-03-17T09:19 -->
+<!-- tags: agentic-coding -->
 <!-- published: true -->
 <!-- spotify: https://open.spotify.com/episode/0aM69uGff54ewQJzQxZVLf?t=1323 -->
 A lot has changed recently. Four months development of the frontier AI models is all it took to go from miserable attempts to convert a codebase from one language to another to a completely successful conversion (in the case in question: into the slightly obscure Zig).
