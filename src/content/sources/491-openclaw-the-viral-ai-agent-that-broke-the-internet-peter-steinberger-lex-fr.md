@@ -8,6 +8,7 @@ link: 'https://open.spotify.com/episode/0aM69uGff54ewQJzQxZVLf?t=231'
 date: 2026-03-17T09:11:27.685Z
 tags:
   - prompt-injection
+  - security
 ---
 
 <!-- note: 2026-03-17T09:11 -->
@@ -41,7 +42,7 @@ Toxicity in the crypto world
 The latest generation of models have a lot of post training to avoid prompt injection attacks.
 
 <!-- note: 2026-03-17T19:07 -->
-<!-- tags: prompt-injection -->
+<!-- tags: prompt-injection, security -->
 <!-- published: true -->
 <!-- spotify: https://open.spotify.com/episode/0aM69uGff54ewQJzQxZVLf?t=4030 -->
 Don’t use haiku or local models with personal agents if security is a concern. They are gullible and susceptible to prompt injection
