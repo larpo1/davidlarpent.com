@@ -23,11 +23,13 @@ The Age of the Lobster
 A lot has changed recently. Four months development of the frontier AI models is all it took to go from miserable attempts to convert a codebase from one language to another to a completely successful conversion (in the case in question: into the slightly obscure Zig).
 
 <!-- note: 2026-03-17T09:24 -->
+<!-- tags: security -->
 <!-- published: true -->
 <!-- spotify: https://open.spotify.com/episode/0aM69uGff54ewQJzQxZVLf?t=1637 -->
 Peter clearly has very relaxed permissions for his own personal agent!
 
 <!-- note: 2026-03-17T09:39 -->
+<!-- tags: security -->
 <!-- published: true -->
 <!-- spotify: https://open.spotify.com/episode/0aM69uGff54ewQJzQxZVLf?t=2540 -->
 There’s a subculture of people who follow viral growth and try to quickly snaffle the name on socials etc.
