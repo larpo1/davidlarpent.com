@@ -7,12 +7,14 @@ type: podcast
 link: 'https://open.spotify.com/episode/0aM69uGff54ewQJzQxZVLf?t=231'
 date: 2026-03-17T09:11:27.685Z
 tags:
+  - agents
   - model-training
   - prompt-injection
   - security
 ---
 
 <!-- note: 2026-03-17T09:11 -->
+<!-- tags: agents -->
 <!-- published: true -->
 <!-- spotify: https://open.spotify.com/episode/0aM69uGff54ewQJzQxZVLf?t=231 -->
 The Age of the Lobster
