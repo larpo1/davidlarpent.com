@@ -35,6 +35,7 @@ Peter clearly has very relaxed permissions for his own personal agent!
 There’s a subculture of people who follow viral growth and try to quickly snaffle the name on socials etc.
 
 <!-- note: 2026-03-17T09:40 -->
+<!-- tags: security -->
 <!-- published: true -->
 <!-- spotify: https://open.spotify.com/episode/0aM69uGff54ewQJzQxZVLf?t=2583 -->
 Toxicity in the crypto world
