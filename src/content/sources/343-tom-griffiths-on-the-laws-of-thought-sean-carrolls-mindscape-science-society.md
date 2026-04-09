@@ -1,8 +1,6 @@
 ---
-title: 343 | Tom Griffiths on The Laws of Thought
-author: >-
-  Sean Carroll's Mindscape: Science, Society, Philosophy, Culture, Arts, and
-  Ideas
+title: Tom Griffiths on The Laws of Thought
+author: 'Sean Carroll''s Mindscape: Science, Society, Philosophy, Culture, Arts, and Ideas'
 type: podcast
 link: 'https://open.spotify.com/episode/1Aj9O2tq1pBamTTJAhdTxc?t=2501'
 date: 2026-04-08T18:36:22.440Z
