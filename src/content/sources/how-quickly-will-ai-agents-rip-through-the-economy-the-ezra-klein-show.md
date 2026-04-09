@@ -8,10 +8,12 @@ tags:
   - agents
   - ai
   - economics
+  - regulation
   - social-policy
 ---
 
 <!-- note: 2026-02-26T23:39 -->
+<!-- tags: regulation, ai -->
 <!-- published: true -->
 <!-- spotify: https://open.spotify.com/episode/6aeTJQPEXYHITci8d0wfdp?t=2766 -->
 On government regulation. There has been close to no successful movement on AI regulation. Open question if the testing can actually be effective.
