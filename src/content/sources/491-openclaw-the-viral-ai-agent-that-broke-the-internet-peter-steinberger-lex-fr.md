@@ -7,6 +7,7 @@ type: podcast
 link: 'https://open.spotify.com/episode/0aM69uGff54ewQJzQxZVLf?t=231'
 date: 2026-03-17T09:11:27.685Z
 tags:
+  - model-training
   - prompt-injection
   - security
 ---
@@ -37,7 +38,7 @@ There’s a subculture of people who follow viral growth and try to quickly snaf
 Toxicity in the crypto world
 
 <!-- note: 2026-03-17T19:05 -->
-<!-- tags: prompt-injection -->
+<!-- tags: prompt-injection, model-training -->
 <!-- published: true -->
 <!-- spotify: https://open.spotify.com/episode/0aM69uGff54ewQJzQxZVLf?t=3968 -->
 The latest generation of models have a lot of post training to avoid prompt injection attacks.
