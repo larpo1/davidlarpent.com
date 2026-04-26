@@ -1,6 +1,6 @@
 ---
 title: Agentic Coding
-description: How autonomous coding agents are reshaping software engineering — from harness design to open-source contribution norms. (edited via verification)
+description: How autonomous coding agents are reshaping software engineering — from harness design to open-source contribution norms.
 tags:
   - agentic-coding
   - harness-engineering
