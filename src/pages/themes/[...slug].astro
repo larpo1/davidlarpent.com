@@ -1,0 +1,309 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import PostListItem from '../../components/PostListItem.astro';
+import {
+  readingForTheme,
+  outputForTheme,
+  noteCountForSource,
+} from '../../lib/themes';
+
+export async function getStaticPaths() {
+  const themes = await getCollection('themes');
+  return themes.map(theme => ({
+    params: { slug: theme.slug },
+    props: { theme },
+  }));
+}
+
+const { theme } = Astro.props;
+const isDev = import.meta.env.DEV;
+
+const allSources = await getCollection('sources');
+const allPosts = await getCollection('posts');
+
+const reading = readingForTheme(theme, allSources);
+const output = outputForTheme(theme, allPosts);
+
+const { Content } = await theme.render();
+
+function formatType(type: string): string {
+  return type.charAt(0).toUpperCase() + type.slice(1);
+}
+---
+
+<Base
+  title={`${theme.data.title} | David Larpent`}
+  description={theme.data.description}
+  activeThemeSlug={theme.slug}
+>
+  <article class="theme-detail" data-theme-slug={theme.slug}>
+    <header class="theme-header">
+      <h1 class="theme-title" contenteditable={isDev} data-field="title">{theme.data.title}</h1>
+      <p class="theme-description" contenteditable={isDev} data-field="description">{theme.data.description}</p>
+      <div class="theme-tags" data-field="tags">
+        {theme.data.tags.map(tag => (
+          isDev ? (
+            <span class="tag-link note-tag-pill">
+              #{tag}
+              <button class="note-tag-remove" data-tag={tag} type="button">&times;</button>
+            </span>
+          ) : (
+            <a href={`/tags/${tag.toLowerCase()}`} class="tag-link">#{tag}</a>
+          )
+        ))}
+        {isDev && (
+          <input class="note-tag-input theme-tag-input" placeholder="+" />
+        )}
+      </div>
+    </header>
+
+    <section class="theme-section theme-reading">
+      <h2 class="theme-section-title">Reading</h2>
+      {reading.length === 0 ? (
+        <p class="theme-empty">No sources yet. {isDev && 'Add some below.'}</p>
+      ) : (
+        <ul class="reading-list">
+          {reading.map(source => {
+            const noteCount = noteCountForSource(source);
+            const isCurated = (theme.data.sources ?? []).includes(source.slug);
+            return (
+              <li class="reading-source-card" data-source-slug={source.slug}>
+                <a href={`/sources/${source.slug}`} class="reading-source-title">
+                  {source.data.title}
+                </a>
+                <p class="reading-source-meta">
+                  <span class="reading-source-author">{source.data.author}</span>
+                  <span> &middot; </span>
+                  <span class="reading-source-type">{formatType(source.data.type)}</span>
+                  <span> &middot; </span>
+                  <span class="reading-source-status">
+                    {noteCount === 0 ? 'unread' : `${noteCount} note${noteCount === 1 ? '' : 's'}`}
+                  </span>
+                  {!isCurated && <span class="reading-source-derived"> &middot; derived</span>}
+                </p>
+                {isDev && isCurated && (
+                  <button class="reading-source-remove" data-slug={source.slug} type="button" title="Remove from theme">
+                    &times;
+                  </button>
+                )}
+              </li>
+            );
+          })}
+        </ul>
+      )}
+      {isDev && (
+        <div class="reading-add">
+          <button class="reading-add-toggle" type="button" id="reading-add-toggle">+ add to reading</button>
+          <div class="reading-add-form" id="reading-add-form" hidden>
+            <input class="reading-add-title" placeholder="Title" />
+            <input class="reading-add-link" placeholder="https:// (optional)" />
+            <select class="reading-add-type">
+              <option value="article">Article</option>
+              <option value="paper">Paper</option>
+              <option value="podcast">Podcast</option>
+              <option value="book">Book</option>
+            </select>
+            <input class="reading-add-author" placeholder="Author" />
+            <button class="reading-add-submit" type="button">Add</button>
+          </div>
+        </div>
+      )}
+    </section>
+
+    <section class="theme-section theme-output">
+      <h2 class="theme-section-title">Output</h2>
+      {output.length === 0 ? (
+        <p class="theme-empty">No essays on this theme yet.</p>
+      ) : (
+        <ul class="post-list">
+          {output.map(post => (
+            <PostListItem
+              slug={post.slug}
+              title={post.data.title}
+              date={post.data.date}
+              description={post.data.description}
+              tags={post.data.tags}
+              draft={post.data.draft}
+              category={post.data.category}
+            />
+          ))}
+        </ul>
+      )}
+    </section>
+
+    {theme.body.trim().length > 0 && (
+      <section class="theme-section theme-synthesis">
+        <h2 class="theme-section-title">Synthesis</h2>
+        <div class="theme-synthesis-body">
+          <Content />
+        </div>
+      </section>
+    )}
+  </article>
+
+  {isDev && (
+    <script
+      define:vars={{
+        themeSlug: theme.slug,
+        initialTags: theme.data.tags,
+        initialSources: theme.data.sources,
+      }}
+    >
+      const article = document.querySelector('.theme-detail');
+      const slug = themeSlug;
+      let currentTags = [...initialTags];
+      let currentSources = [...initialSources];
+
+      async function saveTheme(payload) {
+        try {
+          const res = await fetch('/api/save-theme', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ slug, ...payload }),
+          });
+          const data = await res.json();
+          if (!data.success) console.error('Failed to save theme:', data.message);
+          return data.success;
+        } catch (err) {
+          console.error('Save theme error:', err);
+          return false;
+        }
+      }
+
+      const titleEl = article.querySelector('[data-field="title"]');
+      const descriptionEl = article.querySelector('[data-field="description"]');
+
+      if (titleEl) {
+        const orig = titleEl.textContent.trim();
+        titleEl.addEventListener('blur', () => {
+          const val = titleEl.textContent.trim();
+          if (val && val !== orig) saveTheme({ title: val });
+        });
+      }
+
+      if (descriptionEl) {
+        const orig = descriptionEl.textContent.trim();
+        descriptionEl.addEventListener('blur', () => {
+          const val = descriptionEl.textContent.trim();
+          if (val !== orig) saveTheme({ description: val });
+        });
+      }
+
+      const tagsContainer = article.querySelector('[data-field="tags"]');
+      const tagInput = tagsContainer && tagsContainer.querySelector('.theme-tag-input');
+
+      function buildTagPill(tag) {
+        const span = document.createElement('span');
+        span.className = 'tag-link note-tag-pill';
+        span.appendChild(document.createTextNode('#' + tag));
+        const btn = document.createElement('button');
+        btn.className = 'note-tag-remove';
+        btn.dataset.tag = tag;
+        btn.type = 'button';
+        btn.textContent = '×';
+        btn.addEventListener('click', async () => {
+          currentTags = currentTags.filter(t => t !== tag);
+          await saveTheme({ tags: currentTags });
+          renderTags();
+        });
+        span.appendChild(btn);
+        return span;
+      }
+
+      function renderTags() {
+        if (!tagsContainer) return;
+        tagsContainer.querySelectorAll('.note-tag-pill').forEach(p => p.remove());
+        for (const tag of currentTags) {
+          tagsContainer.insertBefore(buildTagPill(tag), tagInput);
+        }
+      }
+
+      tagsContainer?.querySelectorAll('.note-tag-remove').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          const tag = btn.dataset.tag;
+          currentTags = currentTags.filter(t => t !== tag);
+          await saveTheme({ tags: currentTags });
+          renderTags();
+        });
+      });
+
+      if (tagInput) {
+        tagInput.addEventListener('keydown', async (e) => {
+          if (e.key !== 'Enter') return;
+          e.preventDefault();
+          const val = tagInput.value.trim().toLowerCase().replace(/^#/, '');
+          if (!val || currentTags.includes(val)) {
+            tagInput.value = '';
+            return;
+          }
+          currentTags.push(val);
+          tagInput.value = '';
+          await saveTheme({ tags: currentTags });
+          renderTags();
+        });
+      }
+
+      article.querySelectorAll('.reading-source-remove').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          const sourceSlug = btn.dataset.slug;
+          currentSources = currentSources.filter(s => s !== sourceSlug);
+          const ok = await saveTheme({ sources: currentSources });
+          if (ok) {
+            const card = btn.closest('.reading-source-card');
+            if (card) card.remove();
+          }
+        });
+      });
+
+      const addToggle = document.getElementById('reading-add-toggle');
+      const addForm = document.getElementById('reading-add-form');
+      addToggle?.addEventListener('click', () => {
+        if (addForm) addForm.hidden = !addForm.hidden;
+      });
+
+      const submitBtn = article.querySelector('.reading-add-submit');
+      submitBtn?.addEventListener('click', async () => {
+        const titleInput = article.querySelector('.reading-add-title');
+        const linkInput = article.querySelector('.reading-add-link');
+        const typeInput = article.querySelector('.reading-add-type');
+        const authorInput = article.querySelector('.reading-add-author');
+
+        const newTitle = titleInput.value.trim();
+        const newLink = linkInput.value.trim();
+        const newType = typeInput.value;
+        const newAuthor = authorInput.value.trim() || 'Unknown';
+
+        if (!newTitle) {
+          titleInput.focus();
+          return;
+        }
+
+        try {
+          const createRes = await fetch('/api/create-source', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              title: newTitle,
+              author: newAuthor,
+              type: newType,
+              link: newLink || undefined,
+            }),
+          });
+          const createData = await createRes.json();
+          if (!createData.success) {
+            console.error('Failed to create source:', createData.message);
+            alert('Failed to create source: ' + createData.message);
+            return;
+          }
+
+          currentSources.push(createData.slug);
+          const ok = await saveTheme({ sources: currentSources });
+          if (ok) window.location.reload();
+        } catch (err) {
+          console.error('Add source error:', err);
+        }
+      });
+    </script>
+  )}
+</Base>

@@ -6,7 +6,9 @@ import matter from 'gray-matter';
 import Base from '../../layouts/Base.astro';
 import AddNotePanel from '../../components/AddNotePanel.astro';
 import SourceSettingsPanel from '../../components/SourceSettingsPanel.astro';
+import ThemePills from '../../components/ThemePills.astro';
 import { parseNotes } from '../../lib/parse-notes';
+import { getThemes, themesForSource } from '../../lib/themes';
 
 const isDev = import.meta.env.DEV;
 
@@ -36,6 +38,9 @@ const notes = isDev ? allNotes : allNotes.filter(n => n.published);
 
 // Source tags are computed as the union of all note tags
 const computedTags = [...new Set(allNotes.flatMap(n => n.tags))].sort();
+
+const allThemes = await getThemes();
+const sourceThemes = themesForSource(source.slug, allThemes, source);
 
 // Collect all existing tags across posts and sources for autocomplete
 const allPosts = await getCollection('posts');
@@ -114,6 +119,8 @@ function formatSpotifyTimestamp(url: string): string {
           ))}
         </div>
       )}
+
+      <ThemePills themes={sourceThemes} />
 
     </header>
 

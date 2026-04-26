@@ -1,0 +1,18 @@
+---
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  themes: CollectionEntry<'themes'>[];
+}
+
+const { themes } = Astro.props;
+---
+
+{themes.length > 0 && (
+  <div class="theme-pills">
+    <span class="theme-pills-label">Part of:</span>
+    {themes.map(theme => (
+      <a class="theme-pill" href={`/themes/${theme.slug}`}>{theme.data.title}</a>
+    ))}
+  </div>
+)}

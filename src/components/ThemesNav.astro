@@ -1,0 +1,57 @@
+---
+import { getThemes } from '../lib/themes';
+
+interface Props {
+  activeSlug?: string;
+  variant?: 'full' | 'collapsed';
+}
+
+const { activeSlug, variant = 'full' } = Astro.props;
+const themes = await getThemes();
+themes.sort((a, b) => a.data.title.localeCompare(b.data.title));
+
+const isDev = import.meta.env.DEV;
+---
+
+{variant === 'collapsed' ? (
+  <a class="themes-nav-back" href="/">&larr; Themes</a>
+) : (
+  <nav class="themes-nav" aria-label="Research themes">
+    <h2 class="themes-nav-title">Themes</h2>
+    <ul class="themes-nav-list">
+      {themes.map(theme => (
+        <li class:list={["themes-nav-item", { active: theme.slug === activeSlug }]}>
+          <a href={`/themes/${theme.slug}`}>{theme.data.title}</a>
+        </li>
+      ))}
+    </ul>
+    {isDev && (
+      <button class="themes-nav-new" id="themes-nav-new" type="button">+ new theme</button>
+    )}
+  </nav>
+)}
+
+{isDev && variant !== 'collapsed' && (
+  <script>
+    const newBtn = document.getElementById('themes-nav-new');
+    newBtn?.addEventListener('click', async () => {
+      const title = prompt('Theme title:');
+      if (!title || !title.trim()) return;
+      try {
+        const res = await fetch('/api/create-theme', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ title: title.trim() }),
+        });
+        const data = await res.json();
+        if (data.success && data.slug) {
+          window.location.href = '/themes/' + data.slug;
+        } else {
+          alert('Could not create theme: ' + (data.message || 'unknown error'));
+        }
+      } catch (err) {
+        console.error('Create theme error:', err);
+      }
+    });
+  </script>
+)}

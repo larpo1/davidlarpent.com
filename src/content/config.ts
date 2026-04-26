@@ -26,4 +26,15 @@ const sources = defineCollection({
   }),
 });
 
-export const collections = { posts, sources };
+const themes = defineCollection({
+  type: 'content',
+  schema: z.object({
+    title: z.string(),
+    description: z.string().default(''),
+    tags: z.array(z.string()).default([]),
+    sources: z.array(z.string()).default([]),
+    draft: z.boolean().default(false),
+  }),
+});
+
+export const collections = { posts, sources, themes };

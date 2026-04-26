@@ -2453,3 +2453,313 @@ a:hover {
   }
 }
 
+/* Themes nav (left rail, fixed below site-header) */
+.themes-nav {
+  margin-top: 2rem;
+}
+
+.themes-nav-title {
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--color-text-light);
+  margin: 0 0 0.75rem;
+}
+
+.themes-nav-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.themes-nav-item a {
+  color: var(--color-text-light);
+  font-size: 0.95rem;
+  line-height: 1.35;
+  transition: color 0.2s ease;
+  display: block;
+}
+
+.themes-nav-item a:hover {
+  color: var(--color-text);
+}
+
+.themes-nav-item.active a {
+  color: var(--color-text);
+  font-style: italic;
+}
+
+.themes-nav-new {
+  background: none;
+  border: 1px dashed var(--color-border);
+  color: var(--color-text-light);
+  font-family: inherit;
+  font-size: 0.85rem;
+  padding: 0.35rem 0.6rem;
+  margin-top: 1rem;
+  border-radius: 2rem;
+  cursor: pointer;
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.themes-nav-new:hover {
+  color: var(--color-text);
+  border-color: var(--color-link);
+}
+
+.themes-nav-back {
+  display: inline-block;
+  font-size: 0.85rem;
+  color: var(--color-text-light);
+  margin-bottom: 1rem;
+}
+
+.themes-nav-back:hover {
+  color: var(--color-text);
+}
+
+/* Position the rail under the fixed header on desktop. Mobile: inline. */
+@media (min-width: 1201px) {
+  .themes-nav {
+    position: fixed;
+    top: 6rem;
+    left: var(--grid-margin);
+    width: calc(var(--grid-col) * 3);
+    padding: 0 12px;
+    margin-top: 0;
+    max-height: calc(100vh - 7rem);
+    overflow-y: auto;
+    z-index: 40;
+  }
+}
+
+/* Themes back-link inside the TOC (post pages) */
+.toc-themes-back {
+  display: inline-block;
+  font-size: 0.8rem;
+  color: var(--color-text-light);
+  margin-bottom: 1rem;
+}
+
+.toc-themes-back:hover {
+  color: var(--color-text);
+}
+
+/* Theme detail page */
+.theme-detail {
+  max-width: 100%;
+}
+
+.theme-header {
+  margin-bottom: 3rem;
+}
+
+.theme-title {
+  font-size: 2.5rem;
+  font-weight: 600;
+  margin: 0 0 0.5rem;
+  line-height: 1.2;
+}
+
+.theme-description {
+  font-size: 1.1rem;
+  color: var(--color-text-light);
+  margin: 0 0 1rem;
+  line-height: 1.5;
+}
+
+.theme-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.theme-tag-input {
+  /* Inherits from .note-tag-input */
+}
+
+.theme-section {
+  margin-bottom: 3.5rem;
+}
+
+.theme-section-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0 0 1.25rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.theme-empty {
+  color: var(--color-text-light);
+  font-style: italic;
+  font-size: 0.95rem;
+}
+
+/* Reading list */
+.reading-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.reading-source-card {
+  position: relative;
+  padding-right: 2rem;
+}
+
+.reading-source-title {
+  display: block;
+  font-size: 1.15rem;
+  font-weight: 500;
+  color: var(--color-text);
+  line-height: 1.35;
+  margin-bottom: 0.25rem;
+}
+
+.reading-source-title:hover {
+  color: var(--color-link-hover);
+}
+
+.reading-source-meta {
+  font-size: 0.85rem;
+  color: var(--color-text-light);
+  margin: 0;
+}
+
+.reading-source-derived {
+  font-style: italic;
+  opacity: 0.7;
+}
+
+.reading-source-remove {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background: none;
+  border: none;
+  color: var(--color-text-light);
+  font-size: 1.1rem;
+  cursor: pointer;
+  padding: 0 0.25rem;
+  line-height: 1;
+}
+
+.reading-source-remove:hover {
+  color: var(--color-text);
+}
+
+.reading-add {
+  margin-top: 1.5rem;
+}
+
+.reading-add-toggle {
+  background: none;
+  border: 1px dashed var(--color-border);
+  color: var(--color-text-light);
+  font-family: inherit;
+  font-size: 0.85rem;
+  padding: 0.4rem 0.75rem;
+  border-radius: 2rem;
+  cursor: pointer;
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.reading-add-toggle:hover {
+  color: var(--color-text);
+  border-color: var(--color-link);
+}
+
+.reading-add-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto auto;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+  align-items: center;
+}
+
+.reading-add-form input,
+.reading-add-form select {
+  font-family: inherit;
+  font-size: 0.9rem;
+  background: none;
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  padding: 0.4rem 0.6rem;
+}
+
+.reading-add-form input:focus,
+.reading-add-form select:focus {
+  outline: none;
+  border-color: var(--color-link);
+}
+
+.reading-add-submit {
+  background: var(--color-text);
+  color: var(--color-background);
+  border: none;
+  font-family: inherit;
+  font-size: 0.85rem;
+  padding: 0.4rem 0.85rem;
+  border-radius: 2rem;
+  cursor: pointer;
+}
+
+.reading-add-submit:hover {
+  background: var(--color-link-hover);
+}
+
+@media (max-width: 768px) {
+  .reading-add-form {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Theme synthesis body — re-uses post-content typography */
+.theme-synthesis-body {
+  font-size: 1rem;
+  line-height: 1.7;
+}
+
+.theme-synthesis-body p {
+  margin-bottom: 1rem;
+}
+
+/* "Part of" theme pills on source/post pages */
+.theme-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  align-items: center;
+  margin-top: 0.75rem;
+  font-size: 0.85rem;
+}
+
+.theme-pills-label {
+  color: var(--color-text-light);
+}
+
+.theme-pill {
+  display: inline-block;
+  padding: 0.2em 0.7em;
+  border: 1px solid var(--color-border);
+  border-radius: 2rem;
+  font-size: 0.8rem;
+  color: var(--color-text-light);
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.theme-pill:hover {
+  color: var(--color-text);
+  border-color: var(--color-link);
+}
+

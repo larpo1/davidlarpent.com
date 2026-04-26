@@ -27,9 +27,10 @@ interface Props {
     slug: string;
     text: string;
   }>;
+  themes?: Array<{ slug: string; title: string }>;
 }
 
-const { title, date, description, draft, slug, tags = [], featureImage, relatedPosts = [], headings } = Astro.props;
+const { title, date, description, draft, slug, tags = [], featureImage, relatedPosts = [], headings, themes = [] } = Astro.props;
 const isDev = import.meta.env.DEV;
 
 // Calculate reading time (roughly 200 words per minute)
@@ -104,6 +105,7 @@ const breadcrumbSchema = {
   image={featureImage || undefined}
   type="article"
   keywords={tags}
+  hideThemesNav={true}
   articleMeta={{
     publishedTime: date.toISOString(),
     author: "David Larpent",
@@ -131,6 +133,14 @@ const breadcrumbSchema = {
             </label>
           )}
         </div>
+        {themes.length > 0 && (
+          <div class="theme-pills">
+            <span class="theme-pills-label">Part of:</span>
+            {themes.map(t => (
+              <a class="theme-pill" href={`/themes/${t.slug}`}>{t.title}</a>
+            ))}
+          </div>
+        )}
         <div class="feature-image-wrapper" data-slug={slug} data-title={title} data-description={description}>
           {featureImage ? (
             <img src={featureImage} alt={title} class="feature-image sketch-illustration" />

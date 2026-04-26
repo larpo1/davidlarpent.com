@@ -1,6 +1,7 @@
 ---
 import '../styles/global.css';
 import NewsletterSignup from '../components/NewsletterSignup.astro';
+import ThemesNav from '../components/ThemesNav.astro';
 
 interface Props {
   title: string;
@@ -13,6 +14,8 @@ interface Props {
     author: string;
     tags: string[];
   };
+  hideThemesNav?: boolean;
+  activeThemeSlug?: string;
 }
 
 const {
@@ -21,7 +24,9 @@ const {
   image = "/og-default.jpg",
   keywords = [],
   type = "website",
-  articleMeta
+  articleMeta,
+  hideThemesNav = false,
+  activeThemeSlug,
 } = Astro.props;
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 const imageURL = new URL(image, Astro.site);
@@ -107,6 +112,7 @@ const imageURL = new URL(image, Astro.site);
         <nav class="site-nav">
         </nav>
       </header>
+      {!hideThemesNav && <ThemesNav activeSlug={activeThemeSlug} />}
       <main>
         <slot />
       </main>
