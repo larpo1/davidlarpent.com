@@ -1,3 +1,12 @@
+/* Handwriting font for input notes */
+@font-face {
+  font-family: 'QEJulianDean';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/QEJulianDean.ttf') format('truetype');
+}
+
 /* Self-hosted Newsreader (variable font) */
 @font-face {
   font-family: 'Newsreader';
@@ -33,10 +42,10 @@
   --max-width: 700px;
   /* 6-column grid system */
   --grid-margin: 24px;
-  --grid-columns: 6;
+  --grid-columns: 12;
   --grid-width: calc(100vw - var(--grid-margin) * 2);
   --grid-col: calc(var(--grid-width) / var(--grid-columns));
-  --guide-color: rgba(255, 255, 255, 0.15);
+  --guide-color: rgba(255, 255, 255, 0.10);
 }
 
 /* Light theme override */
@@ -585,14 +594,14 @@ a:hover {
   overflow: hidden;
 }
 
-/* Desktop: wrapper is fixed in right margin (columns 5-6) */
+/* Desktop: wrapper is fixed in right margin (columns 9-12) */
 @media (min-width: 1201px) {
   .sketch-reveal-wrapper {
     position: fixed;
     top: 50%;
-    left: calc(var(--grid-margin) + var(--grid-col) * 4);
+    left: calc(var(--grid-margin) + var(--grid-col) * 8);
     right: var(--grid-margin);
-    max-width: calc(var(--grid-col) * 2);
+    max-width: calc(var(--grid-col) * 4);
     max-height: 70vh;
     z-index: 10;
     pointer-events: none;
@@ -1145,13 +1154,13 @@ a:hover {
   transform: translateX(-50%) translateY(-50%) rotate(-45deg);
 }
 
-/* Desktop: 6-column grid alignment */
+/* Desktop: 12-column grid alignment */
 @media (min-width: 1201px) {
   :root {
-    --max-width: calc(var(--grid-col) * 2);
+    --max-width: calc(var(--grid-col) * 6);
   }
 
-  /* Grid guide overlay — 7 dashed lines at column boundaries */
+  /* Grid guide overlay — 13 dashed lines at column boundaries */
   body::before {
     content: '';
     position: fixed;
@@ -1168,6 +1177,12 @@ a:hover {
       repeating-linear-gradient(180deg, var(--guide-color) 0px, var(--guide-color) 4px, transparent 4px, transparent 8px),
       repeating-linear-gradient(180deg, var(--guide-color) 0px, var(--guide-color) 4px, transparent 4px, transparent 8px),
       repeating-linear-gradient(180deg, var(--guide-color) 0px, var(--guide-color) 4px, transparent 4px, transparent 8px),
+      repeating-linear-gradient(180deg, var(--guide-color) 0px, var(--guide-color) 4px, transparent 4px, transparent 8px),
+      repeating-linear-gradient(180deg, var(--guide-color) 0px, var(--guide-color) 4px, transparent 4px, transparent 8px),
+      repeating-linear-gradient(180deg, var(--guide-color) 0px, var(--guide-color) 4px, transparent 4px, transparent 8px),
+      repeating-linear-gradient(180deg, var(--guide-color) 0px, var(--guide-color) 4px, transparent 4px, transparent 8px),
+      repeating-linear-gradient(180deg, var(--guide-color) 0px, var(--guide-color) 4px, transparent 4px, transparent 8px),
+      repeating-linear-gradient(180deg, var(--guide-color) 0px, var(--guide-color) 4px, transparent 4px, transparent 8px),
       repeating-linear-gradient(180deg, var(--guide-color) 0px, var(--guide-color) 4px, transparent 4px, transparent 8px);
     background-size: 1px 100%;
     background-repeat: no-repeat;
@@ -1178,25 +1193,51 @@ a:hover {
       calc(var(--grid-col) * 3) 0,
       calc(var(--grid-col) * 4) 0,
       calc(var(--grid-col) * 5) 0,
-      calc(var(--grid-col) * 6) 0;
+      calc(var(--grid-col) * 6) 0,
+      calc(var(--grid-col) * 7) 0,
+      calc(var(--grid-col) * 8) 0,
+      calc(var(--grid-col) * 9) 0,
+      calc(var(--grid-col) * 10) 0,
+      calc(var(--grid-col) * 11) 0,
+      calc(var(--grid-col) * 12) 0;
   }
 
-  /* Content aligned to columns 3-4 */
+  /* Content aligned to columns 4-9 (6 of 12 = 50%) */
   .container {
-    max-width: calc(var(--grid-col) * 2);
-    margin-left: calc(var(--grid-margin) + var(--grid-col) * 2);
+    max-width: calc(var(--grid-col) * 6);
+    margin-left: calc(var(--grid-margin) + var(--grid-col) * 3);
     margin-right: auto;
     padding-left: 0;
     padding-right: 24px;
   }
 
-  /* Post layout inherits from container — don't double-constrain */
+  /* Header: break out of container, position in columns 1-3 */
+  .site-header {
+    position: fixed;
+    top: 0;
+    left: var(--grid-margin);
+    width: calc(var(--grid-col) * 3);
+    flex-direction: row;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1rem 12px;
+    margin-bottom: 0;
+    z-index: 50;
+  }
+
+  /* Remove header spacing from container since header is now fixed */
+  .container {
+    padding-top: 1rem;
+  }
+
+  /* Post layout: narrower than homepage (4/12 cols), centered at cols 5-8 */
   .post-layout {
-    max-width: none;
-    margin-left: 0;
+    max-width: calc(var(--grid-col) * 4);
+    margin-left: var(--grid-col);
     margin-right: 0;
     padding-left: 0;
     padding-right: 0;
+    padding-top: 6rem; /* Align post title with CONTENTS label in left column */
   }
 
   /* Bleed elements past right padding to align with grid line */
@@ -1215,8 +1256,10 @@ a:hover {
 
   .toc-container {
     display: block !important; /* Always visible */
+    top: 6rem; /* Below the fixed header */
     left: var(--grid-margin);
-    width: var(--grid-col);
+    width: calc(var(--grid-col) * 3);
+    max-height: calc(100vh - 4.5rem);
     padding-left: 12px;
     padding-right: 12px;
   }
@@ -1395,10 +1438,12 @@ a:hover {
 }
 
 .input-source-title {
-  font-size: 1rem;
-  font-weight: 600;
+  font-family: 'QEJulianDean', cursive;
+  font-size: 2rem;
+  font-weight: 400;
   margin: 0;
-  line-height: 1.3;
+  line-height: 1.4;
+  letter-spacing: 0.01em;
 }
 
 .input-source-title a {
