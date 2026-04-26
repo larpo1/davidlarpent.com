@@ -48,5 +48,14 @@ export default defineConfig({
       wrap: true
     },
     rehypePlugins: [rehypeLazyImages]
+  },
+  vite: {
+    server: {
+      watch: {
+        // Ignore source markdown files so API-driven edits (tag updates, note
+        // toggles) don't trigger Astro HMR full-page reloads mid-interaction.
+        ignored: ['**/src/content/sources/**']
+      }
+    }
   }
 });

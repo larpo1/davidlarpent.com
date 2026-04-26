@@ -63,15 +63,18 @@ for (const source of sources) {
     };
   });
 
-  // Sort notes within group by timestamp descending
-  notes.sort((a, b) => b.timestamp.localeCompare(a.timestamp));
+  // Sort notes within group by timestamp ascending (chronological through the source)
+  notes.sort((a, b) => a.timestamp.localeCompare(b.timestamp));
+
+  // In dev, use fresh frontmatter from disk instead of cached content collection
+  const sourceData = isDev ? { ...source.data, ...parsed.data } : source.data;
 
   sourceGroups.push({
     slug: source.slug,
-    title: source.data.title,
-    author: source.data.author,
-    type: source.data.type,
-    date: source.data.date,
+    title: sourceData.title,
+    author: sourceData.author,
+    type: sourceData.type,
+    date: sourceData.date,
     notes,
     latestTimestamp: notes[0].timestamp,
   });

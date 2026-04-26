@@ -20,12 +20,16 @@ export async function getStaticPaths() {
 
 const { source } = Astro.props;
 
-// Read raw markdown to parse notes
+// Read raw markdown directly — bypasses content collection cache so
+// API-driven edits (title, author, tags) are reflected immediately on refresh.
 const sourcesDir = path.join(process.cwd(), 'src', 'content', 'sources');
 const filePath = path.join(sourcesDir, `${source.slug}.md`);
 const rawContent = await fs.readFile(filePath, 'utf-8');
 const parsed = matter(rawContent);
 const allNotes = parseNotes(parsed.content);
+
+// In dev, use fresh frontmatter from disk instead of cached content collection
+const sourceData = isDev ? { ...source.data, ...parsed.data } : source.data;
 
 // In production, only show published notes
 const notes = isDev ? allNotes : allNotes.filter(n => n.published);
@@ -42,14 +46,14 @@ const allExistingTags = [...new Set([
   ...allNotes.flatMap(n => n.tags),
 ])].map(t => t.toLowerCase()).sort();
 
-const formattedDate = source.data.date.toLocaleDateString('en-US', {
+const formattedDate = sourceData.date.toLocaleDateString('en-US', {
   year: 'numeric',
   month: 'short',
   day: 'numeric'
 });
 
-const isoDate = source.data.date.toISOString().split('T')[0];
-const isArchived = source.data.archived ?? false;
+const isoDate = sourceData.date.toISOString().split('T')[0];
+const isArchived = sourceData.archived ?? false;
 const sourceTypes = ['book', 'article', 'paper', 'podcast'];
 
 function formatSpotifyTimestamp(url: string): string {
@@ -66,8 +70,8 @@ function formatSpotifyTimestamp(url: string): string {
 ---
 
 <Base
-  title={`${source.data.title} | David Larpent`}
-  description={`Notes on ${source.data.title} by ${source.data.author}`}
+  title={`${sourceData.title} | David Larpent`}
+  description={`Notes on ${sourceData.title} by ${sourceData.author}`}
 >
   <div class:list={['source-detail', { 'source-archived': isArchived }]}>
     <header class="source-header">
@@ -75,28 +79,28 @@ function formatSpotifyTimestamp(url: string): string {
         class:list={['source-type-badge', { 'source-type-editable': isDev }]}
         id="source-type"
         data-types={JSON.stringify(sourceTypes)}
-      >{source.data.type}</span>
+      >{sourceData.type}</span>
 
-      <h1 class="source-title" contenteditable={isDev ? 'true' : undefined} id="source-title">{source.data.title}</h1>
+      <h1 class="source-title" contenteditable={isDev ? 'true' : undefined} id="source-title">{sourceData.title}</h1>
 
       <p class="source-author-line">
         {isDev ? (
-          <span contenteditable="true" id="source-author">{source.data.author}</span>
+          <span contenteditable="true" id="source-author">{sourceData.author}</span>
         ) : (
-          <Fragment>{source.data.author}</Fragment>
+          <Fragment>{sourceData.author}</Fragment>
         )}
         &middot;
         <span class:list={['source-date-display', { 'source-date-editable': isDev }]} id="source-date-display">{formattedDate}</span>
         {isDev && <input type="date" class="source-date-hidden" id="source-date" value={isoDate} />}
       </p>
 
-      {(source.data.link || isDev) && (
+      {(sourceData.link || isDev) && (
         <div class="source-link-wrapper">
-          <a href={source.data.link || '#'} class="source-link" id="source-link-anchor" target="_blank" rel="noopener noreferrer">
+          <a href={sourceData.link || '#'} class="source-link" id="source-link-anchor" target="_blank" rel="noopener noreferrer">
             View source &rarr;
           </a>
           {isDev && (
-            <span contenteditable="true" class="source-link-url" id="source-link">{source.data.link || ''}</span>
+            <span contenteditable="true" class="source-link-url" id="source-link">{sourceData.link || ''}</span>
           )}
         </div>
       )}
@@ -232,6 +236,61 @@ function formatSpotifyTimestamp(url: string): string {
           } else {
             linkAnchor.style.display = 'none';
           }
+        });
+      }
+
+      // --- Metadata blur-to-save ---
+      async function saveMetadata(fields) {
+        try {
+          const res = await fetch('/api/save-source', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ slug: sourceSlug, ...fields }),
+          });
+          const data = await res.json();
+          if (!data.success) console.error('Failed to save metadata:', data.message);
+        } catch (err) {
+          console.error('Failed to save metadata:', err);
+        }
+      }
+
+      const titleEl = document.getElementById('source-title');
+      if (titleEl) {
+        const origTitle = titleEl.textContent.trim();
+        titleEl.addEventListener('blur', () => {
+          const val = titleEl.textContent.trim();
+          if (val && val !== origTitle) saveMetadata({ title: val });
+        });
+      }
+
+      const authorEl = document.getElementById('source-author');
+      if (authorEl) {
+        const origAuthor = authorEl.textContent.trim();
+        authorEl.addEventListener('blur', () => {
+          const val = authorEl.textContent.trim();
+          if (val && val !== origAuthor) saveMetadata({ author: val });
+        });
+      }
+
+      if (typeBadge) {
+        const origType = typeBadge.textContent.trim();
+        typeBadge.addEventListener('blur', () => {
+          const val = typeBadge.textContent.trim();
+          if (val && val !== origType) saveMetadata({ type: val });
+        });
+      }
+
+      if (dateInput) {
+        dateInput.addEventListener('change', () => {
+          if (dateInput.value) saveMetadata({ date: dateInput.value });
+        });
+      }
+
+      if (linkUrl) {
+        const origLink = linkUrl.textContent.trim();
+        linkUrl.addEventListener('blur', () => {
+          const val = linkUrl.textContent.trim();
+          if (val !== origLink) saveMetadata({ link: val });
         });
       }
 
