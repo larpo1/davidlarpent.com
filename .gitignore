@@ -36,3 +36,6 @@ test-results/
 # cowork writing workspace
 drafts/
 .cowork/
+
+# scheduled-tasks tool lock file
+.claude/scheduled_tasks.lock
