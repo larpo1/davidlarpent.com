@@ -132,7 +132,7 @@ function formatType(type: string): string {
       )}
     </section>
 
-    {theme.body.trim().length > 0 && (
+    {(theme.body?.trim().length ?? 0) > 0 && (
       <section class="theme-section theme-synthesis">
         <h2 class="theme-section-title">Synthesis</h2>
         <div class="theme-synthesis-body">
