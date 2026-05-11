@@ -43,45 +43,17 @@ A person who has wrestled with hard problems is more likely to have interesting 
 
 A person who’s always had the answer handed to them …well, isn’t. They can tell you what the AI told them. That’s it.
 
-We’re not just risking a less capable workforce. We’re risking less capable and interesting people. Less useful collaborators. Less able to hold a surprising opinion because they’ve never had to form one.
-
-## Why Bother?
-
-I paint. Not very well. Oils, mostly. I like the smell of turps. I also make music, badly, for my own amusement.
-
-I have noticed that since Suno came out I lost some motivation to make music, in fact I all but stopped doing it. Not because I started using Suno. Suno devalued the musical creative process to zero, and that made the effort of music creation feel pointless. It isn’t pointless and I need to talk myself back into it again.
-
-I don’t paint to have paintings. Most of the go in the bin. I paint because the process is engrossing. I used to get the same feeling from making music, but fortunately the tactile real-ness-in-physical-space of an oil painting is more resilient (for now) to the cheapening march of gen AI. Long may that last.
-
-The point is: none of this good struggle happens when you type a prompt. The output might look similar. The experience is nothing alike.
-
-For some things, a bit of difficulty is the point.
-
-Not difficulty for its own sake. Difficulty as the texture of engagement. The thing that makes the breakthrough feel like a breakthrough. The resistance that gives your effort meaning.
-
-What happens when we commoditise the output?
-
-When the thing you can make in 30 seconds with a prompt is indistinguishable from the thing someone sweated over for hours, something negative happens to the value of both. Not the market value. The felt value. The meaning.
-
-We should not primarily worried about AI putting creative people out of work. But rather we should worry about AI putting creative people out of the _experience_ of being creative. Making their struggle feel pointless.
-
 ## There is a choice
 
 We can choose to be deliberate about _which_ parts of our work we hand over.
 
-The stuff that’s mechanical, repetitive, or where speed genuinely matters? Take it. The stuff where the struggle is the learning? Use it more carefully. Use it in every way that helps us learn, just don’t use it to give you the answer.
+The stuff that’s mechanical, repetitive, or where speed genuinely matters? Take it. The stuff where the struggle is the learning? Use it more carefully. Use it in every way that helps learning, just don’t use it to give you the answer.
 
 This might sound like an individual choice, a matter of personal discipline. I think of it more as a life design choice.
 
-If you run a company, you make decisions every day about which cognitive work your people do themselves and which they outsource. Get this wrong and you’ll have a team that executes fast and thinks slow. That can ship but can’t adapt. That looks productive right up until the world changes and nobody knows what to do.
-
-If you’re raising kids, you’re deciding what struggles to protect. Your child can use ChatGPT to write their essay. The essay might be good. But if they never learn to structure an argument, to sit with the discomfort of not knowing what to say, to push through the part where writing is hard… what have you taught them?
-
-That the point of writing is to have written?
-
 ## A Struggle Manifesto
 
-I don’t think there’s one right answer. Different people, different teams, different cultures will draw the line in different places. But I think we need to draw it consciously, rather than letting the logic of efficiency draw it for us.
+I don’t think there’s one right answer. Different people, different teams, different cultures will draw the line in different places. But we should to draw it consciously, rather than letting the logic of efficiency draw it for us.
 
 For me it is something like this:
 
