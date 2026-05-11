@@ -1,12 +1,3 @@
-/* Handwriting font for input notes */
-@font-face {
-  font-family: 'QEJulianDean';
-  font-style: normal;
-  font-weight: 400;
-  font-display: swap;
-  src: url('/fonts/QEJulianDean.ttf') format('truetype');
-}
-
 /* Self-hosted Newsreader (variable font) */
 @font-face {
   font-family: 'Newsreader';
@@ -1438,7 +1429,6 @@ a:hover {
 }
 
 .input-source-title {
-  font-family: 'QEJulianDean', cursive;
   font-size: 2rem;
   font-weight: 400;
   margin: 0;
@@ -2675,13 +2665,12 @@ a:hover {
 }
 
 .input-source-item .input-source-title {
-  font-family: 'QEJulianDean', cursive;
-  font-size: 1.3rem;
-  font-weight: 400;
+  font-size: 1.15rem;
+  font-weight: 500;
   color: var(--color-text);
   text-decoration: none;
   line-height: 1.3;
-  letter-spacing: 0.01em;
+  letter-spacing: 0;
   transition: color 0.2s ease;
   display: inline-block;
 }
