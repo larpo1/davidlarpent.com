@@ -80,10 +80,14 @@ function formatType(type: string): string {
                   </span>
                   <span> &middot; </span>
                   <span class="reading-source-type">{formatType(source.data.type)}</span>
-                  <span> &middot; </span>
-                  <span class="reading-source-status">
-                    {noteCount === 0 ? 'unread' : `${noteCount} note${noteCount === 1 ? '' : 's'}`}
-                  </span>
+                  {noteCount > 0 && (
+                    <>
+                      <span> &middot; </span>
+                      <span class="reading-source-status">
+                        {noteCount} note{noteCount === 1 ? '' : 's'}
+                      </span>
+                    </>
+                  )}
                   {!isCurated && <span class="reading-source-derived"> &middot; derived</span>}
                 </p>
                 {isDev && isCurated && (
