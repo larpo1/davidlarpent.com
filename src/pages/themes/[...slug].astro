@@ -75,6 +75,10 @@ function formatType(type: string): string {
                 <p class="reading-source-meta">
                   <span class="reading-source-author">{source.data.author}</span>
                   <span> &middot; </span>
+                  <span class="reading-source-date">
+                    {source.data.date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
+                  </span>
+                  <span> &middot; </span>
                   <span class="reading-source-type">{formatType(source.data.type)}</span>
                   <span> &middot; </span>
                   <span class="reading-source-status">

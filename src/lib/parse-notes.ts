@@ -12,7 +12,8 @@ export interface ParsedNote {
  * Subsequent comment lines extract metadata (tags, published, spotify).
  * Everything else is the note content.
  */
-export function parseNotes(body: string): ParsedNote[] {
+export function parseNotes(body: string | undefined): ParsedNote[] {
+  if (!body) return [];
   const notePattern = /<!-- note: (.+?) -->/g;
   const matches = [...body.matchAll(notePattern)];
 

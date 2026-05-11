@@ -26,37 +26,30 @@ function intersects(a: string[], b: string[]): boolean {
   return b.some(t => lowerA.has(t.toLowerCase()));
 }
 
-function latestNoteTimestamp(source: Source): string {
-  const notes = parseNotes(source.body);
-  if (notes.length === 0) return '';
-  return notes.map(n => n.timestamp).sort().reverse()[0];
-}
-
 export function readingForTheme(theme: Theme, sources: Source[]): Source[] {
   const bySlug = new Map(sources.map(s => [s.slug, s]));
   const seen = new Set<string>();
-  const ordered: Source[] = [];
+  const collected: Source[] = [];
 
   for (const slug of theme.data.sources ?? []) {
     const s = bySlug.get(slug);
     if (s && !seen.has(s.slug)) {
-      ordered.push(s);
+      collected.push(s);
       seen.add(s.slug);
     }
   }
 
   const themeTags = theme.data.tags ?? [];
   if (themeTags.length > 0) {
-    const stragglers = sources
-      .filter(s => !seen.has(s.slug) && intersects(sourceTagsUnion(s), themeTags))
-      .sort((a, b) => latestNoteTimestamp(b).localeCompare(latestNoteTimestamp(a)));
-    for (const s of stragglers) {
-      ordered.push(s);
-      seen.add(s.slug);
+    for (const s of sources) {
+      if (!seen.has(s.slug) && intersects(sourceTagsUnion(s), themeTags)) {
+        collected.push(s);
+        seen.add(s.slug);
+      }
     }
   }
 
-  return ordered;
+  return collected.sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
 }
 
 export function outputForTheme(theme: Theme, posts: Post[]): Post[] {
