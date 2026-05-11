@@ -11,11 +11,9 @@ tags:
 category: not-work
 featureImage: /images/posts/what-we-lose-when-we-stop-struggling/sketch-1770508192.jpg
 ---
-I wrote this the old fashioned way. Partly to conjure some new neural pathways into being. Partly so I can get my lines right with my kids.
-
 [Anthropic researchers just published a study](https://www.anthropic.com/research/AI-assistance-coding-skills) showing that developers who use AI assistance score 17% lower on understanding the code they just wrote. They finished the task slightly faster. They apparently learned almost nothing.
 
-Researchers watched how people worked. Some handed everything to the AI and breezed through. Others asked the AI questions, then wrote the code themselves. The first group was quickest, but only the second group understood what they’d built.
+Researchers watched how people worked. Some handed everything to the AI and breezed through. Others asked the AI questions, then wrote the code themselves. The first group was quickest. Only the second group understood what they’d built.
 
 The Anthropic research is not the first to make this point. A study in Nature last year concluded: “[Human-generative AI collaboration enhances task performance but undermines human’s intrinsic motivation](https://www.nature.com/articles/s41598-025-98385-2)”.
 
@@ -23,7 +21,7 @@ The Anthropic research is not the first to make this point. A study in Nature la
 
 <img src="/images/posts/what-we-lose-when-we-stop-struggling/sketch-1770896413.jpg" alt="'The Thinker' statue by Rodin, stylised in a bauhaus style. The figure is considering taking one of two paths indicated by two signs, one marked &quot;Least resistance&quot; the other marked &quot;Some resistance&quot;." class="sketch-illustration" data-prompt="Style: Square 1:1 aspect ratio. Minimal architectural line drawing on a pure white background. Fine black ink lines only. Clean, precise, spare linework. No shading, no cross-hatching, no fills, no gradients.  Absolutely no borders, no background textures and no paper/mounting effects. Just architectural hand drawn lines on solid, pure white #ffffff background. Think Bauhaus drawing meets Dieter Rams sketch meets architectural blueprint. Abstract where possible. Elegant negative space. The drawing should feel like a diagram that became art. Subject: 'The Thinker' statue by Rodin, stylised in a bauhaus style. The figure is considering taking one of two paths indicated by two signs, one marked &quot;Least resistance&quot; the other marked &quot;Some resistance&quot;.">
 
-Sometimes speed is the game. A trader has milliseconds. A pilot in an emergency has seconds. An A&E doctor triaging patients needs answers now. In these contexts, AI supported decision making is already proving invaluable. Faster is better.
+Sometimes faster is better. A pilot in an emergency has seconds. An A&E doctor triaging patients needs quick answers. In these contexts, AI supported decision making is already proving invaluable directly because of the time it saves.
 
 But many (most) other forms cognitive work aren’t like that.
 
