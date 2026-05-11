@@ -2,7 +2,7 @@
 title: The Unbearable Lightness of Prompting
 date: 2026-01-30T00:00:00.000Z
 description: On skill atrophy and doing things the hard way.
-draft: false
+draft: true
 tags:
   - AI
   - philosophy
