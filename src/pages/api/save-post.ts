@@ -111,6 +111,7 @@ export const POST: APIRoute = async ({ request }) => {
     // Read existing file
     const fileContent = await fs.readFile(filePath, 'utf-8');
     const parsed = matter(fileContent);
+    const previousDraft = parsed.data.draft === true;
 
     // Update frontmatter
     if (title !== undefined) {
@@ -199,12 +200,13 @@ export const POST: APIRoute = async ({ request }) => {
     const finalSlug = newSlug || slug;
     const commitFile = `src/content/posts/${finalSlug}.md`;
     const isPublished = !parsed.data.draft;
+    const draftStateChanged = previousDraft !== (parsed.data.draft === true);
     setTimeout(async () => {
       try {
         await execAsync(`git add "${commitFile}"`);
         const commitMsg = `Auto-save: ${finalSlug}`;
         await execAsync(`git commit -m "${commitMsg}"`);
-        if (isPublished) {
+        if (isPublished || draftStateChanged) {
           await execAsync('git push');
         }
       } catch (gitError) {
