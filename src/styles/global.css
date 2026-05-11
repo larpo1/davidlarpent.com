@@ -2537,6 +2537,209 @@ a:hover {
   }
 }
 
+/* Home Input rail — themes + tags as filter buttons.
+   Inside .input-panel, so visibility is bound to the Input tab. */
+.input-rail {
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+}
+
+.input-rail-section {
+  margin-bottom: 1.5rem;
+}
+
+.input-rail-section:last-child {
+  margin-bottom: 0;
+}
+
+.input-rail-heading {
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--color-text-light);
+  margin: 0 0 0.75rem;
+}
+
+.input-rail-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.input-rail-list li {
+  margin: 0;
+}
+
+.input-rail-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  font-family: inherit;
+  font-size: 0.95rem;
+  line-height: 1.35;
+  color: var(--color-text-light);
+  cursor: pointer;
+  text-align: left;
+  transition: color 0.2s ease;
+  display: block;
+  width: 100%;
+}
+
+.input-rail-btn:hover {
+  color: var(--color-text);
+}
+
+.input-rail-btn.active {
+  color: var(--color-text);
+  font-style: italic;
+}
+
+.input-rail-tag {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+}
+
+.input-rail-tag-name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.input-rail-tag-count {
+  font-size: 0.7rem;
+  opacity: 0.55;
+  font-variant-numeric: tabular-nums;
+}
+
+.input-rail-new {
+  background: none;
+  border: 1px dashed var(--color-border);
+  color: var(--color-text-light);
+  font-family: inherit;
+  font-size: 0.85rem;
+  padding: 0.35rem 0.6rem;
+  margin-top: 1rem;
+  border-radius: 2rem;
+  cursor: pointer;
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.input-rail-new:hover {
+  color: var(--color-text);
+  border-color: var(--color-link);
+}
+
+/* Pin the input rail to the left margin on desktop, mirroring .themes-nav */
+@media (min-width: 1201px) {
+  .input-rail {
+    position: fixed;
+    top: 6rem;
+    left: var(--grid-margin);
+    width: calc(var(--grid-col) * 3);
+    padding: 0 12px;
+    margin-top: 0;
+    max-height: calc(100vh - 7rem);
+    overflow-y: auto;
+    z-index: 40;
+  }
+}
+
+/* Home Input source list — flat list of all sources, title + author + date */
+.input-source-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.input-source-item {
+  padding: 0.65rem 0;
+  border-bottom: 1px solid var(--color-border);
+  opacity: 0;
+}
+
+.input-source-item.fade-in {
+  animation: fadeInUp 0.35s ease forwards;
+}
+
+.input-source-item:last-child {
+  border-bottom: none;
+}
+
+.input-source-item .input-source-title {
+  font-family: 'QEJulianDean', cursive;
+  font-size: 1.3rem;
+  font-weight: 400;
+  color: var(--color-text);
+  text-decoration: none;
+  line-height: 1.3;
+  letter-spacing: 0.01em;
+  transition: color 0.2s ease;
+  display: inline-block;
+}
+
+.input-source-item .input-source-title:hover {
+  color: var(--color-link);
+}
+
+/* Active-filter bar above source list */
+.input-active-filter {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid var(--color-border);
+  font-size: 0.85rem;
+}
+
+.input-active-filter[hidden] {
+  display: none;
+}
+
+.input-active-filter-label {
+  color: var(--color-text);
+  font-style: italic;
+}
+
+.input-active-filter-link {
+  color: var(--color-link);
+  font-size: 0.85rem;
+  text-decoration: none;
+}
+
+.input-active-filter-link:hover {
+  text-decoration: underline;
+}
+
+.input-active-filter-link[hidden] {
+  display: none;
+}
+
+.input-active-filter-clear {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--color-text-light);
+  font-size: 1.1rem;
+  line-height: 1;
+  padding: 0.2rem 0.4rem;
+  margin-left: auto;
+  transition: color 0.2s ease;
+}
+
+.input-active-filter-clear:hover {
+  color: var(--color-text);
+}
+
 /* Themes back-link inside the TOC (post pages) */
 .toc-themes-back {
   display: inline-block;

@@ -58,20 +58,19 @@ test.describe('Source Detail Page', () => {
 });
 
 test.describe('Sources on Homepage', () => {
-  test('Input tab shows source groups with notes', async ({ page }) => {
+  test('Input tab shows a flat list of sources', async ({ page }) => {
     await page.goto('/?tab=input');
     await page.waitForTimeout(300);
 
-    const sourceGroups = page.locator('[data-tab-panel="input"] .input-source-group');
-    await expect(sourceGroups.first()).toBeVisible();
-    await expect(page.locator('.input-note').first()).toBeVisible();
+    const sources = page.locator('[data-tab-panel="input"] .input-source-item');
+    await expect(sources.first()).toBeVisible();
   });
 
-  test('source groups link to source detail pages', async ({ page }) => {
+  test('source titles link to source detail pages', async ({ page }) => {
     await page.goto('/?tab=input');
     await page.waitForTimeout(300);
 
-    const firstLink = page.locator('[data-tab-panel="input"] .input-source-title a').first();
+    const firstLink = page.locator('[data-tab-panel="input"] .input-source-item .input-source-title').first();
     const href = await firstLink.getAttribute('href');
     expect(href).toMatch(/^\/sources\//);
   });

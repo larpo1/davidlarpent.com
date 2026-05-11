@@ -46,8 +46,8 @@ test.describe('Homepage Tabs', () => {
     const outputPanel = page.locator('[data-tab-panel="output"]');
     await expect(outputPanel).toBeHidden();
 
-    // Should show source groups with notes
-    await expect(inputPanel.locator('.input-source-group').first()).toBeVisible();
+    // Should show the flat source list
+    await expect(inputPanel.locator('.input-source-item').first()).toBeVisible();
   });
 
   test('clicking "Output" tab shows essays', async ({ page }) => {
@@ -127,12 +127,14 @@ test.describe('Homepage Tabs', () => {
     await expect(outputTab).toHaveAttribute('aria-pressed', 'true');
   });
 
-  test('input tab shows tag filter', async ({ page }) => {
+  test('input tab shows themes and tags rail', async ({ page }) => {
     await page.goto('/?tab=input');
     await page.waitForTimeout(300);
 
-    const tagFilter = page.locator('.input-tag-filter');
-    await expect(tagFilter).toBeVisible();
-    await expect(page.locator('.input-filter-btn.active')).toHaveAttribute('data-tag', 'all');
+    const rail = page.locator('.input-rail');
+    await expect(rail).toBeVisible();
+    // Rail has at least one theme button and at least one tag button.
+    await expect(rail.locator('[data-filter-type="theme"]').first()).toBeVisible();
+    await expect(rail.locator('[data-filter-type="tag"]').first()).toBeVisible();
   });
 });

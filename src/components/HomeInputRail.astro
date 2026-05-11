@@ -1,0 +1,85 @@
+---
+interface ThemeOption {
+  slug: string;
+  title: string;
+}
+interface TagOption {
+  tag: string;
+  count: number;
+}
+
+interface Props {
+  themes: ThemeOption[];
+  tags: TagOption[];
+}
+
+const { themes, tags } = Astro.props;
+const isDev = import.meta.env.DEV;
+---
+
+<aside class="input-rail" aria-label="Input filters">
+  <nav class="input-rail-section" aria-label="Research themes">
+    <h2 class="input-rail-heading">Themes</h2>
+    <ul class="input-rail-list">
+      {themes.map(theme => (
+        <li>
+          <button
+            class="input-rail-btn"
+            data-filter-type="theme"
+            data-filter-value={theme.slug}
+            type="button"
+          >
+            {theme.title}
+          </button>
+        </li>
+      ))}
+    </ul>
+    {isDev && (
+      <button class="input-rail-new" id="input-rail-new-theme" type="button">+ new theme</button>
+    )}
+  </nav>
+
+  <nav class="input-rail-section" aria-label="Tags">
+    <h2 class="input-rail-heading">Tags</h2>
+    <ul class="input-rail-list">
+      {tags.map(({ tag, count }) => (
+        <li>
+          <button
+            class="input-rail-btn input-rail-tag"
+            data-filter-type="tag"
+            data-filter-value={tag}
+            type="button"
+          >
+            <span class="input-rail-tag-name">#{tag}</span>
+            <span class="input-rail-tag-count">{count}</span>
+          </button>
+        </li>
+      ))}
+    </ul>
+  </nav>
+</aside>
+
+{isDev && (
+  <script>
+    const newBtn = document.getElementById('input-rail-new-theme');
+    newBtn?.addEventListener('click', async () => {
+      const title = prompt('Theme title:');
+      if (!title || !title.trim()) return;
+      try {
+        const res = await fetch('/api/create-theme', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ title: title.trim() }),
+        });
+        const data = await res.json();
+        if (data.success && data.slug) {
+          window.location.href = '/themes/' + data.slug;
+        } else {
+          alert('Could not create theme: ' + (data.message || 'unknown error'));
+        }
+      } catch (err) {
+        console.error('Create theme error:', err);
+      }
+    });
+  </script>
+)}
