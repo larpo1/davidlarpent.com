@@ -17,7 +17,7 @@ Researchers watched how people worked. Some handed everything to the AI and bree
 
 The Anthropic research is not the first to make this point. A study in Nature last year concluded: “[Human-generative AI collaboration enhances task performance but undermines human’s intrinsic motivation](https://www.nature.com/articles/s41598-025-98385-2)”.
 
-## A Need for Speed?
+## Need for Speed
 
 <img src="/images/posts/what-we-lose-when-we-stop-struggling/sketch-1770896413.jpg" alt="'The Thinker' statue by Rodin, stylised in a bauhaus style. The figure is considering taking one of two paths indicated by two signs, one marked &quot;Least resistance&quot; the other marked &quot;Some resistance&quot;." class="sketch-illustration" data-prompt="Style: Square 1:1 aspect ratio. Minimal architectural line drawing on a pure white background. Fine black ink lines only. Clean, precise, spare linework. No shading, no cross-hatching, no fills, no gradients.  Absolutely no borders, no background textures and no paper/mounting effects. Just architectural hand drawn lines on solid, pure white #ffffff background. Think Bauhaus drawing meets Dieter Rams sketch meets architectural blueprint. Abstract where possible. Elegant negative space. The drawing should feel like a diagram that became art. Subject: 'The Thinker' statue by Rodin, stylised in a bauhaus style. The figure is considering taking one of two paths indicated by two signs, one marked &quot;Least resistance&quot; the other marked &quot;Some resistance&quot;.">
 
@@ -50,20 +50,6 @@ We can choose to be deliberate about _which_ parts of our work we hand over.
 The stuff that’s mechanical, repetitive, or where speed genuinely matters? Take it. The stuff where the struggle is the learning? Use it more carefully. Use it in every way that helps learning, just don’t use it to give you the answer.
 
 This might sound like an individual choice, a matter of personal discipline. I think of it more as a life design choice.
-
-## A Struggle Manifesto
-
-I don’t think there’s one right answer. Different people, different teams, different cultures will draw the line in different places. But we should to draw it consciously, rather than letting the logic of efficiency draw it for us.
-
-For me it is something like this:
-
-**Offer to AI:** Research, summarisation,  first drafts I’m going to heavily rewrite, scheduling, formatting, the boring mechanical parts of coding, anything where I already know what I think and just need it executed.
-
-**Take from AI:** challenge, thought partnership, different perspectives.
-
-**Keep for myself:** Arriving at the answer. Critical thinking. The creative work I do for joy. The writing where I’m trying to figure out what I believe. The reps that build the skills I want to have.
-
-**Protect for my kids:** The experience of not knowing something and having to figure it out. The satisfaction of making something through hard work. The understanding that difficulty is often the texture of meaning, not an obstacle to it.
 
 [^1]: Shen, J.H. & Tamkin, A. (2026). "How AI Impacts Skill Formation." arXiv:2601.20245. The study found participants using AI assistance scored 50% on comprehension tests vs. 67% for the control group. [Full paper](https://arxiv.org/abs/2601.20245)
 
