@@ -2524,6 +2524,13 @@ a:hover {
     max-height: calc(100vh - 7rem);
     overflow-y: auto;
     z-index: 40;
+    scrollbar-width: none;
+    -webkit-mask-image: linear-gradient(to bottom, black calc(100% - 2.5rem), transparent);
+            mask-image: linear-gradient(to bottom, black calc(100% - 2.5rem), transparent);
+  }
+
+  .themes-nav::-webkit-scrollbar {
+    display: none;
   }
 }
 
@@ -2532,6 +2539,11 @@ a:hover {
 .input-rail {
   margin-top: 2rem;
   margin-bottom: 2rem;
+  scrollbar-width: none;
+}
+
+.input-rail::-webkit-scrollbar {
+  display: none;
 }
 
 .input-rail-section {
@@ -2589,24 +2601,13 @@ a:hover {
 }
 
 .input-rail-tag {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  gap: 0.5rem;
   font-size: 0.85rem;
 }
 
-.input-rail-tag-name {
-  flex: 1;
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
 .input-rail-tag-count {
-  font-size: 0.7rem;
-  opacity: 0.55;
+  margin-left: 0.25rem;
+  font-size: 0.75rem;
+  opacity: 0.5;
   font-variant-numeric: tabular-nums;
 }
 
@@ -2640,6 +2641,8 @@ a:hover {
     max-height: calc(100vh - 7rem);
     overflow-y: auto;
     z-index: 40;
+    -webkit-mask-image: linear-gradient(to bottom, black calc(100% - 2.5rem), transparent);
+            mask-image: linear-gradient(to bottom, black calc(100% - 2.5rem), transparent);
   }
 }
 
