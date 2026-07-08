@@ -7,15 +7,18 @@ tags:
 sources:
   - company-brain-request-for-startups-y-combinator
   - securing-the-agent-multitenant-enterprise-retrieval-arceo-narsing
+  - document-level-rbac-for-rag-pipelines-truto
   - okta-for-ai-agents-general-availability-okta
   - what-is-a-company-brain-falconer
   - built-in-memory-for-claude-managed-agents-anthropic
+  - internal-ai-engineering-stack-cloudflare
   - context-kubernetes-mouzouni
   - llm-wiki-karpathy
   - knowledge-activation-ai-skills-institutional-knowledge-bakal
   - retrieval-pivot-attacks-in-hybrid-rag-thornton
   - company-knowledge-in-chatgpt-openai
   - effective-context-engineering-for-ai-agents-anthropic
+  - authorizing-access-to-data-with-rag-implementations-aws
   - enterprise-ai-must-enforce-participant-aware-access-control-bhatt
 draft: false
 ---
@@ -31,6 +34,7 @@ Threads to follow:
 - **Deterministic, not probabilistic.** Bhatt et al.'s rule: guardrails and output filters fail, so authorisation must be enforced before the model sees anything, at ingestion and retrieval, never patched after generation. Need-to-know is a precondition, not a filter.
 - **Agent authority is a strict subset of human authority.** Context Kubernetes' permission model and Okta's delegation tokens converge on the same invariant from opposite directions, one from knowledge orchestration, one from identity. An agent should never know more than the person it acts for.
 - **Memory you can audit.** Anthropic's files-on-a-filesystem design and Karpathy's LLM wiki are the same instinct at different scales: knowledge as plain, inspectable files, synthesis done at ingest rather than at query time. Memory that is inspectable is memory that can be governed; opaque memory cannot respect need-to-know because nobody can see what it holds.
+- **From paper to production.** The how-to layer, for an engineering org that wants to start this quarter. Cloudflare's internal stack is the reference build (gateway, knowledge layer, enforcement layer, everything through one proxy); Truto's six-step RBAC recipe and AWS's chunk-authorisation pattern are the permission plumbing, with code. Notable that the production writeups enforce at retrieval, exactly where the research papers said the enforcement has to live.
 - **Inherited versus designed permissions.** OpenAI's company knowledge inherits source-system ACLs, which ships today and ceilings tomorrow. The privilege hierarchy an organisation actually needs, running from the CEO's full picture down to a single end user's slice, has to be designed. No vendor ships it yet.
 
 Order runs newest-first by publication date: the 2026 material at the top is the last three months of the argument, the 2025 tail is the lineage it rests on. Read up the page for the state of play, down the page for how we got here.
