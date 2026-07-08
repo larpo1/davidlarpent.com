@@ -1,6 +1,6 @@
 ---
 title: Harness Engineering
-description: The engineering of the wrapper around the model — prompt structure, tool design, hooks, MCP, context windows, eval loops, and the feedback systems that make agents reliable.
+description: 'The engineering of the wrapper around the model: prompt structure, tool design, hooks, MCP, context windows, eval loops, and the feedback systems that make agents reliable.'
 tags:
   - harness-engineering
   - mcp
@@ -24,12 +24,12 @@ sources:
 draft: false
 ---
 
-A working notebook on the discipline of harness engineering — the wrapper around the model rather than the model itself. The argument I'm tracking: that the harness defines the productivity ceiling more than the underlying weights. Mitchell Hashimoto crystallised the term in February 2026; within a week OpenAI and Anthropic had published their own treatments, and within two months Martin Fowler's site had a full-length canonical article on it. The pattern matters: a vocabulary moved from one practitioner's habit to industry consensus in eight weeks.
+A working notebook on the discipline of harness engineering, the wrapper around the model rather than the model itself. The argument I'm tracking: that the harness defines the productivity ceiling more than the underlying weights. Mitchell Hashimoto crystallised the term in February 2026; within a week OpenAI and Anthropic had published their own treatments, and within two months Martin Fowler's site had a full-length canonical article on it. The pattern matters: a vocabulary moved from one practitioner's habit to industry consensus in eight weeks.
 
 Threads to follow:
 
 - **Agent = Model + Harness.** The simplest formulation, from Hashimoto. Most discussion of "AI productivity" is really discussion of harness quality.
 - **Context as substrate.** The shift from prompt engineering (one-shot wording) to context engineering (the whole information environment the agent operates inside).
 - **MCP as the neutral protocol.** Tools were the bottleneck; MCP made them composable.
-- **Single agent vs multi-agent.** Cognition's "Don't Build Multi-Agents" paired with Anthropic's research-system writeup is the cleanest disagreement in the field — same data, opposite conclusions.
+- **Single agent vs multi-agent.** Cognition's "Don't Build Multi-Agents" paired with Anthropic's research-system writeup is the cleanest disagreement in the field: same data, opposite conclusions.
 - **Evals as steering.** Hamel Husain's argument that without evals you cannot drive the system, only watch it move.

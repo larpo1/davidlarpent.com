@@ -13,4 +13,4 @@ tags:
 <!-- note: 2026-07-08T09:45 -->
 <!-- tags: global-workspace, machine-consciousness -->
 <!-- published: true -->
-The paper that argued the workspace could be built, not just found — a roadmap for a "global latent workspace" shared between neural modules via unsupervised translation. Anthropic's result is the mirror image: the workspace appearing unbidden in a model that was never designed for it. Read the two together.
+The paper that argued the workspace could be built, not just found: a roadmap for a "global latent workspace" shared between neural modules via unsupervised translation. Anthropic's result is the mirror image: the workspace appearing unbidden in a model that was never designed for it. Read the two together.

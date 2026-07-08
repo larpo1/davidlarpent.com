@@ -12,4 +12,4 @@ tags:
 <!-- note: 2026-07-08T10:20 -->
 <!-- tags: consciousness -->
 <!-- published: true -->
-The "white bear" study — tell someone not to think of something and it floods the workspace. Anthropic cite it because they can run the experiment cleanly: instruct the model to suppress a concept and watch it persist in the J-space anyway. A sixty-year-old human finding, now reproducible with an activation read-out.
+The "white bear" study: tell someone not to think of something and it floods the workspace. Anthropic cite it because they can run the experiment cleanly: instruct the model to suppress a concept and watch it persist in the J-space anyway. A sixty-year-old human finding, now reproducible with an activation read-out.

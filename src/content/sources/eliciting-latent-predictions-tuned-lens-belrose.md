@@ -12,4 +12,4 @@ tags:
 <!-- note: 2026-07-08T10:15 -->
 <!-- tags: interpretability -->
 <!-- published: true -->
-The rigorous successor to the logit lens: learn a per-layer affine probe so the read-off is faithful rather than approximate. Read it for the methodological standard the J-lens has to clear — how do you know an internal "prediction" you decode is really being used downstream, not an artefact of your decoder?
+The rigorous successor to the logit lens: learn a per-layer affine probe so the read-off is faithful rather than approximate. Read it for the methodological standard the J-lens has to clear: how do you know an internal "prediction" you decode is really being used downstream, not an artefact of your decoder?
