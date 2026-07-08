@@ -9,7 +9,6 @@ sources:
   - securing-the-agent-multitenant-enterprise-retrieval-arceo-narsing
   - document-level-rbac-for-rag-pipelines-truto
   - okta-for-ai-agents-general-availability-okta
-  - what-is-a-company-brain-falconer
   - built-in-memory-for-claude-managed-agents-anthropic
   - internal-ai-engineering-stack-cloudflare
   - context-kubernetes-mouzouni
@@ -20,7 +19,6 @@ sources:
   - effective-context-engineering-for-ai-agents-anthropic
   - authorizing-access-to-data-with-rag-implementations-aws
   - enterprise-ai-must-enforce-participant-aware-access-control-bhatt
-draft: false
 ---
 
 A working notebook on context engineering, focused on one question: how to build an organisational brain. Not a wiki, not enterprise search, but a living context system that gives a company's people and agents knowledge that is deep, wide and current, while respecting need-to-know and least privilege at every tier. The motivating case is my own organisation, a b2b2c SaaS business in the property technology space, where the tiers are concrete: the CEO's full picture, then HR, SMT, Product and GTM inside the business, then customers in a b2b relationship, then their guests and residents at the end of the chain, each entitled to a progressively narrower slice of the same brain.
