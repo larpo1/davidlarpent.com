@@ -19,7 +19,7 @@ sources:
 draft: false
 ---
 
-A working notebook on context engineering, focused on one question: how to build an organisational brain. Not a wiki, not enterprise search, but a living context system that gives a company's people and agents knowledge that is deep, wide and current, while respecting need-to-know and least privilege at every tier: CEO, HR, SMT, Product and GTM inside the business, then customers in a b2b relationship, then their end users in a b2b2c one.
+A working notebook on context engineering, focused on one question: how to build an organisational brain. Not a wiki, not enterprise search, but a living context system that gives a company's people and agents knowledge that is deep, wide and current, while respecting need-to-know and least privilege at every tier. The motivating case is my own organisation, a b2b2c SaaS business in the property technology space, where the tiers are concrete: the CEO's full picture, then HR, SMT, Product and GTM inside the business, then customers in a b2b relationship, then their guests and residents at the end of the chain, each entitled to a progressively narrower slice of the same brain.
 
 The through-line, from three months of reading (April to July 2026): the market has named the thing (YC's Summer 2026 RFS calls the company brain "the missing primitive"; vendors call it a moat) but nearly all the demand-side writing is silent on permissions. Meanwhile the security literature has quietly established that the permission half is where the design lives, and that the failure mode is structural, not adversarial: shared entities leak across boundaries under entirely benign queries. The brain and the access model are not two problems. They are one.
 
