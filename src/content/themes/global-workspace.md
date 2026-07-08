@@ -22,7 +22,7 @@ sources:
   - on-a-confusion-about-a-function-of-consciousness-block
   - a-cognitive-theory-of-consciousness-baars
   - paradoxical-effects-of-thought-suppression-wegner
-draft: true
+draft: false
 ---
 
 A working notebook for an essay on the J-space, the small, privileged region Anthropic reported inside Claude in July 2026, and its uncanny resemblance to the "global workspace" that consciousness science has argued about for forty years.
