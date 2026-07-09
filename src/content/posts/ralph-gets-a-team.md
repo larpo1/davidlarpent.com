@@ -11,9 +11,9 @@ tags:
 category: not-work
 featureImage: /images/posts/ralph-gets-a-team/sketch-1770575431.jpg
 ---
-Last week I wrote about [running Claude Code in a bash loop](/posts/ralph-loops). One agent, one task file, a PM that kept sneaking off to write React components. Charming chaos.
+Building on experiments with [running Claude Code in a bash loop](/posts/ralph-loops), which was promising but ultimately a little chaotic - this now has become easier with claude subagents
 
-Anthropic released Claude Opus 4.6, and with it, sub-agents: multiple agents with distinct roles running inside a single session. The PM plans. Ralph builds. A third agent tests. One window instead of two terminals fighting over the same codebase.
+Anthropic released Claude Opus 4.6, and with it, sub-agents: multiple agents with distinct roles running inside a single session. The PM plans. Builder (Ralph if you like) builds. A third agent tests. One window instead of two terminals fighting over the same codebase.
 
 Anthropic’s [research on effective agents](https://www.anthropic.com/research/building-effective-agents) found simple, composable patterns outperform elaborate frameworks. Three patterns in particular have been useful.
 
