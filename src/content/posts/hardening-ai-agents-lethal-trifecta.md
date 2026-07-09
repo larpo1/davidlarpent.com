@@ -1,7 +1,7 @@
 ---
 title: 'Hardening AI Agents Against the ''Lethal Trifecta'''
 date: 2026-03-24T00:00:00.000Z
-description: 'Personal AI assistants like Openclaw are fantastically powerful, and quite dangerous. Here''s how to harden a personal assistant without making it useless.'
+description: 'Experiments and background reading with Openclaw suggests it is incredibly powerful, fun to work with and ultimately quite dangerous if you''re not careful. Here''s how to harden a personal assistant without making it useless.'
 draft: false
 tags:
   - AI
